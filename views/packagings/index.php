@@ -9,37 +9,37 @@ use yii\grid\GridView;
 /* @var $searchModel app\models\PackagingSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Packagings';
+$this->title = 'Confezioni';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="packaging-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <div class="card">
+        <div class="card-body">
 
-    <p>
-        <?= Html::a('Create Packaging', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
+            <p><?= Html::a('Aggiungi', ['create'], ['class' => 'btn btn-success']) ?></p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+            <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
-    <?= GridView::widget([
-        'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
-        'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
+            <?= GridView::widget([
+                'dataProvider' => $dataProvider,
+                'filterModel' => $searchModel,
+                'columns' => [
+                    ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
-            'name',
-            'label',
-            'image',
-            [
-                'class' => ActionColumn::className(),
-                'urlCreator' => function ($action, Packaging $model, $key, $index, $column) {
-                    return Url::toRoute([$action, 'id' => $model->id]);
-                 }
-            ],
-        ],
-    ]); ?>
-
+                    'id',
+                    'name',
+                    'label',
+                    'image',
+                    // [
+                    //     'class' => ActionColumn::className(),
+                    //     'urlCreator' => function ($action, Packaging $model, $key, $index, $column) {
+                    //         return Url::toRoute([$action, 'id' => $model->id]);
+                    //     }
+                    // ],
+                ],
+            ]); ?>
+        </div>
+    </div>
 
 </div>

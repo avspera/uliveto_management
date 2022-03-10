@@ -3,18 +3,20 @@
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\Packaging */
+/* @var $model app\models\Occurrence */
 
-$this->title = 'Aggiungi Confezione';
-$this->params['breadcrumbs'][] = ['label' => 'Confezione', 'url' => ['index']];
+$this->title = 'Aggiungi confezione';
+$this->params['breadcrumbs'][] = ['label' => 'Confezioni', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="packaging-create">
 
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <?= $this->render('_form', [
-        'model' => $model,
-    ]) ?>
+    <div class="card">
+        <div class="card-body">
+            <?= $this->render('_form', [
+                'model' => $model,
+            ]) ?>
+        </div>
+    </div>
 
 </div>

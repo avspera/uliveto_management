@@ -9,35 +9,32 @@ use yii\grid\GridView;
 /* @var $searchModel app\models\OccurrenceSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Occurrences';
+$this->title = 'Occorrenze';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="occurrence-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <div class="card">
+        <div class="card-body">
+            <p>
+                <?= Html::a('Aggiungi', ['create'], ['class' => 'btn btn-success']) ?>
+            </p>
 
-    <p>
-        <?= Html::a('Create Occurrence', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
-
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
-
-    <?= GridView::widget([
-        'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
-        'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-
-            'id',
-            'label',
-            [
-                'class' => ActionColumn::className(),
-                'urlCreator' => function ($action, Occurrence $model, $key, $index, $column) {
-                    return Url::toRoute([$action, 'id' => $model->id]);
-                 }
-            ],
-        ],
-    ]); ?>
-
+            <?= GridView::widget([
+                'dataProvider' => $dataProvider,
+                'filterModel' => $searchModel,
+                'columns' => [
+                    ['class' => 'yii\grid\SerialColumn'],
+                    'label',
+                    // [
+                    //     'class' => ActionColumn::className(),
+                    //     'urlCreator' => function ($action, Occurrence $model, $key, $index, $column) {
+                    //         return Url::toRoute([$action, 'id' => $model->id]);
+                    //     }
+                    // ],
+                ],
+            ]); ?>
+        </div>
+    </div>
 
 </div>

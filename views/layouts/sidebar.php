@@ -48,8 +48,8 @@
                         'label' => 'Prodotti',
                         'iconStyle' => 'far',
                         'items' => [
-                            ['label' => 'Nuovo', 'iconStyle' => 'far', 'icon' => 'dot-circle'],
-                            ['label' => 'Lista', 'iconStyle' => 'far', 'icon' => 'dot-circle'],
+                            ['label' => 'Nuovo', 'url' => ["products/create"], 'iconStyle' => 'far', 'icon' => 'dot-circle'],
+                            ['label' => 'Lista', 'url' => ["products/index"], 'iconStyle' => 'far', 'icon' => 'dot-circle'],
                         ]
                     ],
                     [
@@ -57,23 +57,23 @@
                         'iconStyle' => 'far',
                         'items' => [
                             ['label' => 'Nuovo', 'url' => ["occurrence/create"], 'iconStyle' => 'far', 'icon' => 'dot-circle'],
-                            ['label' => 'Lista', 'iconStyle' => 'far', 'icon' => 'dot-circle'],
+                            ['label' => 'Lista', 'url' => ["occurrence/index"], 'iconStyle' => 'far', 'icon' => 'dot-circle'],
                         ]
                     ],
                     [
                         'label' => 'Colori',
                         'iconStyle' => 'far',
                         'items' => [
-                            ['label' => 'Nuovo', 'iconStyle' => 'far', 'icon' => 'dot-circle'],
-                            ['label' => 'Lista', 'iconStyle' => 'far', 'icon' => 'dot-circle'],
+                            ['label' => 'Nuovo', 'url' => ["colors/create"], 'iconStyle' => 'far', 'icon' => 'dot-circle'],
+                            ['label' => 'Lista', 'url' => ["colors/index"],'iconStyle' => 'far', 'icon' => 'dot-circle'],
                         ]
                     ],
                     [
                         'label' => 'Confezioni',
                         'iconStyle' => 'far',
                         'items' => [
-                            ['label' => 'Nuovo', 'iconStyle' => 'far', 'icon' => 'dot-circle'],
-                            ['label' => 'Lista', 'iconStyle' => 'far', 'icon' => 'dot-circle'],
+                            ['label' => 'Nuovo', 'url' => ["packagings/create"], 'iconStyle' => 'far', 'icon' => 'dot-circle'],
+                            ['label' => 'Lista', 'url' => ["packagings/index"], 'iconStyle' => 'far', 'icon' => 'dot-circle'],
                         ]
                     ],
                     ['label' => 'ACTIONS', 'header' => true],

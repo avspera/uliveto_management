@@ -46,13 +46,13 @@ class Product extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
-            'label' => 'Label',
-            'image' => 'Image',
-            'weight' => 'Weight',
-            'id_packaging' => 'Id Packaging',
-            'price' => 'Price',
-            'capacity' => 'Capacity',
+            'name' => 'Nome',
+            'label' => 'Etichetta',
+            'image' => 'Immagine',
+            'weight' => 'Peso',
+            'id_packaging' => 'Confezione',
+            'price' => 'Prezzo',
+            'capacity' => 'Capacità',
         ];
     }
 }
