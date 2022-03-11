@@ -29,7 +29,7 @@ class UserController extends Controller
                     [
                         'actions' => [
                             'index', 
-                            // 'create', 
+                            'create', 
                             'view', 
                             'update', 
                             'delete'
@@ -37,14 +37,14 @@ class UserController extends Controller
                         'allow' => true,
                         'roles' => ['@'],
                     ],
-                    [
-                        'actions' => [
-                            'create',
-                            'view',  
-                        ],
-                        'allow' => true,
-                        'roles' => ['?'],
-                    ],
+                    // [
+                    //     'actions' => [
+                    //         'create',
+                    //         'view',  
+                    //     ],
+                    //     'allow' => true,
+                    //     'roles' => ['?'],
+                    // ],
                 ],
             ],
         ];
@@ -56,6 +56,10 @@ class UserController extends Controller
      */
     public function actionIndex()
     {
+        if(!Yii::$app->user->identity->isAdmin()){
+            return $this->goHome();
+        }
+        
         $searchModel = new UserSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 

@@ -44,7 +44,8 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
             ['status', 'default', 'value' => self::STATUS_INACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_DELETED]],
             [['username', 'password', 'created', 'status', 'nome', 'email', 'role'], 'required'],
-            [['created','username', 'nome', 'last_login', 'new_password', 'new_password_confirm'], 'safe'],
+            [['created','username', 'nome', 'last_login', 'updated',
+                'new_password', 'new_password_confirm'], 'safe'],
             [['username','email',], 'string'],
             [['status', 'role'], 'integer'],
             [['email'], 'email'],
@@ -64,6 +65,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
             'password' => 'Password',
             'status' => "Stato",
             'created' => 'Registrato il',
+            'updated' => "Ultima modifica",
             'last_login' => "Ultimo accesso",
         ];
     }
@@ -145,6 +147,14 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
         $this->password = Yii::$app->security->generatePasswordHash($password);
     }
 
+    public function getStatus(){
+        return $this->statusList[$this->status];
+    }
+
+    public function getRole(){
+        return $this->roleList[$this->role];
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -195,6 +205,14 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
     public function validateAuthKey($authKey)
     {
         return $this->auth_key === $authKey;
+    }
+
+    public function formatDate($value, $showHour = false){
+        $format = "d/m/Y";
+        if($showHour)
+            $format = "d/m/Y H:i:s";
+
+        return !empty($value) ? date($format, strtotime($value)) : "";
     }
 
     /**

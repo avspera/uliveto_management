@@ -62,13 +62,15 @@ class ClientsController extends Controller
 
     public function actionSearchFromSelect($term = ""){
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-        $out = ['results' => ['id' => '', 'text' => '']];
+        $out = ['results' => []];
 
         if (!is_null($term)) {
             $data = Client::find()->select(["id", "name", "surname"])->where(["LIKE", "surname", $term])->all();
-            foreach($data as $item){
-                $out["results"][$i]["id"] = $item->id;
-                $out["results"][$i]["text"] = $item->surname." ".$item->name;
+            $i = 0;
+            foreach($data as $client){
+                $out["results"][$i]["id"]   = $client->id;
+                $out["results"][$i]["text"] = $client->name." ".$client->surname;
+                $i++;
             }
         }
         else if($id > 0){

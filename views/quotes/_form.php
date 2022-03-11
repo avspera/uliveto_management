@@ -19,7 +19,10 @@ use yii\web\JsExpression;
         <div class="col-md-4 col-sm-6 col-12"><?= $form->field($model, 'order_number')->textInput() ?></div>
         <div class="col-md-4 col-sm-6 col-12">
             <?= $form->field($model, 'id_client')->widget(Select2::classname(), [
-                    'options' => ['multiple'=>true, 'placeholder' => 'Cerca cliente ...'],
+                    'options' => [
+                        'multiple'=>false, 
+                        'placeholder' => 'Cerca cliente ...'
+                    ],
                     'pluginOptions' => [
                         'allowClear' => true,
                         'minimumInputLength' => 3,
@@ -38,7 +41,10 @@ use yii\web\JsExpression;
                 ]);
             ?>
         </div>
-        <div class="col-md-4 col-sm-6 col-12"><?= $form->field($model, 'product')->textInput() ?></div>
+        <div class="col-md-4 col-sm-6 col-12">
+            <?= $form->field($model, 'product')->dropdownlist(yii\helpers\ArrayHelper::map(app\models\Product::find()->orderBy('label')->all(), 'id', 'name'), ['prompt' => 'Scegli'])->label('Prodotto'); ?>
+        </div>
+        
     </div>
    
     <div class="row">

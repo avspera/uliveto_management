@@ -9,7 +9,6 @@ use Yii;
  *
  * @property int $id
  * @property string $name
- * @property string $label
  * @property string|null $image
  * @property string|null $weight
  * @property int $id_packaging
@@ -32,10 +31,12 @@ class Product extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'label', 'id_packaging', 'price', 'capacity'], 'required'],
+            [['name', 'price', 'capacity'], 'required'],
             [['id_packaging'], 'integer'],
+            [['id_packaging'], 'safe'],
             [['price', 'capacity'], 'number'],
-            [['name', 'label', 'image', 'weight'], 'string', 'max' => 255],
+            [['name', 'image', 'weight'], 'string', 'max' => 255],
+            [['image'], 'file', 'skipOnEmpty' => true, 'extensions' => 'jpg, png'],
         ];
     }
 
@@ -47,12 +48,16 @@ class Product extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'name' => 'Nome',
-            'label' => 'Etichetta',
             'image' => 'Immagine',
             'weight' => 'Peso',
             'id_packaging' => 'Confezione',
             'price' => 'Prezzo',
             'capacity' => 'Capacità',
         ];
+    }
+
+    public function formatNumber($value){
+        if(empty($value)) return;
+        return number_format($value, 2, ",", ".")." &euro;";
     }
 }

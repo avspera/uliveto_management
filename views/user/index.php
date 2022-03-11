@@ -9,7 +9,7 @@ use yii\grid\GridView;
 /* @var $searchModel app\models\UserSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Users';
+$this->title = 'Utenti';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="user-index">
@@ -25,22 +25,31 @@ $this->params['breadcrumbs'][] = $this->title;
                 'filterModel' => $searchModel,
                 'columns' => [
                     ['class' => 'yii\grid\SerialColumn'],
-
-                    'id',
                     'username',
-                    'auth_key',
-                    'password_hash',
-                    'password_reset_token',
-                    //'email:email',
-                    //'status',
-                    //'role',
-                    //'created_at',
-                    //'updated_at',
+                    'email:email',
+                    [
+                       'attribute' => 'status',
+                       'value' => function($model){
+                           return $model->getStatus();
+                       },
+                       'filter' => $searchModel->statusList
+                    ],
+                    [
+                        'attribute' => 'role',
+                        'value' => function($model){
+                            return $model->getRole();
+                        }
+                     ],
+                    [
+                        'attribute' => 'created',
+                        'value' => function($model){
+                            return $model->formatDate($model->created);
+                        }
+                     ],
+                    'updated',
                     [
                         'class' => ActionColumn::className(),
-                        'urlCreator' => function ($action, User $model, $key, $index, $column) {
-                            return Url::toRoute([$action, 'id' => $model->id]);
-                        }
+                        
                     ],
                 ],
             ]); ?>

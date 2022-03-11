@@ -35,7 +35,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     [
                         'attribute' => 'status',
                         'value' => function($model){
-                            return $model->statusList[$model->status];
+                            return $model->getStatus();
                         }
                     ],
                     [

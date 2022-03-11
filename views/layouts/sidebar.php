@@ -16,8 +16,9 @@
                 <img src="<?=$assetDir?>/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
             </div>
             <div class="info">
-                <a href="#" class="d-block"><?= isset(Yii::$app->user->identity->username) ? Yii::$app->user->identity->username : "Unlogged user" ?></a>
+                <a class="d-block" href="<?= Url::to(["user/view", "id" => Yii::$app->user->identity->id]) ?>"><?= isset(Yii::$app->user->identity->username) ? Yii::$app->user->identity->username : "Unlogged user" ?></a>
             </div>
+            
         </div>
 
         <!-- SidebarSearch Form -->
@@ -43,7 +44,6 @@
                     ['label' => 'Preventivi', 'url' => ['quotes/index'], 'icon' => 'file-alt'],
                     ['label' => 'Clienti',  'icon' => 'users', 'url' => ['/clients/index'], 'target' => '_self'],
                     ['label' => 'TOOLS', 'header' => true],
-                    
                     [
                         'label' => 'Prodotti',
                         'iconStyle' => 'far',
@@ -76,7 +76,8 @@
                             ['label' => 'Lista', 'url' => ["packagings/index"], 'iconStyle' => 'far', 'icon' => 'dot-circle'],
                         ]
                     ],
-                    ['label' => 'ACTIONS', 'header' => true],
+                    ['label' => 'People', 'header' => true],
+                    ['label' => 'Utenti',  'icon' => 'users', 'url' => ['/user/index'], 'target' => '_self', Yii::$app->user->identity->isAdmin()],
                     ['label' => 'Login', 'url' => ['site/login'], 'icon' => 'sign-in-alt', 'visible' => Yii::$app->user->isGuest],
                     ['label' => 'Logout', 'url' => ['site/logout'], 'icon' => 'sign-out-alt', 'visible' => !Yii::$app->user->isGuest]
                 ],

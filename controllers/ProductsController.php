@@ -1,7 +1,7 @@
 <?php
 
 namespace app\controllers;
-
+use Yii;
 use app\models\Product;
 use app\models\ProductSearch;
 use yii\web\Controller;
@@ -72,6 +72,10 @@ class ProductsController extends Controller
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
                 return $this->redirect(['view', 'id' => $model->id]);
+            }else{
+                $message = json_encode($model->getErrors());
+                print_r($message);die;
+                Yii::$app->session->setFlash('error', $message);
             }
         } else {
             $model->loadDefaultValues();
