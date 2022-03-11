@@ -14,9 +14,6 @@ use yii\widgets\ActiveForm;
 
     <div class="row">
         <div class="col-md-4 col-sm-6 col-12"><?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?></div>
-        <!-- <div class="col-md-4 col-sm-6 col-12">
-            <?= $form->field($model, 'color')->dropdownlist(yii\helpers\ArrayHelper::map(app\models\Color::find()->orderBy('label')->all(), 'id', 'label'), ['prompt' => 'Scegli'])->label('Color'); ?>
-        </div> -->
         <div class="col-md-4 col-sm-6 col-12"><?= $form->field($model, 'weight')->textInput(['maxlength' => true]) ?></div>
         <div class="col-md-4 col-sm-6 col-12">
             <?= $form->field($model, 'id_packaging')->dropdownlist(yii\helpers\ArrayHelper::map(app\models\Packaging::find()->orderBy('label')->all(), 'id', 'label'), ['prompt' => 'Scegli'])->label('Confezione'); ?>

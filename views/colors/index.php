@@ -14,32 +14,31 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="color-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <div class="card">
+        <div class="card-header">
+            <?= Html::a('Aggiungi colore', ['create'], ['class' => 'btn btn-success']) ?>
+        </div>
 
-    <p>
-        <?= Html::a('Create Color', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
+        <div class="card-body">
+            <?= GridView::widget([
+                'dataProvider' => $dataProvider,
+                'filterModel' => $searchModel,
+                'columns' => [
+                    ['class' => 'yii\grid\SerialColumn'],
+                    'label',
+                    'content',
+                    'picture',
+                    [
+                        'class' => ActionColumn::className(),
+                    ],
+                ],
+            ]); ?>
+        </div>
+    </div>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
-    <?= GridView::widget([
-        'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
-        'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-
-            'id',
-            'label',
-            'content',
-            'picture',
-            [
-                'class' => ActionColumn::className(),
-                'urlCreator' => function ($action, Color $model, $key, $index, $column) {
-                    return Url::toRoute([$action, 'id' => $model->id]);
-                 }
-            ],
-        ],
-    ]); ?>
+    
 
 
 </div>

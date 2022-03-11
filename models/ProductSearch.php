@@ -18,7 +18,7 @@ class ProductSearch extends Product
     {
         return [
             [['id', 'id_packaging'], 'integer'],
-            [['name', 'label', 'image', 'weight'], 'safe'],
+            [['name', 'image', 'weight'], 'safe'],
             [['price', 'capacity'], 'number'],
         ];
     }
@@ -66,7 +66,6 @@ class ProductSearch extends Product
         ]);
 
         $query->andFilterWhere(['like', 'name', $this->name])
-            ->andFilterWhere(['like', 'label', $this->label])
             ->andFilterWhere(['like', 'image', $this->image])
             ->andFilterWhere(['like', 'weight', $this->weight]);
 

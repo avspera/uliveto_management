@@ -40,9 +40,9 @@ class Packaging extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
-            'label' => 'Label',
-            'image' => 'Image',
+            'name' => 'Codice',
+            'label' => 'Nome pubblico',
+            'image' => 'Immagine',
         ];
     }
 }

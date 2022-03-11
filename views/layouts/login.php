@@ -18,7 +18,7 @@ $model = new LoginForm();
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <?php $this->registerCsrfMetaTags() ?>
-    <title><?= Html::encode($this->title) ?></title>
+    <title>Accedi a Manager - OrciCilento</title>
     <?php $this->head() ?>
 </head>
 <body id="page-top" class="bg-gradient-green">
@@ -29,7 +29,7 @@ $model = new LoginForm();
             <img src="<?=$assetDir?>/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
         </div>
 
-        <div class="card">
+        <div class="card" style="margin-top: 1rem">
             <div class="card-body table-responsive login-card-body">
                 <p class="login-box-msg">Accedi per iniziare una nuova sessione</p>
 
@@ -64,13 +64,13 @@ $model = new LoginForm();
                         ]) ?>
                     </div>
                     <div class="col-4">
-                        <?= Html::submitButton('Sign In', ['class' => 'btn btn-primary btn-block']) ?>
+                        <?= Html::submitButton('Entra', ['class' => 'btn btn-primary btn-block']) ?>
                     </div>
                 </div>
 
                 <?php \yii\bootstrap4\ActiveForm::end(); ?>
 
-                <div class="social-auth-links text-center mb-3">
+                <!-- <div class="social-auth-links text-center mb-3">
                     <p>- OR -</p>
                     <a href="#" class="btn btn-block btn-primary">
                         <i class="fab fa-facebook mr-2"></i> Sign in using Facebook
@@ -78,15 +78,15 @@ $model = new LoginForm();
                     <a href="#" class="btn btn-block btn-danger">
                         <i class="fab fa-google-plus mr-2"></i> Sign in using Google+
                     </a>
-                </div>
+                </div> -->
                 <!-- /.social-auth-links -->
 
                 <p class="mb-1">
-                    <a href="forgot-password.html">I forgot my password</a>
+                    <a href="forgot-password.html">Ho dimenticato la password</a>
                 </p>
-                <p class="mb-0">
+                <!-- <p class="mb-0">
                     <a href="register.html" class="text-center">Register a new membership</a>
-                </p>
+                </p> -->
             </div>
             <!-- /.login-card-body -->
         </div>

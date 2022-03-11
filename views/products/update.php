@@ -3,19 +3,16 @@
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\Product */
-
-$this->title = 'Update Product: ' . $model->name;
-$this->params['breadcrumbs'][] = ['label' => 'Products', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['view', 'id' => $model->id]];
-$this->params['breadcrumbs'][] = 'Update';
+/* @var $model app\models\Quote */
+$this->title = 'Modifica Prodotto: '.$model->name;
+$this->params['breadcrumbs'][] = ['label' => 'Prodotti', 'url' => ['index']];
+$this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="product-update">
+<div class="product-create">
 
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <?= $this->render('_form', [
-        'model' => $model,
-    ]) ?>
-
+    <div class="card">
+        <div class="card-body table-responsive">
+            <?= $this->render('_form', ['model' => $model]) ?>
+        </div>
+    </div>
 </div>

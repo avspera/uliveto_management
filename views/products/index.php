@@ -27,18 +27,20 @@ $this->params['breadcrumbs'][] = $this->title;
                 'columns' => [
                     ['class' => 'yii\grid\SerialColumn'],
                     'name',
-                    'label',
                     'image',
                     'weight',
-                    //'id_packaging',
-                    //'price',
-                    //'capacity',
-                    // [
-                    //     'class' => ActionColumn::className(),
-                    //     'urlCreator' => function ($action, Product $model, $key, $index, $column) {
-                    //         return Url::toRoute([$action, 'id' => $model->id]);
-                    //     }
-                    // ],
+                    [//'id_packaging',]
+                    [
+                        'attribute' => 'price',
+                        'value' => function($model){
+                            return $model->formatNumber($model->price);
+                        },
+                        'format' => "raw"
+                    ],
+                    'capacity',
+                    [
+                        'class' => ActionColumn::className(),
+                    ],
                 ],
             ]); ?>
         </div>
