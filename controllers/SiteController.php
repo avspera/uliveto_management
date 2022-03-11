@@ -23,19 +23,21 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout'],
                 'rules' => [
+                    [
+                        'actions' => [
+                            'request-password-reset', 
+                            'reset-password',
+                            'login',
+                        ],
+                        'allow' => true,
+                        'allow' => ['?'],
+                    ],
                     [
                         'actions' => ['logout', 'index'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
-                ],
-            ],
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'logout' => ['post'],
                 ],
             ],
         ];
@@ -75,25 +77,25 @@ class SiteController extends Controller
         ]);
     }
 
-    /**
-     * Login action.
-     *
-     * @return Response|string
-     */
     public function actionLogin()
     {
         if (!Yii::$app->user->isGuest) {
             return $this->goHome();
         }
 
+        $this->layout = "login";
+
         $model = new LoginForm();
+        
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
+            return $this->goHome();
         }
 
         $model->password = '';
+        
         return $this->render('login', [
             'model' => $model,
+            'error' => "Not a post request"
         ]);
     }
 

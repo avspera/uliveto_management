@@ -6,7 +6,7 @@
 <div class="container-fluid">
 
     <div class="row">
-        <div class="col-md-4 col-sm-6 col-12">
+        <div class="col-md-6 col-sm-6 col-12">
             <a href= "<?= Url::to(["quotes/create"]) ?>">
                 <div class="info-box bg-success">
                     <span class="info-box-icon"><i class="fas fa-plus"></i></span>
@@ -17,7 +17,7 @@
             </a>
         </div>
 
-        <div class="col-md-4 col-sm-6 col-12">
+        <div class="col-md-6 col-sm-6 col-12">
             <a href= "<?= Url::to(["clients/create"]) ?>">
                 <div class="info-box bg-info">
                     <span class="info-box-icon"><i class="fas fa-user-plus"></i></span>

@@ -16,7 +16,7 @@
                 <img src="<?=$assetDir?>/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
             </div>
             <div class="info">
-                <a href="#" class="d-block"><?= isset(Yii::$app->user->identity->name) ? Yii::$app->user->identity->name : "Unlogged user" ?></a>
+                <a href="#" class="d-block"><?= isset(Yii::$app->user->identity->username) ? Yii::$app->user->identity->username : "Unlogged user" ?></a>
             </div>
         </div>
 

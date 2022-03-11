@@ -5,17 +5,18 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\Occurrence */
 
-$this->title = 'Update Occurrence: ' . $model->id;
-$this->params['breadcrumbs'][] = ['label' => 'Occurrences', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
-$this->params['breadcrumbs'][] = 'Update';
+$this->title = 'Modifica occorrenza '.$model->label;
+$this->params['breadcrumbs'][] = ['label' => 'Occorrenze', 'url' => ['index']];
+$this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="occurrence-update">
+<div class="occurrence-create">
 
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <?= $this->render('_form', [
-        'model' => $model,
-    ]) ?>
+    <div class="card">
+        <div class="card-body table-responsive">
+            <?= $this->render('_form', [
+                'model' => $model,
+            ]) ?>
+        </div>
+    </div>
 
 </div>

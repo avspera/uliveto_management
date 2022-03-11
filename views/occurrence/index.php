@@ -15,7 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="occurrence-index">
 
     <div class="card">
-        <div class="card-body">
+        <div class="card-body table-responsive">
             <p>
                 <?= Html::a('Aggiungi', ['create'], ['class' => 'btn btn-success']) ?>
             </p>
@@ -26,12 +26,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 'columns' => [
                     ['class' => 'yii\grid\SerialColumn'],
                     'label',
-                    // [
-                    //     'class' => ActionColumn::className(),
-                    //     'urlCreator' => function ($action, Occurrence $model, $key, $index, $column) {
-                    //         return Url::toRoute([$action, 'id' => $model->id]);
-                    //     }
-                    // ],
+                    [
+                        'class' => ActionColumn::className(),
+                    ],
                 ],
             ]); ?>
         </div>

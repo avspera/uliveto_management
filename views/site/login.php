@@ -2,7 +2,7 @@
 use yii\helpers\Html;
 ?>
 <div class="card">
-    <div class="card-body login-card-body">
+    <div class="card-body table-responsive login-card-body">
         <p class="login-box-msg">Sign in to start your session</p>
 
         <?php $form = \yii\bootstrap4\ActiveForm::begin(['id' => 'login-form']) ?>

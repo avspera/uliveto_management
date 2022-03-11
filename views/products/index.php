@@ -15,7 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="product-index">
 
     <div class="card">
-        <div class="card-body">
+        <div class="card-body table-responsive">
 
             <p><?= Html::a('Aggiungi', ['create'], ['class' => 'btn btn-success']) ?></p>
 

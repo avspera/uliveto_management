@@ -28,10 +28,16 @@ $config = [
         ],
         'mailer' => [
             'class' => 'yii\swiftmailer\Mailer',
-            // send all mails to a file by default. You have to set
-            // 'useFileTransport' to false and configure transport
-            // for the mailer to send real emails.
-            'useFileTransport' => true,
+            // 'viewPath' => '@app/mail',
+            'useFileTransport' => false,
+            'transport' => [
+                'class'         => 'Swift_SmtpTransport',
+                'host'          => 'smtps.aruba.it',
+                // 'username'      => 'info@smokeman.it',
+                // 'password'      => 'SmokeMan2021',
+                'port'          => '465',
+                'encryption'    => 'ssl',
+            ],
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,

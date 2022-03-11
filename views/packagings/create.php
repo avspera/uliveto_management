@@ -12,7 +12,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="packaging-create">
 
     <div class="card">
-        <div class="card-body">
+        <div class="card-body table-responsive">
             <?= $this->render('_form', [
                 'model' => $model,
             ]) ?>

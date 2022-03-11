@@ -4,14 +4,14 @@ use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\Client */
+/* @var $model app\models\User */
 
-$this->title = $model->name;
-$this->params['breadcrumbs'][] = ['label' => 'Clienti', 'url' => ['index']];
+$this->title = $model->nome;
+$this->params['breadcrumbs'][] = ['label' => 'Users', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
-<div class="client-view">
+<div class="user-view">
 
     <div class="card">
         <div class="card-header">
@@ -24,26 +24,32 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
             ]) ?>
         </div>
-
         <div class="card-body table-responsive">
             <?= DetailView::widget([
                 'model' => $model,
                 'attributes' => [
                     'id',
-                    'name',
-                    'surname',
+                    'nome',
+                    'username',
                     'email:email',
-                    'phone',
-                    'age',
                     [
-                        'attribute' => 'occurrence',
+                        'attribute' => 'status',
                         'value' => function($model){
-                            return $model->getOccurrence();
-                        }   
-                    ]
+                            return $model->statusList[$model->status];
+                        }
+                    ],
+                    [
+                        'attribute' => 'role',
+                        'value' => function($model){
+                            return $model->roleList[$model->role];
+                        }
+                    ],
+                    'created_at',
+                    'updated_at',
                 ],
             ]) ?>
         </div>
     </div>
     
+
 </div>

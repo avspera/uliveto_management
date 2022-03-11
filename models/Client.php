@@ -54,8 +54,8 @@ class Client extends \yii\db\ActiveRecord
         ];
     }
 
-    public function getOccorrence(){
-        $result = Occorrence::findOne([$this->occurrence]);
+    public function getOccurrence(){
+        $result = Occurrence::findOne([$this->occurrence]);
         return !empty($result) ? $result->label : "";
     }
 }

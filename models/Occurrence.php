@@ -38,7 +38,7 @@ class Occurrence extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'label' => 'Label',
+            'label' => 'Nome',
         ];
     }
 }

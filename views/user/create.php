@@ -5,8 +5,8 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\Occurrence */
 
-$this->title = 'Aggiungi colore';
-$this->params['breadcrumbs'][] = ['label' => 'Colori', 'url' => ['index']];
+$this->title = 'Aggiungi utente';
+$this->params['breadcrumbs'][] = ['label' => 'Utenti', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="color-create">

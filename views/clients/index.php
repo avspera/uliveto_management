@@ -19,58 +19,26 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <div class="card">
-        <div class="card-body">
+        <div class="card-body table-responsive table-responsive">
             <?= GridView::widget([
                 'dataProvider' => $dataProvider,
                 'filterModel' => $searchModel,
                 'columns' => [
                     ['class' => 'yii\grid\SerialColumn'],
-                    'id',
                     'name',
                     'surname',
                     'email:email',
                     'phone',
-                    //'age',
+                    'age',
                     [
                        'attribute' => 'occurrence',
                         'value' => function($model){
-                            return $model->getOccorrence();
+                            return $model->getOccurrence();
                         }
                     ],
                     [
                         'class' => ActionColumn::className(),
-                        'urlCreator' => function ($action, Client $model, $key, $index, $column) {
-                            return Url::toRoute([$action, 'id' => $model->id]);
-                        }
                     ],
-                    [
-                        'class' => 'yii\grid\ActionColumn', 'template' => '{view} {update} {delete}',
-                        'buttons' => [
-                            'view' => function($url, $model, $key) {
-                                $url = Url::to(["view", 'id' => $model->id]);
-                                $btn = Html::a("<i class='fa fa-eye'></i>", $url);
-                                return $btn;
-                            },
-                            'update' => function($url, $model, $key) {
-                                $url = Url::to(["update", 'id' => $model->id]);
-                                $btn = Html::a("<i class='fa fa-pencil'></i>", $url);
-                                return $btn;
-                            },
-                            'delete' => function($url, $model) {
-                                //isadmin
-                                // if(Yii::$app->user->identity->isGestore() == 0)
-                                    return Html::a('<i class="fa fa-trash"></i>', ['delete', 'id' => $model->id], [
-                                                'class' => '',
-                                                'data' => [
-                                                    'confirm' => 'Sei sicuro di voler eliminare questo servizio?',
-                                                    'method' => 'post',
-                                                ],
-                                    ]);
-                                // else 
-                                //     return "";
-                            }
-                        ],
-                    ],  
                 ],
             ]); ?>
         </div>
