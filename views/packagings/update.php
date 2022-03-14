@@ -5,10 +5,10 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\Packaging */
 
-$this->title = 'Update Packaging: ' . $model->name;
-$this->params['breadcrumbs'][] = ['label' => 'Packagings', 'url' => ['index']];
+$this->title = 'Modifica Confezione: ' . $model->name;
+$this->params['breadcrumbs'][] = ['label' => 'Confezioni', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['view', 'id' => $model->id]];
-$this->params['breadcrumbs'][] = 'Update';
+$this->params['breadcrumbs'][] = 'Modifica';
 ?>
 <div class="packaging-update">
 

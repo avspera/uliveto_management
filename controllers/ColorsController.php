@@ -1,12 +1,15 @@
 <?php
 
 namespace app\controllers;
-
+use Yii;
 use app\models\Color;
 use app\models\ColorSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use app\utils\FKUploadUtils; 
+use yii\helpers\FileHelper;
+use yii\web\UploadedFile;
 
 /**
  * ColorsController implements the CRUD actions for Color model.
@@ -61,6 +64,26 @@ class ColorsController extends Controller
     }
 
     /**
+     * check each uploaded media in form.
+     * if !empty, upload to server
+     * path is: /images/blog/category/article_id
+     */
+    protected function manageUploadFiles($model) {
+
+        $uploader   = new FKUploadUtils();
+        $path       = Yii::getAlias('web')."/images/colors/";
+        $dirCreated = FileHelper::createDirectory($path);
+        $picture    = UploadedFile::getInstance($model, 'picture');
+        print_r($picture);die;
+        if (!empty($picture)){
+            $filename = $uploader->generateAndSaveFile($picture, $path);
+            $model->picture = "images/colors/".$filename;
+        }
+
+        return $model;
+    }//end of function
+    
+    /**
      * Creates a new Color model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return string|\yii\web\Response
@@ -70,8 +93,15 @@ class ColorsController extends Controller
         $model = new Color();
 
         if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
+            if ($model->load($this->request->post())) {
+                
+                if (!empty($model->picture)) {
+                    $model = $this->manageUploadFiles($model);
+                }
+
+                if($model->save()){
+                    return $this->redirect(['view', 'id' => $model->id]);
+                }
             }
         } else {
             $model->loadDefaultValues();

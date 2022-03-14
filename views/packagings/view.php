@@ -6,34 +6,36 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\models\Packaging */
 
-$this->title = $model->name;
-$this->params['breadcrumbs'][] = ['label' => 'Packagings', 'url' => ['index']];
+$this->title = $model->label;
+$this->params['breadcrumbs'][] = ['label' => 'Confezioni', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
 <div class="packaging-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+        <div class="card">
+            <div class="card-header">
+                <?= Html::a('Modifica', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+                <?= Html::a('Cancella', ['delete', 'id' => $model->id], [
+                    'class' => 'btn btn-danger',
+                    'data' => [
+                        'confirm' => 'Are you sure you want to delete this item?',
+                        'method' => 'post',
+                    ],
+                ]) ?>
+            </div>
 
-    <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
-
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'id',
-            'name',
-            'label',
-            'image',
-        ],
-    ]) ?>
+            <div class="card-body">
+                <?= DetailView::widget([
+                    'model' => $model,
+                    'attributes' => [
+                        'id',
+                        'name',
+                        'label',
+                        'image',
+                    ],
+                ]) ?>
+            </div>
+        </div>
 
 </div>

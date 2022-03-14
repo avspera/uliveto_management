@@ -3,8 +3,8 @@
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\ActionColumn;
-use yii\grid\GridView;
-
+// use yii\grid\GridView;
+use kartik\grid\GridView;
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\QuoteSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -19,10 +19,12 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <div class="card">
-        <div class="card-body table-responsive">
+        <div class="card-body">
             <?= GridView::widget([
                 'dataProvider' => $dataProvider,
                 'filterModel' => $searchModel,
+                'responsive'=>true,
+                'hover'=>true,
                 'columns' => [
                     ['class' => 'yii\grid\SerialColumn'],
                     'order_number',
@@ -47,9 +49,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     //'deadline',
                     [
                         'class' => ActionColumn::className(),
-                        'urlCreator' => function ($action, Quote $model, $key, $index, $column) {
-                            return Url::toRoute([$action, 'id' => $model->id]);
-                        }
                     ],
                 ],
             ]); ?>

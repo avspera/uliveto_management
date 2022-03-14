@@ -42,7 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'class' => ActionColumn::className(),
                     ],
                 ],
-            ]); ?>
+            ]]); ?>
         </div>
     </div>
 

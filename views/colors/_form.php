@@ -12,11 +12,11 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'label')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'content')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'picture')->textInput(['maxlength' => true]) ?>
+    <div class="row">
+        <div class="col-md-4 col-sm-4 col-12"><?= $form->field($model, 'label')->textInput(['maxlength' => true]) ?></div>
+        <div class="col-md-4 col-sm-4 col-12"><?= $form->field($model, 'content')->textInput(['maxlength' => true]) ?></div>
+        <div class="col-md-4 col-sm-4 col-12"><?= $form->field($model, 'picture')->fileInput() ?></div>
+    </div>
 
     <div class="form-group">
         <?= Html::submitButton('Salva', ['class' => 'btn btn-success']) ?>

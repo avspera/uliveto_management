@@ -28,8 +28,9 @@ class Color extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['label', 'content'], 'required'],
-            [['label', 'content', 'picture'], 'string', 'max' => 255],
+            [['label'], 'required'],
+            [['content', 'picture'], 'safe'],
+            [['label', 'content'], 'string', 'max' => 255],
         ];
     }
 
@@ -40,9 +41,9 @@ class Color extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'label' => 'Label',
-            'content' => 'Content',
-            'picture' => 'Picture',
+            'label' => 'Nome',
+            'content' => 'Codice hex',
+            'picture' => 'Foto',
         ];
     }
 }

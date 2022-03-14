@@ -7,6 +7,7 @@ use app\models\ProductSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 
 /**
  * ProductsController implements the CRUD actions for Product model.
@@ -18,17 +19,18 @@ class ProductsController extends Controller
      */
     public function behaviors()
     {
-        return array_merge(
-            parent::behaviors(),
-            [
-                'verbs' => [
-                    'class' => VerbFilter::className(),
-                    'actions' => [
-                        'delete' => ['POST'],
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => ['index', 'view', 'update', 'delete', 'create', 'get-info'],
+                        'allow' => true,
+                        'roles' => ['@'],
                     ],
                 ],
-            ]
-        );
+            ],
+        ];
     }
 
     /**
@@ -60,6 +62,20 @@ class ProductsController extends Controller
         ]);
     }
 
+    public function actionGetInfo($data){
+
+        if(empty($id_product)) return;
+        $out = ["status" => "100", "price" => 0];
+
+        $product = Product::find()->select(["price"])->where(["id" => $id_product])->one();
+        if(!empty($product)){
+            $out["status"]  = "200";
+            $out["price"]   = $product->price;
+        }
+        
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        return $out;
+    }
     /**
      * Creates a new Product model.
      * If creation is successful, the browser will be redirected to the 'view' page.

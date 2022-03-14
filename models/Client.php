@@ -58,4 +58,17 @@ class Client extends \yii\db\ActiveRecord
         $result = Occurrence::findOne([$this->occurrence]);
         return !empty($result) ? $result->label : "";
     }
+
+    public function getOccurrenceList(){
+        $results    = Occurrence::find()->select(["id", "label"])->orderBy(["label" => SORT_DESC])->all();
+        $out        = ["results" => []];
+        $i = 0;
+        foreach($results as $result){
+            $out["results"][$i]["id"]   = $result->id;
+            $out["results"][$i]["text"] = $result->label;
+            $i++;
+        }
+
+        return $out;
+    }
 }

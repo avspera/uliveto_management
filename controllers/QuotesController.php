@@ -2,12 +2,14 @@
 
 namespace app\controllers;
 
+use Yii;
 use app\models\Quote;
 use app\models\QuoteSearch;
+use app\models\Product;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-
+use yii\helpers\ArrayHelper;
 /**
  * QuotesController implements the CRUD actions for Quote model.
  */
@@ -67,18 +69,27 @@ class QuotesController extends Controller
      */
     public function actionCreate()
     {
-        $model = new Quote();
-
+        $model      = new Quote();
+        $latestCode = Quote::find()->select(["order_number"])->orderBy(["created_at" => SORT_DESC])->one();
+        $model->order_number = !empty($lastCode) ? $lastCode->order_number : 1;
+        
         if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
+            if ($model->load($this->request->post())) {
+                $model->created_at = date("Y-m-d H:i:s");
+                $model->updated_at = date("Y-m-d H:i:s");
+                if($model->save())
+                    return $this->redirect(['view', 'id' => $model->id]);
+                else{
+                    print_r($model->getErrors());die;
+                    Yii::$app->session->setFlash('error', "Ops...something went wrong [QU-101]");
+                }
             }
         } else {
             $model->loadDefaultValues();
         }
-
+        
         return $this->render('create', [
-            'model' => $model,
+            'model' => $model
         ]);
     }
 

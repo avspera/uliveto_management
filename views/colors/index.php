@@ -9,7 +9,7 @@ use yii\grid\GridView;
 /* @var $searchModel app\models\ColorSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Colors';
+$this->title = 'Colori';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="color-index">

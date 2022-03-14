@@ -5,6 +5,7 @@ use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 use kartik\select2\Select2;
 use yii\web\JsExpression;
+use kartik\date\DatePicker;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Quote */
@@ -16,7 +17,7 @@ use yii\web\JsExpression;
     <?php $form = ActiveForm::begin(); ?>
 
     <div class="row">
-        <div class="col-md-4 col-sm-6 col-12"><?= $form->field($model, 'order_number')->textInput() ?></div>
+        <div class="col-md-4 col-sm-6 col-12"><?= $form->field($model, 'order_number')->textInput(["readonly" => true]) ?></div>
         <div class="col-md-4 col-sm-6 col-12">
             <?= $form->field($model, 'id_client')->widget(Select2::classname(), [
                     'options' => [
@@ -42,26 +43,18 @@ use yii\web\JsExpression;
             ?>
         </div>
         <div class="col-md-4 col-sm-6 col-12">
-            <?= $form->field($model, 'product')->dropdownlist(yii\helpers\ArrayHelper::map(app\models\Product::find()->orderBy('label')->all(), 'id', 'name'), ['prompt' => 'Scegli'])->label('Prodotto'); ?>
+            <?= $form->field($model, 'product')->dropdownlist(yii\helpers\ArrayHelper::map(app\models\Product::find()->orderBy('name')->all(), 'id', 'name'), ['prompt' => 'Scegli', "onChange" => "getProductInfo()"])->label('Prodotto'); ?>
         </div>
         
     </div>
    
     <div class="row">
         <div class="col-md-4 col-sm-6 col-12">
-            <label>Colore</label>
-            <img src="<?= Yii::getAlias("@web") ?>/images/colors/light_blue.png" />
-            <img src="<?= Yii::getAlias("@web") ?>/images/colors/light_blue.png" />
-            <img src="<?= Yii::getAlias("@web") ?>/images/colors/light_blue.png" />
-            <img src="<?= Yii::getAlias("@web") ?>/images/colors/light_blue.png" />
-            <img src="<?= Yii::getAlias("@web") ?>/images/colors/light_blue.png" />
-            <img src="<?= Yii::getAlias("@web") ?>/images/colors/light_blue.png" />
-            <img src="<?= Yii::getAlias("@web") ?>/images/colors/light_blue.png" />
-            <img src="<?= Yii::getAlias("@web") ?>/images/colors/light_blue.png" />
+            <?= $form->field($model, 'color')->dropdownlist(yii\helpers\ArrayHelper::map(app\models\Color::find()->orderBy('label')->all(), 'id', 'label'), ['prompt' => 'Scegli'])->label('Colore'); ?>
         </div>
 
         <div class="col-md-4 col-sm-6 col-12">
-            <?= $form->field($model, 'packaging')->textInput() ?>
+            <?= $form->field($model, 'packaging')->dropdownlist(yii\helpers\ArrayHelper::map(app\models\Packaging::find()->orderBy('label')->all(), 'id', 'label'), ['prompt' => 'Scegli'])->label('Confezione'); ?>
         </div>
         <div class="col-md-4 col-sm-6 col-12">
             <?= $form->field($model, 'placeholder')->checkbox() ?>
@@ -75,8 +68,19 @@ use yii\web\JsExpression;
         <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'total')->textInput(['maxlength' => true]) ?></div>
     </div>
     <div class="row">
-        <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'shipping')->textInput() ?></div>
-        <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'deadline')->textInput() ?></div>
+        <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'shipping')->dropdownlist([0 => "NO", 1 => "SI"]) ?></div>
+        <div class="col-md-3 col-sm-4 col-12"><?php
+            echo '<label class="form-label">Consegna (entro il) </label>';
+            echo DatePicker::widget([
+                'value' => date("Y-m-d"),
+                'name' => 'Quote[deadline]',
+                'type' => DatePicker::TYPE_INPUT,
+                'pluginOptions' => [
+                    'autoclose' => true,
+                    'format' => 'yyyy-mm-dd'
+                ]
+            ]);
+        ?></div>
     </div>
     
 
@@ -90,3 +94,21 @@ use yii\web\JsExpression;
     <?php ActiveForm::end(); ?>
 
 </div>
+
+<script>
+    function getProductInfo(){
+        let id_product = $("#quote-product").val();
+        
+        $.ajax({
+            url: '<?= Url::to(['products/get-info']) ?>',
+            type: 'post',
+            dataType: 'json',
+            'data': {
+                'id_product': id_product,
+            },
+            success: function (data) {
+                $('#quote-total').val(data.price)
+            }
+        });
+    }
+</script>

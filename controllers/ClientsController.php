@@ -60,12 +60,20 @@ class ClientsController extends Controller
         ]);
     }
 
-    public function actionSearchFromSelect($term = ""){
+    public function actionSearchFromSelect($q = ""){
+        $term = $q;
+
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         $out = ['results' => []];
-
+        
         if (!is_null($term)) {
-            $data = Client::find()->select(["id", "name", "surname"])->where(["LIKE", "surname", $term])->all();
+            $data = Client::find()
+                        ->select(["id", "name", "surname"])
+                        ->where(["LIKE", "surname", $term])
+                        ->orWhere(["LIKE", "name", $term])
+                        ->orderBy(["name" => SORT_ASC])
+                        ->all();
+                
             $i = 0;
             foreach($data as $client){
                 $out["results"][$i]["id"]   = $client->id;

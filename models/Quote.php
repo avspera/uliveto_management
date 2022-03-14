@@ -40,7 +40,7 @@ class Quote extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['order_number', 'created_at', 'updated_at', 'id_client', 'product', 'amount', 'color', 'packaging', 'placeholder', 'shipping', 'deadline'], 'required'],
+            [['order_number', 'created_at', 'id_client', 'product', 'amount', 'color', 'packaging', 'placeholder', 'shipping', 'deadline'], 'required'],
             [['order_number', 'id_client', 'product', 'amount', 'color', 'packaging', 'placeholder', 'shipping'], 'integer'],
             [['created_at', 'updated_at', 'deadline'], 'safe'],
             [['notes'], 'string'],
@@ -74,8 +74,25 @@ class Quote extends \yii\db\ActiveRecord
     }
 
     public function getProduct(){
-        $product = Product::findOne([$this->id_product]);
+        $product = Product::findOne([$this->product]);
         return !empty($product) ? $product->name : "";
     }
 
+    public function getClient(){
+        $client = Client::findOne([$this->id_client]);
+        return !empty($client) ? $client->name." ".$client->surname : "";
+    }
+
+    public function formatDate($value, $showHour = false){
+        $format = "d/m/Y";
+        if($showHour)
+            $format = "d/m/Y H:i:s";
+
+        return !empty($value) ? date($format, strtotime($value)) : "";
+    }
+
+    public function formatNumber($value){
+        if(empty($value)) return;
+        return number_format($value, 2, ",", ".")." &euro;";
+    }
 }
