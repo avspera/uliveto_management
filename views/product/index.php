@@ -29,7 +29,12 @@ $this->params['breadcrumbs'][] = $this->title;
                     'name',
                     'image',
                     'weight',
-                    [//'id_packaging',]
+                    [
+                        'attribute' => 'id_packaging',
+                        'value' => function($model){
+                            return $model->getPackaging();
+                        },
+                    ],
                     [
                         'attribute' => 'price',
                         'value' => function($model){
@@ -37,12 +42,15 @@ $this->params['breadcrumbs'][] = $this->title;
                         },
                         'format' => "raw"
                     ],
-                    'capacity',
                     [
-                        'class' => ActionColumn::className(),
+                        'attribute' => 'capacity',
+                        'value' => function($model){
+                            return $model->capacity." ml";
+                        }
                     ],
-                ],
-            ]]); ?>
+                    [ 'class' => ActionColumn::className() ]
+                ]
+            ]); ?>
         </div>
     </div>
 

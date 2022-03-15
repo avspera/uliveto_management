@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use app\models\Product;
+use app\models\Color;
 /**
  * This is the model class for table "quote".
  *
@@ -23,6 +24,8 @@ use app\models\Product;
  * @property float|null $balance
  * @property int $shipping
  * @property string $deadline
+ * @property string $date_deposit
+ * @property string $date_balance
  */
 class Quote extends \yii\db\ActiveRecord
 {
@@ -40,9 +43,9 @@ class Quote extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['order_number', 'created_at', 'id_client', 'product', 'amount', 'color', 'packaging', 'placeholder', 'shipping', 'deadline'], 'required'],
+            [['order_number', 'created_at', 'id_client', 'product', 'amount', 'color', 'packaging', 'shipping', 'deadline'], 'required'],
             [['order_number', 'id_client', 'product', 'amount', 'color', 'packaging', 'placeholder', 'shipping'], 'integer'],
-            [['created_at', 'updated_at', 'deadline'], 'safe'],
+            [['created_at', 'updated_at', 'deadline', 'date_deposit', 'date_balance','placeholder'], 'safe'],
             [['notes'], 'string'],
             [['total', 'deposit', 'balance'], 'number'],
         ];
@@ -81,6 +84,12 @@ class Quote extends \yii\db\ActiveRecord
     public function getClient(){
         $client = Client::findOne([$this->id_client]);
         return !empty($client) ? $client->name." ".$client->surname : "";
+    }
+
+
+    public function getColor(){
+        $color = Color::findOne([$this->color]);
+        return !empty($color) ? $color->label : "";
     }
 
     public function formatDate($value, $showHour = false){

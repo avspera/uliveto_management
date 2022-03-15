@@ -35,9 +35,6 @@ $this->params['breadcrumbs'][] = $this->title;
             'replied_at',
             [
                 'class' => ActionColumn::className(),
-                'urlCreator' => function ($action, Message $model, $key, $index, $column) {
-                    return Url::toRoute([$action, 'id' => $model->id]);
-                 }
             ],
         ],
     ]); ?>

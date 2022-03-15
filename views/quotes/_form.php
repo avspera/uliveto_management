@@ -56,16 +56,42 @@ use kartik\date\DatePicker;
         <div class="col-md-4 col-sm-6 col-12">
             <?= $form->field($model, 'packaging')->dropdownlist(yii\helpers\ArrayHelper::map(app\models\Packaging::find()->orderBy('label')->all(), 'id', 'label'), ['prompt' => 'Scegli'])->label('Confezione'); ?>
         </div>
-        <div class="col-md-4 col-sm-6 col-12">
+        <div class="col-md-4 col-sm-4 col-12"><?= $form->field($model, 'amount')->textInput(["onChange" => "updateTotalPrice(value)"]) ?></div>
+        <!-- <div class="col-md-4 col-sm-6 col-12">
             <?= $form->field($model, 'placeholder')->checkbox() ?>
-        </div>
+        </div> -->
     </div>
 
     <div class="row">
-        <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'amount')->textInput() ?></div>
-        <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'deposit')->textInput(['maxlength' => true]) ?></div>
-        <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'balance')->textInput(['maxlength' => true]) ?></div>
-        <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'total')->textInput(['maxlength' => true]) ?></div>
+        <div class="col-md-4 col-sm-4 col-12"><?= $form->field($model, 'deposit')->textInput(['maxlength' => true, "onchange" => "subtractDeposit()"]) ?></div>
+        <div class="col-md-4 col-sm-4 col-12"><?php
+            echo '<label class="form-label">Data </label>';
+            echo DatePicker::widget([
+                'value' => date("Y-m-d"),
+                'name' => 'Quote[date_deposit]',
+                'type' => DatePicker::TYPE_INPUT,
+                'pluginOptions' => [
+                    'autoclose' => true,
+                    'format' => 'yyyy-mm-dd'
+                ]
+            ]);
+        ?></div>
+    </div>
+    <div class="row">
+        <div class="col-md-4 col-sm-4 col-12"><?= $form->field($model, 'balance')->textInput(['maxlength' => true, "readonly" => true]) ?></div>
+        <div class="col-md-4 col-sm-4 col-12"><?= $form->field($model, 'total')->textInput(['maxlength' => true, "readonly" => true]) ?></div>
+        <div class="col-md-3 col-sm-4 col-12"><?php
+            echo '<label class="form-label">Data saldo</label>';
+            echo DatePicker::widget([
+                'value' => date("Y-m-d"),
+                'name' => 'Quote[date_balance]',
+                'type' => DatePicker::TYPE_INPUT,
+                'pluginOptions' => [
+                    'autoclose' => true,
+                    'format' => 'yyyy-mm-dd'
+                ]
+            ]);
+        ?></div>
     </div>
     <div class="row">
         <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'shipping')->dropdownlist([0 => "NO", 1 => "SI"]) ?></div>
@@ -100,15 +126,32 @@ use kartik\date\DatePicker;
         let id_product = $("#quote-product").val();
         
         $.ajax({
-            url: '<?= Url::to(['products/get-info']) ?>',
-            type: 'post',
+            url: '<?= Url::to(['product/get-info']) ?>',
+            type: 'get',
             dataType: 'json',
             'data': {
-                'id_product': id_product,
+                'id': id_product,
             },
             success: function (data) {
                 $('#quote-total').val(data.price)
+            },
+            error: function(error){
+                console.log("error", error)
             }
         });
+    }
+
+    function updateTotalPrice(value){
+        let currentTotal    = $('#quote-total').val();
+        let updatedTotal    = currentTotal*value;
+        let totalWithVat    = updatedTotal + (updatedTotal / 100) * 4;
+        $('#quote-total').val(parseFloat(totalWithVat).toFixed(2))
+    }
+
+    function subtractDeposit(){
+        let deposit         = $('#quote-deposit').val();
+        let currentTotal    = $('#quote-total').val();
+        let balance         = currentTotal-deposit;
+        $('#quote-balance').val(parseFloat(balance).toFixed(2))
     }
 </script>

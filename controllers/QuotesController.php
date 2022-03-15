@@ -6,10 +6,12 @@ use Yii;
 use app\models\Quote;
 use app\models\QuoteSearch;
 use app\models\Product;
+use app\models\Client;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
+use yii\filters\AccessControl;
 /**
  * QuotesController implements the CRUD actions for Quote model.
  */
@@ -20,17 +22,25 @@ class QuotesController extends Controller
      */
     public function behaviors()
     {
-        return array_merge(
-            parent::behaviors(),
-            [
-                'verbs' => [
-                    'class' => VerbFilter::className(),
-                    'actions' => [
-                        'delete' => ['POST'],
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index', 
+                            'view', 
+                            'update', 
+                            'delete', 
+                            'create', 
+                            'get-by-client-id'
+                        ],
+                        'allow' => true,
+                        'roles' => ['@'],
                     ],
                 ],
-            ]
-        );
+            ],
+        ];
     }
 
     /**
@@ -42,7 +52,7 @@ class QuotesController extends Controller
     {
         $searchModel = new QuoteSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
-
+        $dataProvider->sort->defaultOrder = ["deadline" => SORT_DESC];
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -57,8 +67,11 @@ class QuotesController extends Controller
      */
     public function actionView($id)
     {
+        $model = $this->findModel($id);
+        $client = Client::find()->select(["name", "surname"])->where(["id" => $model->id_client])->one();
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model'     => $model,
+            'client'    => !empty($client) ? $client->name." ".$client->surname : ""
         ]);
     }
 
@@ -71,7 +84,7 @@ class QuotesController extends Controller
     {
         $model      = new Quote();
         $latestCode = Quote::find()->select(["order_number"])->orderBy(["created_at" => SORT_DESC])->one();
-        $model->order_number = !empty($lastCode) ? $lastCode->order_number : 1;
+        $model->order_number = !empty($latestCode) ? $latestCode->order_number+1 : 1;
         
         if ($this->request->isPost) {
             if ($model->load($this->request->post())) {
@@ -125,6 +138,31 @@ class QuotesController extends Controller
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
+    }
+
+    public function actionGetByClientId($id_client){
+        
+        if(is_null($id_client)) return;
+
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $out = ['results' => [], "status" => "100"];
+        
+        $data = Quote::find()
+                    ->select(["id", "created_at"])
+                    ->where(["id_client" => $id_client])
+                    ->orderBy(["created_at" => SORT_DESC])
+                    ->all();
+            
+        $i = 0;
+        foreach($data as $item){
+            $out["results"][$i]["id"]   = $item->id;
+            $out["results"][$i]["text"] = $item->id. " - ".$item->formatDate($item->created_at);
+            $i++;
+        }
+        
+        if(!empty($out["results"]))
+            $out["status"] = "200";
+        return $out;
     }
 
     /**

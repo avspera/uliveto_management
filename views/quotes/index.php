@@ -3,11 +3,7 @@
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\ActionColumn;
-// use yii\grid\GridView;
 use kartik\grid\GridView;
-/* @var $this yii\web\View */
-/* @var $searchModel app\models\QuoteSearch */
-/* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = 'Preventivi';
 $this->params['breadcrumbs'][] = $this->title;
@@ -26,18 +22,35 @@ $this->params['breadcrumbs'][] = $this->title;
                 'responsive'=>true,
                 'hover'=>true,
                 'columns' => [
-                    ['class' => 'yii\grid\SerialColumn'],
                     'order_number',
-                    'id_client',
+                    [
+                        'attribute' => 'id_client',
+                        'value' => function($model){
+                            return Html::a($model->getClient(), Url::to(["clients/view", "id" => $model->id_client]));
+                        },
+                        'format' => "raw"
+                    ],
                     [
                        'attribute' => 'product',
                        'value' => function($model){
                            return $model->getProduct();
                        }
                     ],
-                    'created_at',
-                    'updated_at',
-                    //'amount',
+                    [
+                        'attribute' => 'created_at',
+                        'value' => function($model){
+                            return $model->formatDate($model->created_at);
+                        },
+                        'format' => "raw"
+                    ],
+                    [
+                        'attribute' => 'updated_at',
+                        'value' => function($model){
+                            return $model->formatDate($model->updated_at);
+                        },
+                        'format' => "raw"
+                    ],
+                    'amount',
                     //'color',
                     //'packaging',
                     //'placeholder',

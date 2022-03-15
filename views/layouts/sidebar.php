@@ -43,13 +43,14 @@
                     // ['label' => 'Preventivi', 'url' => ['quotes/index'], 'icon' => 'file-alt', 'visible' => !Yii::$app->user->isGuest],
                     ['label' => 'Preventivi', 'url' => ['quotes/index'], 'icon' => 'file-alt'],
                     ['label' => 'Clienti',  'icon' => 'users', 'url' => ['/clients/index'], 'target' => '_self'],
+                    ['label' => 'Pagamenti',  'icon' => 'coins', 'url' => ['/payment/index'], 'target' => '_self'],
                     ['label' => 'TOOLS', 'header' => true],
                     [
                         'label' => 'Prodotti',
                         'iconStyle' => 'far',
                         'items' => [
-                            ['label' => 'Nuovo', 'url' => ["products/create"], 'iconStyle' => 'far', 'icon' => 'dot-circle'],
-                            ['label' => 'Lista', 'url' => ["products/index"], 'iconStyle' => 'far', 'icon' => 'dot-circle'],
+                            ['label' => 'Nuovo', 'url' => ["product/create"], 'iconStyle' => 'far', 'icon' => 'dot-circle'],
+                            ['label' => 'Lista', 'url' => ["product/index"], 'iconStyle' => 'far', 'icon' => 'dot-circle'],
                         ]
                     ],
                     [

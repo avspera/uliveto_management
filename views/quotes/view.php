@@ -1,12 +1,13 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Quote */
 
-$this->title = $model->order_number;
+$this->title = $model->order_number." - ".$client;
 $this->params['breadcrumbs'][] = ['label' => 'Preventivi', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
@@ -29,7 +30,6 @@ $this->params['breadcrumbs'][] = $this->title;
             <?= DetailView::widget([
                 'model' => $model,
                 'attributes' => [
-                    'id',
                     'order_number',
                     [
                         'attribute' => 'created_at',
@@ -46,8 +46,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     [
                         'attribute' => 'id_client',
                         'value' => function($model){
-                            return $model->getClient();
-                        }
+                            return Html::a($model->getClient(), Url::to(["clients/view", "id" => $model->id_client]));
+                        },
+                        'format' => "raw"
                     ],
                     [
                         'attribute' => 'product',
@@ -56,7 +57,12 @@ $this->params['breadcrumbs'][] = $this->title;
                         }
                     ],
                     'amount',
-                    'color',
+                    [
+                        'attribute' => 'color',
+                        'value' => function($model){
+                            return $model->getColor();
+                        },
+                    ],
                     'packaging',
                     'placeholder',
                     'notes:ntext',

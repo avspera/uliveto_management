@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use app\models\Packaging;
 
 /**
  * This is the model class for table "product".
@@ -13,7 +14,7 @@ use Yii;
  * @property string|null $weight
  * @property int $id_packaging
  * @property float $price
- * @property float $capacity
+ * @property string $capacity
  */
 class Product extends \yii\db\ActiveRecord
 {
@@ -33,9 +34,10 @@ class Product extends \yii\db\ActiveRecord
         return [
             [['name', 'price', 'capacity'], 'required'],
             [['id_packaging'], 'integer'],
-            [['id_packaging'], 'safe'],
-            [['price', 'capacity'], 'number'],
+            [['id_packaging', 'weight', 'image'], 'safe'],
+            [['price', ], 'number'],
             [['name', 'image', 'weight'], 'string', 'max' => 255],
+            [['capacity'], 'string', 'max' => 10],
             [['image'], 'file', 'skipOnEmpty' => true, 'extensions' => 'jpg, png'],
         ];
     }
@@ -59,5 +61,11 @@ class Product extends \yii\db\ActiveRecord
     public function formatNumber($value){
         if(empty($value)) return;
         return number_format($value, 2, ",", ".")." &euro;";
+    }
+
+    public function getPackaging(){
+        $packaging = Packaging::findOne(["id" => $this->id_packaging]);
+        
+        return !empty($packaging) ? $packaging->label : "";
     }
 }

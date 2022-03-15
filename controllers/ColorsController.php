@@ -74,14 +74,14 @@ class ColorsController extends Controller
         $path       = Yii::getAlias('web')."/images/colors/";
         $dirCreated = FileHelper::createDirectory($path);
         $picture    = UploadedFile::getInstance($model, 'picture');
-        print_r($picture);die;
+        
         if (!empty($picture)){
             $filename = $uploader->generateAndSaveFile($picture, $path);
             $model->picture = "images/colors/".$filename;
         }
 
         return $model;
-    }//end of function
+    }
     
     /**
      * Creates a new Color model.

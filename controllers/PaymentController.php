@@ -2,52 +2,43 @@
 
 namespace app\controllers;
 
-use app\models\Client;
-use app\models\ClientSearch;
+use app\models\Payment;
+use app\models\PaymentSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use yii\filters\AccessControl;
 
 /**
- * ClientsController implements the CRUD actions for Client model.
+ * PaymentController implements the CRUD actions for Payment model.
  */
-class ClientsController extends Controller
+class PaymentController extends Controller
 {
     /**
      * @inheritDoc
      */
     public function behaviors()
     {
-        return [
-            'access' => [
-                'class' => AccessControl::className(),
-                'rules' => [
-                    [
-                        'actions' => [
-                            'index', 
-                            'view', 
-                            'update', 
-                            'delete', 
-                            'create', 
-                            'search-from-select'
-                        ],
-                        'allow' => true,
-                        'roles' => ['@'],
+        return array_merge(
+            parent::behaviors(),
+            [
+                'verbs' => [
+                    'class' => VerbFilter::className(),
+                    'actions' => [
+                        'delete' => ['POST'],
                     ],
                 ],
-            ],
-        ];
+            ]
+        );
     }
 
     /**
-     * Lists all Client models.
+     * Lists all Payment models.
      *
      * @return string
      */
     public function actionIndex()
     {
-        $searchModel = new ClientSearch();
+        $searchModel = new PaymentSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
         return $this->render('index', [
@@ -57,7 +48,7 @@ class ClientsController extends Controller
     }
 
     /**
-     * Displays a single Client model.
+     * Displays a single Payment model.
      * @param int $id ID
      * @return string
      * @throws NotFoundHttpException if the model cannot be found
@@ -69,42 +60,15 @@ class ClientsController extends Controller
         ]);
     }
 
-    public function actionSearchFromSelect($q = ""){
-        $term = $q;
-
-        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-        $out = ['results' => []];
-        
-        if (!is_null($term)) {
-            $data = Client::find()
-                        ->select(["id", "name", "surname"])
-                        ->where(["LIKE", "surname", $term])
-                        ->orWhere(["LIKE", "name", $term])
-                        ->orderBy(["name" => SORT_ASC])
-                        ->all();
-                
-            $i = 0;
-            foreach($data as $client){
-                $out["results"][$i]["id"]   = $client->id;
-                $out["results"][$i]["text"] = $client->name." ".$client->surname;
-                $i++;
-            }
-        }
-        else if($id > 0){
-            $out['results'] = ['id' => $id, 'text' => Client::find($id)->surname." ".Client::find($id)->name];
-        }
-        return $out;
-    }
-
     /**
-     * Creates a new Client model.
+     * Creates a new Payment model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return string|\yii\web\Response
      */
     public function actionCreate()
     {
-        $model = new Client();
-        
+        $model = new Payment();
+
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
                 return $this->redirect(['view', 'id' => $model->id]);
@@ -119,7 +83,7 @@ class ClientsController extends Controller
     }
 
     /**
-     * Updates an existing Client model.
+     * Updates an existing Payment model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param int $id ID
      * @return string|\yii\web\Response
@@ -139,7 +103,7 @@ class ClientsController extends Controller
     }
 
     /**
-     * Deletes an existing Client model.
+     * Deletes an existing Payment model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param int $id ID
      * @return \yii\web\Response
@@ -153,15 +117,15 @@ class ClientsController extends Controller
     }
 
     /**
-     * Finds the Client model based on its primary key value.
+     * Finds the Payment model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param int $id ID
-     * @return Client the loaded model
+     * @return Payment the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Client::findOne(['id' => $id])) !== null) {
+        if (($model = Payment::findOne(['id' => $id])) !== null) {
             return $model;
         }
 

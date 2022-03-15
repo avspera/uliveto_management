@@ -8,11 +8,14 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
+use app\utils\FKUploadUtils; 
+use yii\helpers\FileHelper;
+use yii\web\UploadedFile;
 
 /**
- * ProductsController implements the CRUD actions for Product model.
+ * ProductController implements the CRUD actions for Product model.
  */
-class ProductsController extends Controller
+class ProductController extends Controller
 {
     /**
      * @inheritDoc
@@ -24,7 +27,14 @@ class ProductsController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'view', 'update', 'delete', 'create', 'get-info'],
+                        'actions' => [
+                            'index', 
+                            'view', 
+                            'update', 
+                            'delete', 
+                            'create', 
+                            'get-info'
+                        ],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -62,12 +72,12 @@ class ProductsController extends Controller
         ]);
     }
 
-    public function actionGetInfo($data){
+    public function actionGetInfo($id){
 
-        if(empty($id_product)) return;
+        if(empty($id)) return;
         $out = ["status" => "100", "price" => 0];
-
-        $product = Product::find()->select(["price"])->where(["id" => $id_product])->one();
+        
+        $product = Product::find()->select(["price"])->where(["id" => $id])->one();
         if(!empty($product)){
             $out["status"]  = "200";
             $out["price"]   = $product->price;
@@ -86,8 +96,16 @@ class ProductsController extends Controller
         $model = new Product();
 
         if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
+            if ($model->load($this->request->post()) ) {
+                if (!empty($_FILES)) {
+                    $model->image = $this->manageUploadFiles($model);
+                    $model->image = str_replace(" ", "_", $model->image);
+                }
+                if($model->save())
+                    return $this->redirect(['view', 'id' => $model->id]);
+                else{
+                    print_r($model->getErrors());die;     
+                }
             }else{
                 $message = json_encode($model->getErrors());
                 print_r($message);die;
@@ -102,6 +120,28 @@ class ProductsController extends Controller
         ]);
     }
 
+     /**
+     * check each uploaded media in form.
+     * if !empty, upload to server
+     * path is: /images/blog/category/article_id
+     */
+    protected function manageUploadFiles($model) {
+
+        $uploader   = new FKUploadUtils();
+        $path       = Yii::getAlias('@webroot')."/images/prod/";
+    
+        $dirCreated = FileHelper::createDirectory($path);
+        
+        $image = UploadedFile::getInstance($model, 'image');
+        if (!empty($image)){
+            $filename = $uploader->generateAndSaveFile($image, $path);
+            $model->image = "images/prod/".$filename;
+        }
+        
+        return $model->image;
+
+    }
+
     /**
      * Updates an existing Product model.
      * If update is successful, the browser will be redirected to the 'view' page.
@@ -111,10 +151,21 @@ class ProductsController extends Controller
      */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
+        $model      = $this->findModel($id);
+        $prevImage  = $model->image;
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($this->request->isPost && $model->load($this->request->post()) ) {
+            
+            if (!empty($_FILES)) {
+                $model->image = $this->manageUploadFiles($model);
+                $model->image = str_replace(" ", "_", $model->image);
+            }
+            
+            if($model->save())
+                return $this->redirect(['view', 'id' => $model->id]);
+            else{
+                print_r($model->getErrors());die;
+            }
         }
 
         return $this->render('update', [

@@ -27,7 +27,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
     const ROLE_ADMIN        = 1;
     const ROLE_SELLER       = 2;
     public $statusList = [self::STATUS_INACTIVE => "Non attivo", self::STATUS_ACTIVE => "Attivo"];
-    public $roleList    = [0 => "Utente", 1 => "Amministratore", 2 => "Venditore"];
+    public $roleList    = [0 => "Amministratore", 1 => "Preventivi", 2 => "Clienti", 3 => "Pagamenti"];
     public $new_password            = "";
     public $new_password_confirm    = "";
 

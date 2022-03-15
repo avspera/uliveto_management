@@ -2,6 +2,10 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use kartik\file\FileInput;
+use app\utils\FKUploadUtils; 
+use yii\helpers\FileHelper;
+use yii\web\UploadedFile;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Product */
@@ -10,7 +14,7 @@ use yii\widgets\ActiveForm;
 
 <div class="product-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data']]) ?>
 
     <div class="row">
         <div class="col-md-4 col-sm-6 col-12"><?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?></div>
@@ -22,18 +26,16 @@ use yii\widgets\ActiveForm;
 
     <div class="row">
         <div class="col-md-4 col-sm-6 col-12"><?= $form->field($model, 'price')->textInput(['maxlength' => true, 'type' => "decimal"]) ?></div>
-        <div class="col-md-4 col-sm-6 col-12"><?= $form->field($model, 'capacity')->textInput(['maxlength' => true, 'type' => "decimal"]) ?></div>
-        <div class="col-md-4 col-sm-6 col-12">
-        <label>Immagine</label>
-        <div class="input-group">
-            <div class="custom-file">
-                <input type="file" name="[Product][image]" class="custom-file-input" id="image">
-                <label class="custom-file-label" for="exampleInputFile">Scegli</label>
-            </div>
-            <div class="input-group-append">
-                <span class="input-group-text">Carica</span>
-            </div>
-        </div>
+        <div class="col-md-4 col-sm-6 col-12"><?= $form->field($model, 'capacity')->textInput(['maxlength' => true, 'type' => "decimal", "placeholder" => "in ml"]) ?></div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <?= FileInput::widget([
+                'model' => $model,
+                'attribute' => 'image',
+                'options' => ['multiple' => false, 'accept' => ["png", "jpg"]]
+            ]);?>
         </div>
     </div>
 
