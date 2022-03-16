@@ -17,7 +17,8 @@ class QuoteSearch extends Quote
     public function rules()
     {
         return [
-            [['id', 'order_number', 'id_client', 'product', 'amount', 'color', 'packaging', 'placeholder', 'shipping'], 'integer'],
+            [['id', 'order_number', 'id_client', 'confirmed',
+                'product', 'amount', 'color', 'packaging', 'placeholder', 'shipping'], 'integer'],
             [['created_at', 'updated_at', 'notes', 'deadline'], 'safe'],
             [['total', 'deposit', 'balance'], 'number'],
         ];
@@ -74,6 +75,7 @@ class QuoteSearch extends Quote
             'balance' => $this->balance,
             'shipping' => $this->shipping,
             'deadline' => $this->deadline,
+            'confirmed' => $this->confirmed,
         ]);
 
         $query->andFilterWhere(['like', 'notes', $this->notes]);

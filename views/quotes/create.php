@@ -9,10 +9,5 @@ $this->params['breadcrumbs'][] = ['label' => 'Preventivi', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="quote-create">
-
-    <div class="card">
-        <div class="card-body table-responsive">
-            <?= $this->render('_form', ['model' => $model]) ?>
-        </div>
-    </div>
+    <?= $this->render('_form', ['model' => $model]) ?>
 </div>

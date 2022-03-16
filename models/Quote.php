@@ -43,8 +43,10 @@ class Quote extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['order_number', 'created_at', 'id_client', 'product', 'amount', 'color', 'packaging', 'shipping', 'deadline'], 'required'],
-            [['order_number', 'id_client', 'product', 'amount', 'color', 'packaging', 'placeholder', 'shipping'], 'integer'],
+            [['order_number', 'created_at', 'id_client', 'product', 'confirmed',
+                'amount', 'color', 'packaging', 'shipping', 'deadline'], 'required'],
+            [['order_number', 'id_client', 'product', 'amount', 'confirmed',
+                'color', 'packaging', 'placeholder', 'shipping'], 'integer'],
             [['created_at', 'updated_at', 'deadline', 'date_deposit', 'date_balance','placeholder'], 'safe'],
             [['notes'], 'string'],
             [['total', 'deposit', 'balance'], 'number'],
@@ -58,7 +60,7 @@ class Quote extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'order_number'  => 'Numero ordine',
+            'order_number'  => 'Numero preventivo',
             'created_at'    => 'Creato',
             'updated_at'    => 'Aggiornato',
             'id_client'     => 'Cliente',
@@ -73,6 +75,7 @@ class Quote extends \yii\db\ActiveRecord
             'balance'       => 'Saldo',
             'shipping'      => 'Spedizione',
             'deadline'      => 'Consegna (entro il)',
+            'confirmed'     => "Confermato"
         ];
     }
 

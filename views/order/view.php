@@ -6,7 +6,7 @@ use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Quote */
-$client = $model->getClient();
+
 $this->title = $model->order_number." - ".$client;
 $this->params['breadcrumbs'][] = ['label' => 'Preventivi', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
@@ -24,8 +24,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     'method' => 'post',
                 ],
             ]) ?>
-            <?= Html::a('<i class="fas fa-file-pdf"></i> Genera PDF', ['generate-pdf', 'id' => $model->id], ['class' => 'btn btn-success']) ?>
-            <?= Html::a('<i class="fas fa-check"></i> Conferma', ['confirm', 'id' => $model->id], ['class' => 'btn btn-info']) ?>
         </div>
 
         <div class="card-body">
@@ -97,17 +95,9 @@ $this->params['breadcrumbs'][] = $this->title;
                         },
                         'format' => "raw"
                     ],
-                    [
-                        'attribute' => "confirmed",
-                        "value" => function($model){
-                            return $model->confirmed ? "SI" : "NO";
-                        }
-                    ]
                 ],
             ]) ?>
 
         </div>
     </div>    
-
-
 </div>

@@ -6,10 +6,10 @@ use yii\grid\ActionColumn;
 use kartik\grid\GridView;
 use kartik\date\DatePicker;
 
-$this->title = 'Preventivi';
+$this->title = 'Ordini';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="quote-index">
+<div class="orders-index">
 
     <p><?= Html::a('Aggiungi', ['create'], ['class' => 'btn btn-success']) ?></p>
 
@@ -61,19 +61,13 @@ $this->params['breadcrumbs'][] = $this->title;
                         },
                         'format' => "raw"
                     ],
-                    'amount',
                     [
-                       'attribute' => 'confirmed',
-                       'value' => function($model){
-                           return $model->confirmed ? "SI" : "NO";
-                       },
-                       'filter' => [0 => "NO", 1 => "SI"] 
+                        'attribute' => 'total',
+                        'value' => function($model){
+                            return $model->formatNumber($model->total);
+                        },
+                        'format' => "raw"
                     ],
-                    //'color',
-                    //'packaging',
-                    //'placeholder',
-                    //'notes:ntext',
-                    //'total',
                     //'deposit',
                     //'balance',
                     //'shipping',

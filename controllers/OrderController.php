@@ -13,9 +13,9 @@ use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\filters\AccessControl;
 /**
- * QuotesController implements the CRUD actions for Quote model.
+ * OrderController implements the CRUD actions for Quote model.
  */
-class QuotesController extends Controller
+class OrderController extends Controller
 {
     /**
      * @inheritDoc
@@ -32,9 +32,7 @@ class QuotesController extends Controller
                             'view', 
                             'update', 
                             'delete', 
-                            'create', 
-                            'get-by-client-id',
-                            'confirm'
+                            'create',
                         ],
                         'allow' => true,
                         'roles' => ['@'],
@@ -52,8 +50,9 @@ class QuotesController extends Controller
     public function actionIndex()
     {
         $searchModel = new QuoteSearch();
+        $searchModel->confirmed = 1;
         $dataProvider = $searchModel->search($this->request->queryParams);
-        $dataProvider->sort->defaultOrder = ["deadline" => SORT_DESC];
+        $dataProvider->sort->defaultOrder = ["created_at" => SORT_DESC];
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -69,9 +68,10 @@ class QuotesController extends Controller
     public function actionView($id)
     {
         $model = $this->findModel($id);
-        
+        $client = Client::find()->select(["name", "surname"])->where(["id" => $model->id_client])->one();
         return $this->render('view', [
             'model'     => $model,
+            'client'    => !empty($client) ? $client->name." ".$client->surname : ""
         ]);
     }
 
@@ -88,14 +88,14 @@ class QuotesController extends Controller
         
         if ($this->request->isPost) {
             if ($model->load($this->request->post())) {
-                $model->created_at  = date("Y-m-d H:i:s");
-                $model->updated_at  = date("Y-m-d H:i:s");
-                $model->confirmed   = 0;
+                $model->created_at = date("Y-m-d H:i:s");
+                $model->updated_at = date("Y-m-d H:i:s");
+                $model->confirmed = 1;
                 if($model->save())
                     return $this->redirect(['view', 'id' => $model->id]);
                 else{
                     print_r($model->getErrors());die;
-                    Yii::$app->session->setFlash('error', "Ops...something went wrong [QU-101]");
+                    Yii::$app->session->setFlash('error', "Ops...something went wrong [OR-101]");
                 }
             }
         } else {
@@ -107,15 +107,6 @@ class QuotesController extends Controller
         ]);
     }
 
-    public function actionConfirm($id){
-        $model = $this->findModel($id);
-        $model->confirmed = 1;
-        if($model->save()){
-            return $this->render('view', [
-                'model' => $model,
-            ]);
-        }
-    }
     /**
      * Updates an existing Quote model.
      * If update is successful, the browser will be redirected to the 'view' page.

@@ -5,8 +5,8 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\Quote */
 
-$this->title = 'Modifica Preventivo: ' . $model->id;
-$this->params['breadcrumbs'][] = ['label' => 'Preventivi', 'url' => ['index']];
+$this->title = 'Modifica Ordine: ' . $model->id;
+$this->params['breadcrumbs'][] = ['label' => 'Ordini', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = 'Modifica';
 ?>
@@ -17,4 +17,3 @@ $this->params['breadcrumbs'][] = 'Modifica';
         </div>
     </div>
 </div>
-
