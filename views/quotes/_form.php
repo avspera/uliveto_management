@@ -51,40 +51,65 @@ use kartik\date\DatePicker;
         <div class="card-header">
             <div class="row">
                 <div class="text-lg">Prodotti</div>    
-                <!-- <div class="text-md" style="cursor:pointer" onclick="addProductLine()"><i style="margin-top:7px; margin-left:7px" class="fas fa-plus-circle" ></i></div> -->
+                <div class="text-md" style="cursor:pointer" onclick="addProductLine()"><i style="margin-top:7px; margin-left:7px" class="fas fa-plus-circle" ></i></div>
             </div>
             
         </div>
         <div class="card-body table-responsive">
-            <div class="row" id="prod_0">
-                <div class="col-md-4 col-sm-6 col-12">
-                    <?= $form->field($model, 'product[0]')->dropdownlist(yii\helpers\ArrayHelper::map(app\models\Product::find()->orderBy('name')->all(), 'id', 'name'), ['prompt' => 'Scegli', "onChange" => "getProductInfo()"])->label('Prodotto'); ?>
+            <div class="row prod" id="prod_0">
+                <div class="col-md-3 col-sm-6 col-12">
+                    <?= $form->field($model, 'product[0]')->dropdownlist(yii\helpers\ArrayHelper::map(app\models\Product::find()->orderBy('name')->all(), 'id', 'name'), ['prompt' => 'Scegli', "onChange" => "getProductInfo(0)"])->label('Prodotto'); ?>
                 </div>
-                <div class="col-md-4 col-sm-4 col-12"><?= $form->field($model, 'amount')->textInput(["onChange" => "updateTotalPrice(value)"]) ?></div>
+                <div class="col-md-1 col-sm-4 col-12"><?= $form->field($model, 'amount[0]')->textInput(["onChange" => "updateTotalPrice(value)"]) ?></div>
+                <div class="col-md-2 col-sm-6 col-12">
+                    <?= $form->field($model, 'color[0]')->dropdownlist(yii\helpers\ArrayHelper::map(app\models\Color::find()->orderBy('label')->all(), 'id', 'label'), ['prompt' => 'Scegli'])->label('Colore'); ?>
+                </div>
+                <div class="col-md-2 col-sm-4 col-12"><?= $form->field($model, 'custom_color[0]')->textInput(["maxlenght" => true]) ?></div>
+                <div class="col-md-3 col-sm-6 col-12">
+                    <?= $form->field($model, 'packaging')->dropdownlist(yii\helpers\ArrayHelper::map(app\models\Packaging::find()->orderBy('label')->all(), 'id', 'label'), ['prompt' => 'Scegli'])->label('Confezione'); ?>
+                </div>
             </div>
         </div>
     </div>
 
     
-    <div class="card card-secondary">
+    <div class="card card-info">
         <div class="card-header">
-            <div class="text-lg">Servizi aggiuntivi</div>    
+            <div class="text-lg text-white">Servizi aggiuntivi</div>    
         </div>
         <div class="card-body table-responsive">
-    
+
             <div class="row">
-                <div class="col-md-4 col-sm-6 col-12">
-                    <?= $form->field($model, 'color')->dropdownlist(yii\helpers\ArrayHelper::map(app\models\Color::find()->orderBy('label')->all(), 'id', 'label'), ['prompt' => 'Scegli'])->label('Colore'); ?>
-                </div>
-
-                <div class="col-md-4 col-sm-6 col-12">
-                    <?= $form->field($model, 'packaging')->dropdownlist(yii\helpers\ArrayHelper::map(app\models\Packaging::find()->orderBy('label')->all(), 'id', 'label'), ['prompt' => 'Scegli'])->label('Confezione'); ?>
-                </div>
+                <div class="col-md-4 col-sm-4 col-12"><?= $form->field($model, 'confetti')->dropdownlist([0 => "NO", 1 => "SI"], ['prompt' => "Scegli"]) ?></div>
+                <div class="col-md-4 col-sm-4 col-12"><?= $form->field($model, 'custom_amount')->textInput(['maxlength' => true, "onchange" => "subtractDeposit()"]) ?></div>
             </div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-12"><?= $form->field($model, 'custom')->textarea(['rows' => 6]) ?></div>    
+            </div>
+        </div>
+    </div>
 
+    <div class="card card-secondary">
+        <div class="card-header">
+            <div class="text-lg">Altro</div>    
+        </div>
+        <div class="card-body table-responsive">
+            <?= $form->field($model, 'notes')->textarea(['rows' => 6]) ?>
+        </div>
+    </div>
+
+    <div class="card card-secondary">
+        <div class="card-header">
+            <div class="text-lg">Costi</div>    
+        </div>
+        <div class="card-body table-responsive">
+
+            <div class="row">
+                <div class="col-md-4 col-sm-4 col-12"><?= $form->field($model, 'total')->textInput(['maxlength' => true, "readonly" => true]) ?></div>
+            </div>
             <div class="row">
                 <div class="col-md-4 col-sm-4 col-12"><?= $form->field($model, 'deposit')->textInput(['maxlength' => true, "onchange" => "subtractDeposit()"]) ?></div>
-                <div class="col-md-4 col-sm-4 col-12"><?php
+                <div class="col-md-3 col-sm-4 col-12"><?php
                     echo '<label class="form-label">Data </label>';
                     echo DatePicker::widget([
                         'value' => date("Y-m-d"),
@@ -99,23 +124,25 @@ use kartik\date\DatePicker;
             </div>
             <div class="row">
                 <div class="col-md-4 col-sm-4 col-12"><?= $form->field($model, 'balance')->textInput(['maxlength' => true, "readonly" => true]) ?></div>
-                <div class="col-md-4 col-sm-4 col-12"><?= $form->field($model, 'total')->textInput(['maxlength' => true, "readonly" => true]) ?></div>
-                <div class="col-md-3 col-sm-4 col-12"><?php
-                    echo '<label class="form-label">Data saldo</label>';
-                    echo DatePicker::widget([
-                        'value' => date("Y-m-d"),
-                        'name' => 'Quote[date_balance]',
-                        'type' => DatePicker::TYPE_INPUT,
-                        'pluginOptions' => [
-                            'autoclose' => true,
-                            'format' => 'yyyy-mm-dd'
-                        ]
-                    ]);
-                ?></div>
+                <div class="col-md-3 col-sm-4 col-12">
+                    <?php
+                        echo '<label class="form-label">Data saldo</label>';
+                        echo DatePicker::widget([
+                            'value' => date("Y-m-d"),
+                            'name' => 'Quote[date_balance]',
+                            'type' => DatePicker::TYPE_INPUT,
+                            'pluginOptions' => [
+                                'autoclose' => true,
+                                'format' => 'yyyy-mm-dd'
+                            ]
+                        ]);
+                    ?>
+                </div>
             </div>
             <div class="row">
-                <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'shipping')->dropdownlist([0 => "NO", 1 => "SI"]) ?></div>
-                <div class="col-md-3 col-sm-4 col-12"><?php
+                <div class="col-md-4 col-sm-4 col-12"><?= $form->field($model, 'shipping')->dropdownlist([0 => "NO", 1 => "SI"]) ?></div>
+                <div class="col-md-4 col-sm-6 col-12"><?= $form->field($model, 'address')->textInput(["maxlength" => true]) ?></div>
+                <div class="col-md-4 col-sm-4 col-12"><?php
                     echo '<label class="form-label">Consegna (entro il) </label>';
                     echo DatePicker::widget([
                         'value' => date("Y-m-d"),
@@ -128,29 +155,28 @@ use kartik\date\DatePicker;
                     ]);
                 ?></div>
             </div>
-        </div>
-    </div>
 
-    <div class="card card-secondary">
-        <div class="card-header">
-            <div class="text-lg">Altro</div>    
-        </div>
-        <div class="card-body table-responsive">
-            <?= $form->field($model, 'notes')->textarea(['rows' => 6]) ?>
-            <div class="form-group">
-                <?= Html::submitButton('Salva', ['class' => 'btn btn-success']) ?>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <?= Html::submitButton('Salva', ['class' => 'btn btn-success']) ?>
+                    </div>
+                </div>
             </div>
         </div>
+    
     </div>
+
+    
 
     <?php ActiveForm::end(); ?>
 
 </div>
 
 <script>
-    function getProductInfo(){
-        let id_product = $("#quote-product").val();
-        
+    function getProductInfo(index){
+        let id_product = $(`#quote-product-${index}`).val();
+        console.log("id_prodiuct", id_product)
         $.ajax({
             url: '<?= Url::to(['product/get-info']) ?>',
             type: 'get',
@@ -159,7 +185,8 @@ use kartik\date\DatePicker;
                 'id': id_product,
             },
             success: function (data) {
-                $('#quote-total').val(data.price)
+                let currentTotal = $('#quote-total').val();
+                $('#quote-total').val(parseFloat(currentTotal + data.price).toFixed(2))
             },
             error: function(error){
                 console.log("error", error)
@@ -181,35 +208,79 @@ use kartik\date\DatePicker;
         $('#quote-balance').val(parseFloat(balance).toFixed(2))
     }
 
+    function removeProductLine(index){
+        console.log("index", index);
+        let id = `#prod_${index}`;
+        $(id).remove()
+    }
+
     function addProductLine(){
-        let index = $("div[id^='prod_']").attr("id");
-        index = index.substr(index.indexOf("_")+1, 1);
-        let html = "";
-        html += `
-            <div class="row" id="prod_0">
-                <div class="col-md-4 col-sm-6 col-12">
-                    <div class="form-group field-quote-product-0 required has-error">
-                    <label class="control-label" for="quote-product-0">Prodotto</label>
-                    <select id="quote-product-0" class="form-control" name="Quote[product][0]" onchange="getProductInfo()" aria-required="true" aria-invalid="true">
-                    <option value="">Scegli</option>
-                    <option value="3">[U]classic</option>
-                    <option value="4">[U]gliarulo</option>
-                    <option value="2">[U]live</option>
-                    </select>
+        let index   = $("div[id^='prod_']").attr("id");
+        let node    = $("div[id^='prod_']");
+        index       = index.substr(index.indexOf("_")+1, 1);
+        index       = parseInt(index+1)
+        let html    = 
+            `<div class="row prod" id="prod_${index}">
+                <div class="col-md-3 col-sm-6 col-12">
+                    <div class="form-group field-quote-product-${index} required">
+                        <label class="control-label" for="quote-product-${index}">Prodotto</label>
+                        <select id="quote-product-${index}" class="form-control" name="Quote[product][${index}]" onchange="getProductInfo(${index})" aria-required="true">
+                            <option value="">Scegli</option>
+                            <option value="3">[U]classic</option>
+                            <option value="4">[U]gliarulo</option>
+                            <option value="2">[U]live</option>
+                        </select>
+                        <div class="help-block"></div>
+                    </div>
+                </div>
+                <div class="col-md-1 col-sm-4 col-12">
+                    <div class="form-group field-quote-amount-${index} required has-error">
+                        <label class="control-label" for="quote-amount-${index}">Quantità</label>
+                        <input type="text" id="quote-amount-${index}" class="form-control" name="Quote[amount][${index}]" onchange="updateTotalPrice(value)" aria-required="true" aria-invalid="true">
 
-                    <div class="help-block">Prodotto non può essere vuoto.</div>
-                    </div>                </div>
-                                    <div class="col-md-4 col-sm-4 col-12"><div class="form-group field-quote-amount required">
-                    <label class="control-label" for="quote-amount">Quantità</label>
-                    <input type="text" id="quote-amount" class="form-control" name="Quote[amount]" onchange="updateTotalPrice(value)" aria-required="true">
+                        <div class="help-block"></div>
+                    </div>
+                </div>
+                <div class="col-md-2 col-sm-6 col-12">
+                    <div class="form-group field-quote-color-${index} required">
+                        <label class="control-label" for="quote-color-${index}">Colore</label>
+                        <select id="quote-color-${index}" class="form-control" name="Quote[color][${index}]" aria-required="true">
+                            <option value="">Scegli</option>
+                            <option value="1">Light blue</option>
+                        </select>
+                        <div class="help-block"></div>
+                    </div>
+                </div>
+                <div class="col-md-2 col-sm-4 col-12">
+                    <div class="form-group field-quote-custom_color-0">
+                        <label class="control-label" for="quote-custom_color-0">Colore custom</label>
+                        <input type="text" id="quote-custom_color-0" class="form-control" name="Quote[custom_color][0]" maxlenght="">
 
-                    <div class="help-block"></div>
+                        <div class="help-block"></div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 col-12">
+                    <div class="form-group field-quote-packaging required">
+                        <label class="control-label" for="quote-packaging">Confezione</label>
+                        <select id="quote-packaging" class="form-control" name="Quote[packaging][${index}]" aria-required="true">
+                            <option value="">Scegli</option>
+                            <option value="3">Scatola </option>
+                            <option value="2">Scatola con Raso</option>
+                            <option value="4">senza scatola </option>
+                        </select>
+                        <div class="help-block"></div>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="form-group field-quote-product-${index} required">
+                        <label class="control-label" for="quote-product-${index}"></label>
+                        <div class="text-md" style="cursor:pointer" onclick="removeProductLine(${index})"><i style="margin-top:17px; margin-left:7px; color:red" class="fas fa-minus-circle" ></i></div>
                     </div>
                 </div>
             </div>
         `;
-
-
-
+        
+        $(node[node.length -1]).after(html); //append to latest row
+            
     }
 </script>

@@ -14,6 +14,8 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="payment-index">
 
+    <?php echo $this->render('_search', ['model' => $searchModel]); ?>
+
     <div class="row">
         <div class="card">
             <div class="card-header">
@@ -25,7 +27,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     'dataProvider' => $dataProvider,
                     'filterModel' => $searchModel,
                     'columns' => [
-                        'id',
                         [
                             'attribute' => 'id_client',
                             'value' => function($model){
@@ -39,11 +40,28 @@ $this->params['breadcrumbs'][] = $this->title;
                             }
                         ],
                         [
+                            'attribute' => "total",
+                            'value' => function($model){
+                                return $model->formatNumber($model->getTotal());
+                            },
+                            'format' => "raw",
+                            'label' => "Totale"
+                        ],
+                        [
                             'attribute' => 'amount',
                             'value' => function($model){
                                 return $model->formatNumber($model->amount);
                             },
                             'format' => "raw"
+                        ],
+                        [
+                            'attribute' => "saldo",
+                            'value' => function($model){
+                                $totale = $model->getTotal();
+                                return $model->formatNumber($totale - $model->amount);
+                            },
+                            'format' => "raw",
+                            'label' => "Saldo"
                         ],
                         [
                             'attribute' => 'created_at',

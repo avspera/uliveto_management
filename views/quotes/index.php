@@ -11,12 +11,11 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="quote-index">
 
-    <p><?= Html::a('Aggiungi', ['create'], ['class' => 'btn btn-success']) ?></p>
-
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <div class="card">
-        <div class="card-body">
+        <div class="card-header"><?= Html::a('<i class="fas fa-plus"></i> Aggiungi', ['create'], ['class' => 'btn btn-success']) ?></div>
+        <div class="card-body table table-responsive">
             <?= GridView::widget([
                 'dataProvider' => $dataProvider,
                 'filterModel' => $searchModel,
@@ -31,13 +30,13 @@ $this->params['breadcrumbs'][] = $this->title;
                         },
                         'format' => "raw"
                     ],
-                    [
-                       'attribute' => 'product',
-                       'value' => function($model){
-                           return $model->getProduct();
-                       },
-                       'filter' => yii\helpers\ArrayHelper::map(app\models\Product::find()->orderBy('name')->all(), 'id', 'name')
-                    ],
+                    // [
+                    //    'attribute' => 'product',
+                    //    'value' => function($model){
+                    //        return $model->getProduct();
+                    //    },
+                    //    'filter' => yii\helpers\ArrayHelper::map(app\models\Product::find()->orderBy('name')->all(), 'id', 'name')
+                    // ],
                     [
                         'attribute' => 'created_at',
                         'value' => function($model){
@@ -55,13 +54,20 @@ $this->params['breadcrumbs'][] = $this->title;
                         ])
                     ],
                     [
+                        'attribute' => 'deadline',
+                        'value' => function($model){
+                            return $model->formatDate($model->deadline);
+                        },
+                        'format' => "raw"
+                    ],
+                    [
                         'attribute' => 'updated_at',
                         'value' => function($model){
                             return $model->formatDate($model->updated_at);
                         },
                         'format' => "raw"
                     ],
-                    'amount',
+                    // 'amount',
                     [
                        'attribute' => 'confirmed',
                        'value' => function($model){

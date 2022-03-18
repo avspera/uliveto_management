@@ -63,8 +63,19 @@ class PaymentSearch extends Payment
             'id_client' => $this->id_client,
             'id_quote' => $this->id_quote,
             'amount' => $this->amount,
-            'created_at' => $this->created_at,
         ]);
+
+        if(!empty($params["PaymentSearch"]["start_date"]) || !empty($params["PaymentSearch"]["end_date"]))
+        {
+            $tmp_start_date = explode("/", $params["PaymentSearch"]["start_date"]);
+            $start_date     = $tmp_start_date["2"]."-".$tmp_start_date["1"]."-".$tmp_start_date[0];
+            $tmp_end_date   = explode("/", $params["PaymentSearch"]["end_date"]);
+            $end_date       = $tmp_end_date["2"]."-".$tmp_end_date["1"]."-".$tmp_end_date[0];
+            if($start_date == $end_date)
+                $query->andFilterWhere(['LIKE', 'created_at', $start_date ]);
+            else    
+                $query->andFilterWhere(['>=', 'created_at', $start_date ])->andFilterWhere(['<=', 'created_at', $end_date]);
+        }
 
         return $dataProvider;
     }

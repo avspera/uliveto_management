@@ -14,15 +14,15 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="client-index">
 
-    <p><?= Html::a('Aggiungi', ['create'], ['class' => 'btn btn-success']) ?></p>
-
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <div class="card">
-        <div class="card-body table-responsivge table-responsive">
+        <div class="card-header"><?= Html::a('Aggiungi', ['create'], ['class' => 'btn btn-success']) ?></div>
+        <div class="card-body table-responsive">
             <?= GridView::widget([
                 'dataProvider' => $dataProvider,
                 'filterModel' => $searchModel,
+                'responsive' => true,
                 'columns' => [
                     ['class' => 'yii\grid\SerialColumn'],
                     'name',

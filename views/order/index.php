@@ -11,11 +11,10 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="orders-index">
 
-    <p><?= Html::a('Aggiungi', ['create'], ['class' => 'btn btn-success']) ?></p>
-
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <div class="card">
+        <div class="card-header"><?= Html::a('Aggiungi', ['create'], ['class' => 'btn btn-success']) ?></div>
         <div class="card-body">
             <?= GridView::widget([
                 'dataProvider' => $dataProvider,

@@ -22,7 +22,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     echo Html::a('<i class="fas fa-trash"></i> Cancella', ['delete', 'id' => $model->id], [
                         'class' => 'btn btn-danger',
                         'data' => [
-                            'confirm' => 'Are you sure you want to delete this item?',
+                            'confirm' => 'Sei sicuro di voler cancellare questo elemento?',
                             'method' => 'post',
                         ],
                     ]) 
@@ -38,7 +38,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     [
                        'attribute' => 'image',
                        'value' => function($model){
-                           return !empty($model->image) ? Html::img(Url::to(Yii::getAlias("@web")."/".$model->image), ['class' => 'img-fluid img-responsive', 'alt' => $model->name, 'title' => $model->name]) : "-";
+                           return !empty($model->image) ? 
+                                Html::img(Url::to(Yii::getAlias("@web")."/".$model->image), ['class' => 'img-fluid img-responsive', 'alt' => $model->name, 'title' => $model->name]) 
+                            : "-";
                         },
                         'format' => "raw"
                     ],

@@ -23,6 +23,12 @@ class ProductController extends Controller
     public function behaviors()
     {
         return [
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'delete' => ['POST'],
+                ],
+            ],
             'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
@@ -98,8 +104,8 @@ class ProductController extends Controller
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) ) {
                 if (!empty($_FILES)) {
-                    $model->image = $this->manageUploadFiles($model);
                     $model->image = str_replace(" ", "_", $model->image);
+                    $model->image = $this->manageUploadFiles($model);
                 }
                 if($model->save())
                     return $this->redirect(['view', 'id' => $model->id]);

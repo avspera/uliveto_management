@@ -5,6 +5,8 @@ namespace app\controllers;
 use Yii;
 use app\models\Quote;
 use app\models\QuoteSearch;
+use app\models\QuoteDetails;
+use app\models\QuoteDetailsSearch;
 use app\models\Product;
 use app\models\Client;
 use yii\web\Controller;
@@ -23,6 +25,12 @@ class QuotesController extends Controller
     public function behaviors()
     {
         return [
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'delete' => ['POST'],
+                ],
+            ],
             'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
@@ -52,6 +60,7 @@ class QuotesController extends Controller
     public function actionIndex()
     {
         $searchModel = new QuoteSearch();
+        $searchModel->confirmed = 0;
         $dataProvider = $searchModel->search($this->request->queryParams);
         $dataProvider->sort->defaultOrder = ["deadline" => SORT_DESC];
         return $this->render('index', [
@@ -69,9 +78,13 @@ class QuotesController extends Controller
     public function actionView($id)
     {
         $model = $this->findModel($id);
+        $detailsModel = new QuoteDetailsSearch();
+        $detailsModel->id_quote = $id;
+        $quoteDetails = $detailsModel->search($this->request->queryParams);
         
         return $this->render('view', [
-            'model'     => $model,
+            'model'         => $model,
+            'quoteDetails'  => $quoteDetails
         ]);
     }
 
@@ -88,11 +101,31 @@ class QuotesController extends Controller
         
         if ($this->request->isPost) {
             if ($model->load($this->request->post())) {
-                $model->created_at  = date("Y-m-d H:i:s");
-                $model->updated_at  = date("Y-m-d H:i:s");
-                $model->confirmed   = 0;
-                if($model->save())
+                
+                $model->created_at      = date("Y-m-d H:i:s");
+                $model->updated_at      = date("Y-m-d H:i:s");
+                $model->confirmed       = 0;
+                $model->total_no_vat    = $model->total / (1 + 4 / 100);
+                if($model->save()){
+                    $i = 0;
+                    
+                    foreach($model->product as $key => $value){
+                        $quoteDetails = new QuoteDetails();
+                        $quoteDetails->id_product   = $value;
+                        $quoteDetails->id_quote     = $model->id;
+                        $quoteDetails->amount       = $model->amount[$i];
+                        $quoteDetails->id_packaging = $model->packaging[$i];
+                        $quoteDetails->id_color     = $model->color[$i];
+                        $quoteDetails->created_at   = date("Y-m-d H:i:s");
+                        if(!$quoteDetails->save()){
+                            print_r($quoteDetails->getErrors());
+                        }
+                        $i++;
+                    }
+
                     return $this->redirect(['view', 'id' => $model->id]);
+                }
+                    
                 else{
                     print_r($model->getErrors());die;
                     Yii::$app->session->setFlash('error', "Ops...something went wrong [QU-101]");

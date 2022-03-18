@@ -16,6 +16,8 @@ use app\models\Quote;
  */
 class Payment extends \yii\db\ActiveRecord
 {
+    public $total;
+    public $saldo;
     /**
      * {@inheritdoc}
      */
@@ -55,6 +57,11 @@ class Payment extends \yii\db\ActiveRecord
     public function getQuote(){
         $quote = Quote::findOne([$this->id_quote]);
         return !empty($quote) ? $quote->id." - ".$this->formatDate($quote->created_at) : "";
+    }
+
+    public function getTotal(){
+        $quote = Quote::find()->select(["total"])->where(["id" => $this->id_quote])->one();
+        return !empty($quote) ? $quote->total : "";
     }
 
     public function getClient(){

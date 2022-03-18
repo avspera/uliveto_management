@@ -3,6 +3,8 @@
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\DetailView;
+use kartik\grid\GridView;
+use yii\grid\ActionColumn;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Quote */
@@ -20,7 +22,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <?= Html::a('<i class="fas fa-trash"></i> Cancella', ['delete', 'id' => $model->id], [
                 'class' => 'btn btn-danger',
                 'data' => [
-                    'confirm' => 'Are you sure you want to delete this item?',
+                    'confirm' => 'Sei sicuro di voler cancellare questo elemento?',
                     'method' => 'post',
                 ],
             ]) ?>
@@ -52,12 +54,12 @@ $this->params['breadcrumbs'][] = $this->title;
                         },
                         'format' => "raw"
                     ],
-                    [
-                        'attribute' => 'product',
-                        'value' => function($model){
-                            return $model->getProduct();
-                        }
-                    ],
+                    // [
+                    //     'attribute' => 'product',
+                    //     'value' => function($model){
+                    //         return $model->getProduct();
+                    //     }
+                    // ],
                     'amount',
                     [
                         'attribute' => 'color',
@@ -107,7 +109,38 @@ $this->params['breadcrumbs'][] = $this->title;
             ]) ?>
 
         </div>
-    </div>    
+    </div>  
+    
+    <div class="card card-info">
+        <div class="card-header">
+            <div class="text-md">Dettagli prodotti</div>
+        </div>
+
+        <div class="card-body">
+       
+            <?= GridView::widget([
+                'dataProvider'  => $quoteDetails,
+                'columns' => [
+                    ['class' => 'yii\grid\SerialColumn'],
+                    [
+                        'attribute' => 'id_product',
+                        'value' => function($model){
+                            return $model->getProduct();
+                        },
+                    ],
+                    [
+                        'attribute' => 'id_packaging',
+                        'value' => function($model){
+                            return $model->getPackaging();
+                        },
+                    ],
+                    'amount',
+                    [ 'class' => ActionColumn::className() ]
+                ]
+            ]); ?>
+        </div>
+        
+    </div>
 
 
 </div>

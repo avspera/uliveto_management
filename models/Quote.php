@@ -43,12 +43,11 @@ class Quote extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['order_number', 'created_at', 'id_client', 'product', 'confirmed',
-                'amount', 'color', 'packaging', 'shipping', 'deadline'], 'required'],
-            [['order_number', 'id_client', 'product', 'amount', 'confirmed',
-                'color', 'packaging', 'placeholder', 'shipping'], 'integer'],
-            [['created_at', 'updated_at', 'deadline', 'date_deposit', 'date_balance','placeholder'], 'safe'],
-            [['notes'], 'string'],
+            [['order_number', 'created_at', 'id_client',  'confirmed', 'shipping', 'deadline'], 'required'],
+            [['order_number', 'id_client', 'confirmed', 'placeholder', 'shipping'], 'integer'],
+            [['created_at', 'updated_at', 'deadline', 'product', 'amount', 'color', 'packaging',
+                'date_deposit', 'date_balance','placeholder', 'address', 'custom_color', 'confetti', 'custom', 'custom_amount'], 'safe'],
+            [['notes', 'address'], 'string'],
             [['total', 'deposit', 'balance'], 'number'],
         ];
     }
@@ -67,15 +66,22 @@ class Quote extends \yii\db\ActiveRecord
             'product'       => 'Prodotto',
             'amount'        => 'Quantità',
             'color'         => 'Colore',
+            'custom_color'  => "Colore custom",
             'packaging'     => 'Confezione',
             'placeholder'   => 'Segnaposto',
             'notes'         => 'Note',
             'total'         => 'Totale',
-            'deposit'       => 'Deposito',
+            'deposit'       => 'Acconto',
             'balance'       => 'Saldo',
             'shipping'      => 'Spedizione',
             'deadline'      => 'Consegna (entro il)',
-            'confirmed'     => "Confermato"
+            'confirmed'     => "Confermato",
+            'address'       => "Indirizzo",
+            'custom'        => "Personalizzazione",
+            'custom_amount' => "Costo personalizzazione",
+            'confetti'      => "Confetti",
+            'invoice'       => "Fattura",
+            'attachements'  => "Allegati"
         ];
     }
 
@@ -84,15 +90,14 @@ class Quote extends \yii\db\ActiveRecord
         return !empty($product) ? $product->name : "";
     }
 
-    public function getClient(){
-        $client = Client::findOne([$this->id_client]);
-        return !empty($client) ? $client->name." ".$client->surname : "";
-    }
-
-
     public function getColor(){
         $color = Color::findOne([$this->color]);
         return !empty($color) ? $color->label : "";
+    }
+
+    public function getClient(){
+        $client = Client::findOne([$this->id_client]);
+        return !empty($client) ? $client->name." ".$client->surname : "";
     }
 
     public function formatDate($value, $showHour = false){

@@ -75,7 +75,23 @@
                 </a>
             </div>
         </div>
+    </div>
 
+    <div class="row">
+        <div class="col-lg-4 col-md-6 col-sm-6 col-12">
+            <div class="small-box bg-primary">
+                <div class="inner">
+                    <h3><?= $messagesCount ?></h3>
+                    <p>Messaggi</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <a href="<?= Url::to(["message/index"]) ?>" class="small-box-footer">
+                    Tutti <i class="fas fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
     </div>
 
 </div>

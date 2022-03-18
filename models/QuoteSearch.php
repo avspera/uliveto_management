@@ -62,8 +62,9 @@ class QuoteSearch extends Quote
         $query->andFilterWhere([
             'id' => $this->id,
             'order_number' => $this->order_number,
-            'created_at' => $this->created_at,
+            // 'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            // $query->andFilterWhere(['>=', 'created', $start_date ])->andFilterWhere(['<=', 'created', $end_date]);
             'id_client' => $this->id_client,
             'product' => $this->product,
             'amount' => $this->amount,
@@ -78,8 +79,20 @@ class QuoteSearch extends Quote
             'confirmed' => $this->confirmed,
         ]);
 
-        $query->andFilterWhere(['like', 'notes', $this->notes]);
+        if(!empty($params["QuoteSearch"]["start_date"]) || !empty($params["QuoteSearch"]["end_date"]))
+        {
+            $tmp_start_date = explode("/", $params["QuoteSearch"]["start_date"]);
+            $start_date     = $tmp_start_date["2"]."-".$tmp_start_date["1"]."-".$tmp_start_date[0];
+            $tmp_end_date   = explode("/", $params["QuoteSearch"]["end_date"]);
+            $end_date       = $tmp_end_date["2"]."-".$tmp_end_date["1"]."-".$tmp_end_date[0];
+            if($start_date == $end_date)
+                $query->andFilterWhere(['LIKE', 'created_at', $start_date ]);
+            else    
+                $query->andFilterWhere(['>=', 'created_at', $start_date ])->andFilterWhere(['<=', 'created_at', $end_date]);
+        }
 
+        $query->andFilterWhere(['like', 'notes', $this->notes]);
+        
         return $dataProvider;
     }
 }

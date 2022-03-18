@@ -2,10 +2,14 @@
 
     use yii\helpers\Html;
     use yii\helpers\Url;
+    use app\models\Client;
+
     $today          = date("Y-m-d H:i:s");
     $expiring       = app\models\Quote::find()->where(["<=", "deadline", $today])->all();
     $expiringCount  = app\models\Quote::find()->where(["<=", "deadline", $today])->count();
     $messageCount   = app\models\Message::find()->where(["not",  ["replied_at" => null]])->count();
+    $paymentsCount  = app\models\Payment::find()->count();
+    $payments       = app\models\Payment::find()->orderBy(["created_at" => SORT_DESC])->all();
 
 ?>
 <!-- Navbar -->
@@ -102,6 +106,39 @@
                 </a>
                 <div class="dropdown-divider"></div>
                 <a href="<?= Url::to(["message/index"]) ?>" class="dropdown-item dropdown-footer">Vedi tutti</a>
+            </div>
+        </li>
+
+        <!-- Messages Dropdown Menu -->
+        <li class="nav-item dropdown">
+            <a class="nav-link" data-toggle="dropdown" href="#">
+                <i class="fas fa-coins"></i>
+                <span class="badge badge-success navbar-badge"><?= $paymentsCount ?></span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                <a href="#" class="dropdown-item">
+                    <?php 
+                        foreach($payments as $item){
+                            $client = Client::find()->select(["name", "surname"])->where(["id" => $item->id_client])->one();
+                    ?>
+                        <div class="media">
+                            <div class="media-body">
+                                <h3 class="dropdown-item-title">
+                                    <?= !empty($client) ? $client->name." ".$client->surname : ""?>
+                                    <span class="float-right text-sm text-success"><i class="fas fa-coins"></i></span>
+                                </h3>
+                                <div class="row" style="margin: 3px">
+                                    <p class="text-sm" style="margin-right:5px"><?= $item->formatNumber($item->amount) ?></p>
+                                    <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> <?= $item->formatDate($item->created_at) ?> </p>
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                    <?php } ?>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="<?= Url::to(["payment/index"]) ?>" class="dropdown-item dropdown-footer">Vedi tutti</a>
             </div>
         </li>
 
