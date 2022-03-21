@@ -40,19 +40,20 @@
             echo \hail812\adminlte\widgets\Menu::widget([
                 'items' => [
                     ['label' => 'ORCI', 'header' => true],
-                    // ['label' => 'Preventivi', 'url' => ['quotes/index'], 'icon' => 'file-alt', 'visible' => !Yii::$app->user->isGuest],
-                    ['label' => 'Preventivi', 'url' => ['quotes/index'], 'icon' => 'file-alt'],
-                    ['label' => 'Ordini', 'url' => ['order/index'], 'icon' => 'credit-card'],
-                    ['label' => 'Clienti',  'icon' => 'users', 'url' => ['/clients/index'], 'target' => '_self'],
-                    ['label' => 'Pagamenti',  'icon' => 'coins', 'url' => ['/payment/index'], 'target' => '_self'],
-                    ['label' => 'TOOLS', 'header' => true],
+                    ['label' => 'Preventivi', 'url' => ['quotes/index'], 'icon' => 'file-alt', 'visible' => (Yii::$app->user->identity->role == 0 || Yii::$app->user->identity->role == 1)],
+                    ['label' => 'Ordini', 'url' => ['order/index'], 'icon' => 'credit-card', 'visible' => Yii::$app->user->identity->role == 0],
+                    ['label' => 'Clienti',  'icon' => 'users', 'url' => ['/clients/index'], 'target' => '_self', 'visible' => (Yii::$app->user->identity->role == 0 || Yii::$app->user->identity->role == 2)],
+                    ['label' => 'Pagamenti',  'icon' => 'coins', 'url' => ['/payment/index'], 'target' => '_self', 'visible' => (Yii::$app->user->identity->role == 0 || Yii::$app->user->identity->role == 3)],
+                    ['label' => 'Catalogo',  'icon' => 'file', 'url' => ['/invia-catalogo/index'], 'target' => '_self', 'visible' => (Yii::$app->user->identity->role == 0)],
+                    ['label' => 'TOOLS', 'header' => true, 'visible' => Yii::$app->user->identity->role == 0],
                     [
                         'label' => 'Prodotti',
                         'iconStyle' => 'far',
                         'items' => [
                             ['label' => 'Nuovo', 'url' => ["product/create"], 'iconStyle' => 'far', 'icon' => 'dot-circle'],
                             ['label' => 'Lista', 'url' => ["product/index"], 'iconStyle' => 'far', 'icon' => 'dot-circle'],
-                        ]
+                        ],
+                        'visible' => Yii::$app->user->identity->role == 0
                     ],
                     [
                         'label' => 'Occorrenze',
@@ -60,7 +61,8 @@
                         'items' => [
                             ['label' => 'Nuovo', 'url' => ["occurrence/create"], 'iconStyle' => 'far', 'icon' => 'dot-circle'],
                             ['label' => 'Lista', 'url' => ["occurrence/index"], 'iconStyle' => 'far', 'icon' => 'dot-circle'],
-                        ]
+                        ],
+                        'visible' => Yii::$app->user->identity->role == 0
                     ],
                     [
                         'label' => 'Colori',
@@ -68,7 +70,8 @@
                         'items' => [
                             ['label' => 'Nuovo', 'url' => ["colors/create"], 'iconStyle' => 'far', 'icon' => 'dot-circle'],
                             ['label' => 'Lista', 'url' => ["colors/index"],'iconStyle' => 'far', 'icon' => 'dot-circle'],
-                        ]
+                        ],
+                        'visible' => Yii::$app->user->identity->role == 0
                     ],
                     [
                         'label' => 'Confezioni',
@@ -76,12 +79,12 @@
                         'items' => [
                             ['label' => 'Nuovo', 'url' => ["packagings/create"], 'iconStyle' => 'far', 'icon' => 'dot-circle'],
                             ['label' => 'Lista', 'url' => ["packagings/index"], 'iconStyle' => 'far', 'icon' => 'dot-circle'],
-                        ]
+                        ],
+                        'visible' => Yii::$app->user->identity->role == 0
                     ],
-                    ['label' => 'People', 'header' => true],
-                    ['label' => 'Utenti',  'icon' => 'users', 'url' => ['/user/index'], 'target' => '_self', Yii::$app->user->identity->isAdmin()],
-                    ['label' => 'Login', 'url' => ['site/login'], 'icon' => 'sign-in-alt', 'visible' => Yii::$app->user->isGuest],
-                    ['label' => 'Logout', 'url' => ['site/logout'], 'icon' => 'sign-out-alt', 'visible' => !Yii::$app->user->isGuest]
+                    ['label' => 'People', 'header' => true, 'visible' => Yii::$app->user->identity->role == 0],
+                    ['label' => 'Utenti',  'icon' => 'users', 'url' => ['/user/index'], 'target' => '_self', Yii::$app->user->identity->isAdmin(), 'visible' => Yii::$app->user->identity->role == 0],
+                    ['label' => 'Esci', 'url' => ['site/logout'], 'icon' => 'sign-out-alt', 'visible' => !Yii::$app->user->isGuest]
                 ],
             ]);
             ?>

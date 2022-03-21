@@ -88,6 +88,9 @@ class SiteController extends Controller
         $model = new LoginForm();
         
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
+            // $auth       = \Yii::$app->authManager;
+            // $userRole   = $auth->getRole(strtolower($model->getRole()));
+            // $auth->assign($userRole, $user->getId());
             return $this->goHome();
         }
 

@@ -38,7 +38,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         'attribute' => 'role',
                         'value' => function($model){
                             return $model->getRole();
-                        }
+                        },
+                        'filter' => $searchModel->roleList
                      ],
                     [
                         'attribute' => 'created',

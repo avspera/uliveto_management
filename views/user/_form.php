@@ -22,7 +22,6 @@ use yii\widgets\ActiveForm;
         <div class="col-md-4"><?= $form->field($model, 'password')->textInput(['maxlength' => true, 'type' => "password"]) ?></div>
         <div class="col-md-4"><?= $form->field($model, 'status')->dropdownlist($model->statusList, ['prompt' => "Scegli"]) ?></div>
         <div class="col-md-4"><?= $form->field($model, 'role')->dropdownlist($model->roleList, ['prompt' => "Scegli"]) ?></div>
-
     </div>
     
     <div class="row">

@@ -29,8 +29,9 @@ $model = new LoginForm();
             <img src="<?=$assetDir?>/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
         </div>
 
-        <div class="card" style="margin-top: 1rem">
+        <div class="card" style="margin-top: 1rem; width: 500px; margin: 0 auto;float: none; margin-top: 20px">
             <div class="card-body table-responsive login-card-body">
+    
                 <p class="login-box-msg">Accedi per iniziare una nuova sessione</p>
 
                 <?php $form = \yii\bootstrap4\ActiveForm::begin(['id' => 'login-form']) ?>
@@ -54,32 +55,13 @@ $model = new LoginForm();
                     ->passwordInput(['placeholder' => $model->getAttributeLabel('password')]) ?>
 
                 <div class="row">
-                    <div class="col-8">
-                        <?= $form->field($model, 'rememberMe')->checkbox([
-                            'template' => '<div class="icheck-primary">{input}{label}</div>',
-                            'labelOptions' => [
-                                'class' => ''
-                            ],
-                            'uncheck' => null
-                        ]) ?>
-                    </div>
+                    <div class="col-8"></div>
                     <div class="col-4">
                         <?= Html::submitButton('Entra', ['class' => 'btn btn-primary btn-block']) ?>
                     </div>
                 </div>
 
                 <?php \yii\bootstrap4\ActiveForm::end(); ?>
-
-                <!-- <div class="social-auth-links text-center mb-3">
-                    <p>- OR -</p>
-                    <a href="#" class="btn btn-block btn-primary">
-                        <i class="fab fa-facebook mr-2"></i> Sign in using Facebook
-                    </a>
-                    <a href="#" class="btn btn-block btn-danger">
-                        <i class="fab fa-google-plus mr-2"></i> Sign in using Google+
-                    </a>
-                </div> -->
-                <!-- /.social-auth-links -->
 
                 <p class="mb-1">
                     <a href="forgot-password.html">Ho dimenticato la password</a>

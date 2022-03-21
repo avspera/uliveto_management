@@ -31,6 +31,19 @@ class PaymentController extends Controller
         );
     }
 
+    public function beforeAction($action)
+    {
+        if (!parent::beforeAction($action)) {
+            if(Yii::$app->user->identity->role == 0 || Yii::$app->user->identity->role == 3){
+                return true;
+            }else{
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     /**
      * Lists all Payment models.
      *

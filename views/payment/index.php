@@ -3,7 +3,7 @@
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\ActionColumn;
-use yii\grid\GridView;
+use kartik\grid\GridView;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\PaymentSearch */
@@ -45,7 +45,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 return $model->formatNumber($model->getTotal());
                             },
                             'format' => "raw",
-                            'label' => "Totale"
+                            'label' => "Totale ordine"
                         ],
                         [
                             'attribute' => 'amount',
@@ -55,19 +55,37 @@ $this->params['breadcrumbs'][] = $this->title;
                             'format' => "raw"
                         ],
                         [
+                            'attribute' => 'created_at',
+                            'value' => function($model){
+                                return $model->formatDate($model->created_at);
+                            }
+                        ],
+                        [
                             'attribute' => "saldo",
                             'value' => function($model){
                                 $totale = $model->getTotal();
-                                return $model->formatNumber($totale - $model->amount);
+                                return ($totale - $model->amount) < 0 ? 0 : $model->formatNumber($totale - $model->amount);
                             },
                             'format' => "raw",
                             'label' => "Saldo"
                         ],
                         [
-                            'attribute' => 'created_at',
+                            'attribute' => "data_saldo",
                             'value' => function($model){
-                                return $model->formatDate($model->created_at);
-                            }
+                                $date = new DateTime($model->created_at);
+                                $date->add(new DateInterval('P10D'));
+                                return $date->format('d/m/y');
+                            },
+                            'format' => "raw",
+                            'label' => "Data Saldo"
+                        ],
+                        [
+                            'attribute' => "fatturato",
+                            'value' => function($model){
+                                return $model->fatturato ? "<i class='fas fa-check' style='color:green'></i>" : "<i class='fas fa-ban' style='color:red'></i>";
+                            },
+                            'filter' => [0 => "NO", 1 => "SI"],
+                            'format' => "raw"
                         ],
                         [
                             'class' => ActionColumn::className(),

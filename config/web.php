@@ -29,15 +29,15 @@ $config = [
         ],
         'mailer' => [
             'class' => 'yii\swiftmailer\Mailer',
-            // 'viewPath' => '@app/mail',
+            'viewPath' => '@app/mail',
             'useFileTransport' => false,
             'transport' => [
-                'class'         => 'Swift_SmtpTransport',
-                'host'          => 'smtps.aruba.it',
-                // 'username'      => 'info@smokeman.it',
-                // 'password'      => 'SmokeMan2021',
-                'port'          => '465',
-                'encryption'    => 'ssl',
+                'class' => 'Swift_SmtpTransport',
+                'host' => 'smtps.aruba.it',
+                'username' => 'info@orcimanager.it',
+                'password' => 'Francesco97?',
+                'port' => '465',
+                'encryption' => 'ssl',
             ],
         ],
         'log' => [
@@ -56,6 +56,10 @@ $config = [
             'rules' => [
             ],
         ],
+        'authManager' => [
+            'class' => 'yii\rbac\PhpManager',
+            'defaultRoles' => ['admin', 'preventivi', 'clienti']
+        ]
     ],
     'params' => $params,
     'modules' => [

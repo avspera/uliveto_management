@@ -1,5 +1,6 @@
 <?php
 
+use Yii;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\ActionColumn;
@@ -10,7 +11,8 @@ $this->title = 'Ordini';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="orders-index">
-
+    <?= Yii::$app->session->getFlash('error'); ?>
+    <?= Yii::$app->session->getFlash('success'); ?>
     <?php echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <div class="card">

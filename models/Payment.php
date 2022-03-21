@@ -32,8 +32,8 @@ class Payment extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id_client', 'id_quote', 'amount', 'created_at'], 'required'],
-            [['id_client', 'id_quote'], 'integer'],
+            [['id_client', 'id_quote', 'amount', 'created_at', 'fatturato'], 'required'],
+            [['id_client', 'id_quote', 'fatturato'], 'integer'],
             [['amount'], 'number'],
             [['created_at'], 'safe'],
         ];
@@ -48,8 +48,9 @@ class Payment extends \yii\db\ActiveRecord
             'id' => 'ID',
             'id_client' => 'Cliente',
             'id_quote' => 'Preventivo',
-            'amount' => 'Importo',
+            'amount' => 'Acconto',
             'created_at' => 'Effettuato il',
+            'fatturat' => "Fatturato"
         ];
     }
 
