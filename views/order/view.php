@@ -3,14 +3,15 @@
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\DetailView;
+use kartik\grid\GridView;
+use yii\grid\ActionColumn;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Quote */
-
-$this->title = $model->order_number." - ".$client;
-$this->params['breadcrumbs'][] = ['label' => 'Preventivi', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
-\yii\web\YiiAsset::register($this);
+    $this->title = $model->order_number." - ".$client;
+    $this->params['breadcrumbs'][] = ['label' => 'Ordini', 'url' => ['index']];
+    $this->params['breadcrumbs'][] = $this->title;
+    \yii\web\YiiAsset::register($this);
 ?>
 <div class="quote-view">
 
@@ -100,4 +101,76 @@ $this->params['breadcrumbs'][] = $this->title;
 
         </div>
     </div>    
+
+    <div class="card card-info">
+        <div class="card-header">
+            <div class="text-md">Dettagli prodotti</div>
+        </div>
+
+        <div class="card-body">
+       
+            <?= GridView::widget([
+                'dataProvider'  => $products,
+                'columns' => [
+                    ['class' => 'yii\grid\SerialColumn'],
+                    [
+                        'attribute' => 'id_product',
+                        'value' => function($model){
+                            return $model->getProduct();
+                        },
+                    ],
+                    [
+                        'attribute' => 'id_packaging',
+                        'value' => function($model){
+                            return $model->getPackaging();
+                        },
+                    ],
+                    'amount',
+                    [ 'class' => ActionColumn::className() ]
+                ]
+            ]); ?>
+        </div>
+        
+    </div>
+
+    <div class="card card-success">
+        <div class="card-header">
+            <div class="text-md">Pagamenti</div>
+        </div>
+
+        <div class="card-body">
+            <?= GridView::widget([
+                'dataProvider' => $payments,
+                'columns' => [
+                    ['class' => 'yii\grid\SerialColumn'],
+                    [
+                        'attribute' => 'id_client',
+                        'value' => function($model){
+                            return $model->getClient();
+                        }
+                    ],
+                    [
+                        'attribute' => 'id_quote',
+                        'value' => function($model){
+                            return $model->getQuote();
+                        }
+                    ],
+                    [
+                        'attribute' => 'amount',
+                        'value' => function($model){
+                            return $model->formatNumber($model->amount);
+                        },
+                        'format' => "raw"
+                    ],
+                    [
+                        'attribute' => 'created_at',
+                        'value' => function($model){
+                            return $model->formatDate($model->created_at);
+                        }
+                    ],
+                ]
+            ]); ?>
+        </div>
+
+    </div>
 </div>

@@ -5,6 +5,8 @@ namespace app\controllers;
 use Yii;
 use app\models\Quote;
 use app\models\QuoteSearch;
+use app\models\QuoteDetailsSearch;
+use app\models\PaymentSearch;
 use app\models\Product;
 use app\models\Client;
 use yii\web\Controller;
@@ -69,9 +71,21 @@ class OrderController extends Controller
     {
         $model = $this->findModel($id);
         $client = Client::find()->select(["name", "surname"])->where(["id" => $model->id_client])->one();
+        
+        $detailsModel = new QuoteDetailsSearch();
+        $detailsModel->id_quote = $id;
+        $products = $detailsModel->search($this->request->queryParams);
+
+        $paymentModel = new PaymentSearch();
+        $paymentModel->id_quote = $id;
+        $payments     = $paymentModel->search([]);
+        $payments->sort->defaultOrder = ["created_at" => SORT_DESC];
+
         return $this->render('view', [
             'model'     => $model,
-            'client'    => !empty($client) ? $client->name." ".$client->surname : ""
+            'client'    => !empty($client) ? $client->name." ".$client->surname : "",
+            'products'  => $products,
+            'payments'  => $payments 
         ]);
     }
 

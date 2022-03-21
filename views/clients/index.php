@@ -3,11 +3,7 @@
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\ActionColumn;
-// use yii\grid\GridView;
 use kartik\grid\GridView;
-/* @var $this yii\web\View */
-/* @var $searchModel app\models\ClientSearch */
-/* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = 'Clienti';
 $this->params['breadcrumbs'][] = $this->title;
