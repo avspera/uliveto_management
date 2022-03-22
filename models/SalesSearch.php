@@ -4,12 +4,12 @@ namespace app\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\Packaging;
+use app\models\Sales;
 
 /**
- * PackagingSearch represents the model behind the search form of `app\models\Packaging`.
+ * SalesSearch represents the model behind the search form of `app\models\Sales`.
  */
-class PackagingSearch extends Packaging
+class SalesSearch extends Sales
 {
     /**
      * {@inheritdoc}
@@ -18,7 +18,9 @@ class PackagingSearch extends Packaging
     {
         return [
             [['id'], 'integer'],
-            [['name', 'label', 'image', 'price', 'created_at'], 'safe'],
+            [['amount'], 'number'],
+            [[ 'created_at'], 'string'],
+            [['name', 'created_at'], 'safe'],
         ];
     }
 
@@ -40,7 +42,7 @@ class PackagingSearch extends Packaging
      */
     public function search($params)
     {
-        $query = Packaging::find();
+        $query = Sales::find();
 
         // add conditions that should always apply here
 
@@ -59,13 +61,11 @@ class PackagingSearch extends Packaging
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'price' => $this->price,
+            'amount' => $this->amount,
+            'created_at' => $this->created_at,
         ]);
 
-        $query->andFilterWhere(['like', 'name', $this->name])
-            ->andFilterWhere(['like', 'label', $this->label])
-            ->andFilterWhere(['like', 'created_at', $this->created_at])
-            ->andFilterWhere(['like', 'image', $this->image]);
+        $query->andFilterWhere(['like', 'name', $this->name]);
 
         return $dataProvider;
     }

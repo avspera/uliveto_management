@@ -82,7 +82,16 @@
                         ],
                         'visible' => Yii::$app->user->identity->role == 0
                     ],
-                    ['label' => 'People', 'header' => true, 'visible' => Yii::$app->user->identity->role == 0],
+                    [
+                        'label' => 'Sconti',
+                        'iconStyle' => 'far',
+                        'items' => [
+                            ['label' => 'Nuovo', 'url' => ["sales/create"], 'iconStyle' => 'far', 'icon' => 'dot-circle'],
+                            ['label' => 'Lista', 'url' => ["sales/index"], 'iconStyle' => 'far', 'icon' => 'dot-circle'],
+                        ],
+                        'visible' => Yii::$app->user->identity->role == 0
+                    ],
+                    ['label' => 'PEOPLE', 'header' => true, 'visible' => Yii::$app->user->identity->role == 0],
                     ['label' => 'Utenti',  'icon' => 'users', 'url' => ['/user/index'], 'target' => '_self', Yii::$app->user->identity->isAdmin(), 'visible' => Yii::$app->user->identity->role == 0],
                     ['label' => 'Esci', 'url' => ['site/logout'], 'icon' => 'sign-out-alt', 'visible' => !Yii::$app->user->isGuest]
                 ],

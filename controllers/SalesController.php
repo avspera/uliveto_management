@@ -2,57 +2,45 @@
 
 namespace app\controllers;
 
-use Yii;
-use app\models\InviaCatalogo;
-use app\models\InviaCatalogoSearch;
+use app\models\Sales;
+use app\models\SalesSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use yii\filters\AccessControl;
 
 /**
- * InviaCatalogoController implements the CRUD actions for InviaCatalogo model.
+ * SalesController implements the CRUD actions for Sales model.
  */
-class InviaCatalogoController extends Controller
+class SalesController extends Controller
 {
-     /**
+    /**
      * @inheritDoc
      */
     public function behaviors()
     {
-        return [
-            'access' => [
-                'class' => AccessControl::className(),
-                'rules' => [
-                    [
-                        'actions' => [
-                            'index', 
-                            'view', 
-                            'update', 
-                            'delete', 
-                            'create',
-                        ],
-                        'allow' => true,
-                        'roles' => ['@'],
+        return array_merge(
+            parent::behaviors(),
+            [
+                'verbs' => [
+                    'class' => VerbFilter::className(),
+                    'actions' => [
+                        'delete' => ['POST'],
                     ],
                 ],
-                'denyCallback' => function ($rule, $action) {
-                    throw new \Exception('You are not allowed to access this page');
-                }
-            ],
-        ];
+            ]
+        );
     }
 
     /**
-     * Lists all InviaCatalogo models.
+     * Lists all Sales models.
      *
      * @return string
      */
     public function actionIndex()
     {
-        $searchModel = new InviaCatalogoSearch();
+        $searchModel = new SalesSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
-        $dataProvider->sort->defaultOrder = ["created_at" => SORT_DESC];
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -60,7 +48,7 @@ class InviaCatalogoController extends Controller
     }
 
     /**
-     * Displays a single InviaCatalogo model.
+     * Displays a single Sales model.
      * @param int $id ID
      * @return string
      * @throws NotFoundHttpException if the model cannot be found
@@ -73,22 +61,19 @@ class InviaCatalogoController extends Controller
     }
 
     /**
-     * Creates a new InviaCatalogo model.
+     * Creates a new Sales model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return string|\yii\web\Response
      */
     public function actionCreate()
     {
-        $model = new InviaCatalogo();
+        $model = new Sales();
 
         if ($this->request->isPost) {
-            
             if ($model->load($this->request->post())) {
                 $model->created_at = date("Y-m-d H:i:s");
-                if($model->save()){
-                    // && $this->sendEmail($model)
+                if($model->save())
                     return $this->redirect(['view', 'id' => $model->id]);
-                }   
             }
         } else {
             $model->loadDefaultValues();
@@ -100,7 +85,7 @@ class InviaCatalogoController extends Controller
     }
 
     /**
-     * Updates an existing InviaCatalogo model.
+     * Updates an existing Sales model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param int $id ID
      * @return string|\yii\web\Response
@@ -120,7 +105,7 @@ class InviaCatalogoController extends Controller
     }
 
     /**
-     * Deletes an existing InviaCatalogo model.
+     * Deletes an existing Sales model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param int $id ID
      * @return \yii\web\Response
@@ -133,31 +118,16 @@ class InviaCatalogoController extends Controller
         return $this->redirect(['index']);
     }
 
-    protected function sendEmail($model){
-        
-        if(empty($model)) return false;
-
-        return Yii::$app->mailer
-                ->compose(
-                    ['html' => 'invio-catalogo'],
-                    ['model' => $model]
-                )
-                ->setFrom(["ordini@opostomio.it"])
-                ->setTo($model->email)
-                ->setSubject($model->name." ecco i nostri cataloghi")
-                ->send();
-    }
-
     /**
-     * Finds the InviaCatalogo model based on its primary key value.
+     * Finds the Sales model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param int $id ID
-     * @return InviaCatalogo the loaded model
+     * @return Sales the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = InviaCatalogo::findOne(['id' => $id])) !== null) {
+        if (($model = Sales::findOne(['id' => $id])) !== null) {
             return $model;
         }
 

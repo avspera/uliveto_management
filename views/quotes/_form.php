@@ -80,11 +80,13 @@ use kartik\date\DatePicker;
         <div class="card-body table-responsive">
 
             <div class="row">
-                <div class="col-md-4 col-sm-4 col-12"><?= $form->field($model, 'confetti')->dropdownlist([0 => "NO", 1 => "SI"], ['prompt' => "Scegli"]) ?></div>
-                <div class="col-md-4 col-sm-4 col-12"><?= $form->field($model, 'custom_amount')->textInput(['maxlength' => true, "onchange" => "subtractDeposit()"]) ?></div>
+                <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'confetti')->dropdownlist([0 => "NO", 1 => "SI"], ['prompt' => "Scegli"]) ?></div>
+                <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'prezzo_confetti')->textInput(['maxlength' => true, "onchange" => "addPrezzoConfetti(value)"]); ?></div>
+                <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'confetti_omaggio')->checkBox(["onChange" => "removePrezzoConfetti()"]); ?></div>
             </div>
             <div class="row">
-                <div class="col-md-12 col-sm-12 col-12"><?= $form->field($model, 'custom')->textarea(['rows' => 6]) ?></div>    
+                <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'custom_amount')->textInput(['maxlength' => true]) ?></div>
+                <div class="col-md-9 col-sm-12 col-12"><?= $form->field($model, 'custom')->textarea(['rows' => 6]) ?></div>    
             </div>
         </div>
     </div>
@@ -105,11 +107,13 @@ use kartik\date\DatePicker;
         <div class="card-body table-responsive">
 
             <div class="row">
+                <div class="col-md-4 col-sm-4 col-12"><?= $form->field($model, 'id_sconto')->dropdownlist(yii\helpers\ArrayHelper::map(app\models\Sales::find()->orderBy('name')->all(), 'id', 'name'), ['prompt' => 'Scegli', "onChange" => "applySales()"]); ?></div>
+                <div class="col-md-4 col-sm-4 col-12"><?= $form->field($model, 'total_no_vat')->textInput(['maxlength' => true, "readonly" => true]) ?></div>
                 <div class="col-md-4 col-sm-4 col-12"><?= $form->field($model, 'total')->textInput(['maxlength' => true, "readonly" => true]) ?></div>
             </div>
             <div class="row">
                 <div class="col-md-4 col-sm-4 col-12"><?= $form->field($model, 'deposit')->textInput(['maxlength' => true, "onchange" => "subtractDeposit()"]) ?></div>
-                <div class="col-md-3 col-sm-4 col-12"><?php
+                <div class="col-md-4 col-sm-4 col-12"><?php
                     echo '<label class="form-label">Data </label>';
                     echo DatePicker::widget([
                         'value' => date("Y-m-d"),
@@ -124,7 +128,7 @@ use kartik\date\DatePicker;
             </div>
             <div class="row">
                 <div class="col-md-4 col-sm-4 col-12"><?= $form->field($model, 'balance')->textInput(['maxlength' => true, "readonly" => true]) ?></div>
-                <div class="col-md-3 col-sm-4 col-12">
+                <div class="col-md-4 col-sm-4 col-12">
                     <?php
                         echo '<label class="form-label">Data saldo</label>';
                         echo DatePicker::widget([
@@ -167,8 +171,6 @@ use kartik\date\DatePicker;
     
     </div>
 
-    
-
     <?php ActiveForm::end(); ?>
 
 </div>
@@ -187,6 +189,7 @@ use kartik\date\DatePicker;
             success: function (data) {
                 let currentTotal = $('#quote-total').val();
                 $('#quote-total').val(parseFloat(currentTotal + data.price).toFixed(2))
+                $('#quote-total_no_vat').val(parseFloat(currentTotal + data.price).toFixed(2))
             },
             error: function(error){
                 console.log("error", error)
@@ -199,6 +202,7 @@ use kartik\date\DatePicker;
         let updatedTotal    = currentTotal*value;
         let totalWithVat    = updatedTotal + (updatedTotal / 100) * 4;
         $('#quote-total').val(parseFloat(totalWithVat).toFixed(2))
+        $('#quote-total_no_vat').val(parseFloat(updatedTotal).toFixed(2))
     }
 
     function subtractDeposit(){
@@ -212,6 +216,16 @@ use kartik\date\DatePicker;
         console.log("index", index);
         let id = `#prod_${index}`;
         $(id).remove()
+    }
+
+    function addPrezzoConfetti (price) {
+        let currentTotal    = $('#quote-total').val();
+        $('#quote-total').val(parseFloat(currentTotal+price).toFixed(2))
+    }
+
+    function removePrezzoConfetti () {
+        let priceConfetti    = $('#quote-prezzo_confetti').val();
+        $('#quote-total').val(parseFloat(currentTotal-priceConfetti).toFixed(2))
     }
 
     function addProductLine(){

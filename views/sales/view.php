@@ -4,14 +4,14 @@ use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\InviaCatalogo */
+/* @var $model app\models\Sales */
 
 $this->title = $model->name;
-$this->params['breadcrumbs'][] = ['label' => 'Invia Catalogo', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Sconti', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
-<div class="invia-catalogo-view">
+<div class="sales-view">
 
     <div class="card">
         <div class="card-header">
@@ -24,17 +24,28 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
             ]) ?>
         </div>
-        <div class="card-body">
+        <div class="card-body table-responsive">
             <?= DetailView::widget([
                 'model' => $model,
                 'attributes' => [
                     'id',
-                    'email:email',
+                    [
+                       'attribute' => 'amount',
+                       'value' => function($model){
+                           return $model->amount." %";
+                       }
+                    ],
                     'name',
-                    'telefono',
+                    [
+                        'attribute' => 'created_at',
+                        'value' => function($model){
+                            return $model->formatDate($model->created_at);
+                        }
+                    ],
                 ],
             ]) ?>
+
         </div>
     </div>
-    
+ 
 </div>

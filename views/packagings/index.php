@@ -19,15 +19,18 @@ $this->params['breadcrumbs'][] = $this->title;
 
             <p><?= Html::a('Aggiungi', ['create'], ['class' => 'btn btn-success']) ?></p>
 
-            <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
-
             <?= GridView::widget([
                 'dataProvider' => $dataProvider,
                 'filterModel' => $searchModel,
                 'columns' => [
-                    'id',
                     'name',
                     'label',
+                    [
+                       'attribute' => 'price',
+                       'value' => function($model){
+                           return $model->formatNumber($model->price);
+                       }
+                    ],
                     'image',
                     [
                         'class' => ActionColumn::className()

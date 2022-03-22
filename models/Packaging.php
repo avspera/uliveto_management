@@ -28,7 +28,8 @@ class Packaging extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'label'], 'required'],
+            [['name', 'label', 'created_at'], 'required'],
+            [['price'], 'safe'],
             [['name', 'label', 'image'], 'string', 'max' => 255],
         ];
     }
@@ -43,6 +44,13 @@ class Packaging extends \yii\db\ActiveRecord
             'name' => 'Codice',
             'label' => 'Nome pubblico',
             'image' => 'Immagine',
+            'price' => "Prezzo",
+            'created_at' => "Creato il"
         ];
+    }
+
+    public function formatNumber($value){
+        if(empty($value)) return;
+        return number_format($value, 2, ",", ".")." &euro;";
     }
 }

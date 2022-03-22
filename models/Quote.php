@@ -44,9 +44,10 @@ class Quote extends \yii\db\ActiveRecord
     {
         return [
             [['order_number', 'created_at', 'id_client',  'confirmed', 'shipping', 'deadline'], 'required'],
-            [['order_number', 'id_client', 'confirmed', 'placeholder', 'shipping'], 'integer'],
-            [['created_at', 'updated_at', 'deadline', 'product', 'amount', 'color', 'packaging',
-                'date_deposit', 'date_balance','placeholder', 'address', 'custom_color', 'confetti', 'custom', 'custom_amount'], 'safe'],
+            [['order_number', 'id_client', 'confirmed', 'placeholder', 'shipping', 'id_sconto'], 'integer'],
+            [['created_at', 'updated_at', 'deadline', 'product', 'amount', 'color', 'packaging', 'total_no_vat',
+                'date_deposit', 'date_balance','placeholder', 'address', 'custom_color', 
+                    'confetti', 'custom', 'custom_amount', 'id_sconto', 'prezzo_confetti', 'confetti_omaggio'], 'safe'],
             [['notes', 'address'], 'string'],
             [['total', 'deposit', 'balance'], 'number'],
         ];
@@ -71,6 +72,7 @@ class Quote extends \yii\db\ActiveRecord
             'placeholder'   => 'Segnaposto',
             'notes'         => 'Note',
             'total'         => 'Totale',
+            'total_no_vat'   => 'Totale senza iva',
             'deposit'       => 'Acconto',
             'balance'       => 'Saldo',
             'shipping'      => 'Spedizione',
@@ -81,7 +83,8 @@ class Quote extends \yii\db\ActiveRecord
             'custom_amount' => "Costo personalizzazione",
             'confetti'      => "Confetti",
             'invoice'       => "Fattura",
-            'attachements'  => "Allegati"
+            'attachements'  => "Allegati",
+            'id_sconto'     => "Sconto"
         ];
     }
 
