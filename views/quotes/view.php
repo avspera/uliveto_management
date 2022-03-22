@@ -71,6 +71,13 @@ $this->params['breadcrumbs'][] = $this->title;
                     'placeholder',
                     'notes:ntext',
                     [
+                        'attribute' => 'total_no_vat',
+                        'value' => function($model){
+                            return $model->formatNumber($model->total_no_vat);
+                        },
+                        'format' => "raw"
+                    ],
+                    [
                         'attribute' => 'total',
                         'value' => function($model){
                             return $model->formatNumber($model->total);

@@ -70,8 +70,12 @@ class PackagingsController extends Controller
         $model = new Packaging();
 
         if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
+            if ($model->load($this->request->post())) {
+                $model->created_at = date("Y-m-d H:i:s");
+                if($model->save())
+                    return $this->redirect(['view', 'id' => $model->id]);
+            }else{
+                print_r($model->getErrors());
             }
         } else {
             $model->loadDefaultValues();

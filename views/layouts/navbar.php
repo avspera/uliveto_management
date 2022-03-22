@@ -5,8 +5,12 @@
     use app\models\Client;
 
     $today          = date("Y-m-d H:i:s");
-    $expiring       = app\models\Quote::find()->where(["<=", "deadline", $today])->all();
-    $expiringCount  = app\models\Quote::find()->where(["<=", "deadline", $today])->count();
+    $expiring       = app\models\Quote::find()
+                        ->where(["<=", "deadline", $today])
+                        ->andWhere(["confirmed" => 1])
+                        ->orderBy(["deadline" => SORT_DESC])
+                        ->all();
+    $expiringCount  = app\models\Quote::find()->where(["<=", "deadline", $today])->andWhere(["confirmed" => 1])->count();
     $messageCount   = app\models\Message::find()->where(["not",  ["replied_at" => null]])->count();
     $paymentsCount  = app\models\Payment::find()->count();
     $payments       = app\models\Payment::find()->orderBy(["created_at" => SORT_DESC])->all();
@@ -150,23 +154,14 @@
             </a>
             <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
                 <span class="dropdown-header"><?= $expiringCount ?> Notifiche</span>
-                <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item">
-                    <i class="fas fa-envelope mr-2"></i> 4 new messages
-                    <span class="float-right text-muted text-sm">3 mins</span>
-                </a>
-                <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item">
-                    <i class="fas fa-users mr-2"></i> 8 friend requests
-                    <span class="float-right text-muted text-sm">12 hours</span>
-                </a>
-                <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item">
-                    <i class="fas fa-file mr-2"></i> 3 new reports
-                    <span class="float-right text-muted text-sm">2 days</span>
-                </a>
-                <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item dropdown-footer">Vedi tutto</a>
+                <?php foreach($expiring as $item){ ?>
+                    <a href="<?= Url::to(["quotes/view", "id" => $item->id])?>" class="dropdown-item">
+                        <i class="fas fa-credit-card mr-2"></i> <?= $item->getClient() ?> in scadenza
+                        <span class="float-right text-muted text-sm"><?= $item->formatDate($item->deadline) ?></span>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                <?php } ?>
+                <a href="<?= Url::to(["quotes/index"]) ?> " class="dropdown-item dropdown-footer">Vedi tutto</a>
             </div>
         </li>
         <li class="nav-item">

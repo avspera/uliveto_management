@@ -29,9 +29,15 @@ $this->params['breadcrumbs'][] = $this->title;
                        'attribute' => 'price',
                        'value' => function($model){
                            return $model->formatNumber($model->price);
-                       }
+                       },
+                       'format' => "raw"
                     ],
-                    'image',
+                    [
+                        'attribute' => 'image',
+                        'value' => function($model){
+                            return !empty($model->image) ? Html::img(Url::to($model->image), ['class' => "img-responsive"]) : "-";
+                        }
+                    ],
                     [
                         'class' => ActionColumn::className()
                     ],

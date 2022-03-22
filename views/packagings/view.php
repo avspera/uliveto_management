@@ -32,6 +32,13 @@ $this->params['breadcrumbs'][] = $this->title;
                         'id',
                         'name',
                         'label',
+                        [
+                            'attribute' => "price",
+                            'value' => function($model){
+                              return $model->formatNumber($model->price);
+                            },
+                            'format' => "raw"
+                        ],
                         'image',
                     ],
                 ]) ?>
