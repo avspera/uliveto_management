@@ -38,8 +38,11 @@ class FKUploadUtils {
     public static function generateAndSaveFile($file, $path = NULL, $hideName = false, $overwrite = false) {
         $filename = self::generateFilename($file->getBaseName() . "." . $file->getExtension(), $path, $hideName, $overwrite);
 
-        $file->saveAs($path . "/" . $filename);
+        if ($str == trim($str) && strpos($str, ' ') !== false) {
+            $filename = str_replace(" ", "_", $filename);
+        }
 
+        $file->saveAs($path . "/" .$filename);
         return $filename;
     }
 

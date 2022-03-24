@@ -104,7 +104,6 @@ class ProductController extends Controller
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) ) {
                 if (!empty($_FILES)) {
-                    $model->image = str_replace(" ", "_", $model->image);
                     $model->image = $this->manageUploadFiles($model);
                 }
                 if($model->save())
@@ -164,7 +163,6 @@ class ProductController extends Controller
             
             if (!empty($_FILES)) {
                 $model->image = $this->manageUploadFiles($model);
-                $model->image = str_replace(" ", "_", $model->image);
             }
             
             if($model->save())

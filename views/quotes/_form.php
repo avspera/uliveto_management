@@ -189,6 +189,7 @@ use kartik\date\DatePicker;
             success: function (data) {
                 let currentTotal = $('#quote-total').val();
                 $('#quote-total').val(parseFloat(currentTotal + data.price).toFixed(2))
+                console.log("currentTotal", parseFloat(currentTotal + data.price).toFixed(2))
                 $('#quote-total_no_vat').val(parseFloat(currentTotal + data.price).toFixed(2))
             },
             error: function(error){
@@ -200,7 +201,9 @@ use kartik\date\DatePicker;
     function updateTotalPrice(value){
         let currentTotal    = $('#quote-total').val();
         let updatedTotal    = currentTotal*value;
+        console.log("updatedTotal", updatedTotal)
         let totalWithVat    = updatedTotal + (updatedTotal / 100) * 4;
+        console.log("total_with_cat", totalWithVat);
         $('#quote-total').val(parseFloat(totalWithVat).toFixed(2))
         $('#quote-total_no_vat').val(parseFloat(updatedTotal).toFixed(2))
     }

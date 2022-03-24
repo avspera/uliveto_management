@@ -17,12 +17,6 @@ class UserController extends Controller
     public function behaviors()
     {
         return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['POST'],
-                ],
-            ],
             'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
@@ -37,14 +31,6 @@ class UserController extends Controller
                         'allow' => true,
                         'roles' => ['@'],
                     ],
-                    // [
-                    //     'actions' => [
-                    //         'create',
-                    //         'view',  
-                    //     ],
-                    //     'allow' => true,
-                    //     'roles' => ['?'],
-                    // ],
                 ],
             ],
         ];

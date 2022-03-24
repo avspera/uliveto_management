@@ -30,7 +30,9 @@ class InviaCatalogo extends \yii\db\ActiveRecord
     {
         return [
             [['email', 'created_at'], 'required'],
+            [['files'], 'safe'],
             [['email', 'name', 'telefono', 'created_at'], 'string', 'max' => 255],
+            [['files'], 'file', 'skipOnEmpty' => true, 'extensions' => 'jpg, png, pdf'],
         ];
     }
 
@@ -42,7 +44,7 @@ class InviaCatalogo extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'email' => 'Email',
-            'name' => 'Name',
+            'name' => 'Nome',
             'telefono' => 'Telefono',
             'created_at' => "Inviato il"
         ];

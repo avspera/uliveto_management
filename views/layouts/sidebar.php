@@ -3,9 +3,9 @@
 ?>
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
-    <a href="<?= Url::to(["site/index"]) ?>" class="brand-link">
-        <img src="<?=$assetDir?>/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-        <span class="brand-text font-weight-light">ORCI Manager</span>
+    <a href="<?= Url::to(["site/index"]) ?>" class="brand-link logo-switch">
+        <img src="<?=Yii::getAlias("@web")."/images/logo.png"?>" alt="AdminLTE Docs Logo Small" class="brand-image-xl logo-xs">
+        <img src="<?=Yii::getAlias("@web")."/images/logo.png"?>" alt="AdminLTE Docs Logo Large" class="brand-image-xs logo-xl" style="left: 12px">
     </a>
 
     <!-- Sidebar -->

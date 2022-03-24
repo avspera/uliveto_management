@@ -16,15 +16,18 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="invia-catalogo-index">
 
     <div class="card">
-        <div class="card-header"><?= Html::a('Aggiungi', ['create'], ['class' => 'btn btn-success']) ?></div>
+        <div class="card-header">
+            <?= Html::a('<i class="fas fa-plus"></i> Aggiungi', ['create'], ['class' => 'btn btn-success']) ?>
+            <?= Html::a('<i class="fas fa-file-pdf"></i> Carica cataloghi', ['upload-files'], ['class' => 'btn btn-info']) ?>
+        </div>
         <div class="card-body table-responsive">
             <?= GridView::widget([
                 'dataProvider' => $dataProvider,
                 'filterModel' => $searchModel,
                 'columns' => [
                     ['class' => 'yii\grid\SerialColumn'],
-                    'email:email',
                     'name',
+                    'email:email',
                     'telefono',
                     [
                         'attribute' => "created_at",

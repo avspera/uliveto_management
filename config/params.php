@@ -1,8 +1,9 @@
 <?php
 
 return [
-    'adminEmail' => 'admin@example.com',
-    'senderEmail' => 'noreply@example.com',
-    'senderName' => 'Example.com mailer',
-    'bsVersion' => '4.x',
+    'infoEmail'     => 'info@orcidelcilento.it',
+    'infoName'      => 'Info :: OrciDelCilento.it',
+    'orderEmail'    => 'ordini@orcidelcilento.it',
+    'orderName'     => 'Ordini :: OrciDelCilento.it',
+    'bsVersion'     => '4.x',
 ];

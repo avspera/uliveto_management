@@ -9,7 +9,9 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
-
+use app\utils\FKUploadUtils; 
+use yii\helpers\FileHelper;
+use yii\web\UploadedFile;
 /**
  * InviaCatalogoController implements the CRUD actions for InviaCatalogo model.
  */
@@ -21,6 +23,12 @@ class InviaCatalogoController extends Controller
     public function behaviors()
     {
         return [
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'delete' => ['POST'],
+                ],
+            ],
             'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
@@ -31,14 +39,12 @@ class InviaCatalogoController extends Controller
                             'update', 
                             'delete', 
                             'create',
+                            'upload-files'
                         ],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
-                ],
-                'denyCallback' => function ($rule, $action) {
-                    throw new \Exception('You are not allowed to access this page');
-                }
+                ]
             ],
         ];
     }
@@ -85,8 +91,7 @@ class InviaCatalogoController extends Controller
             
             if ($model->load($this->request->post())) {
                 $model->created_at = date("Y-m-d H:i:s");
-                if($model->save()){
-                    // && $this->sendEmail($model)
+                if($model->save() && $this->sendEmail($model)){
                     return $this->redirect(['view', 'id' => $model->id]);
                 }   
             }
@@ -97,6 +102,63 @@ class InviaCatalogoController extends Controller
         return $this->render('create', [
             'model' => $model,
         ]);
+    }
+
+    public function actionUploadFiles(){
+        
+        $model = new InviaCatalogo();
+
+        if ($model->load($this->request->post()) ) {
+            if (!empty($_FILES)) {
+                try{
+                    $existingFiles=\yii\helpers\FileHelper::findFiles(Yii::getAlias("@webroot").'/pdf', ['recursive' => false] );
+                    //delete existing files if there are new to update
+                    foreach($_FILES["InviaCatalogo"]["name"]["files"] as $file) {
+                        if (strpos($file, "catalogo") !== FALSE)
+                            unlink(Yii::getAlias("@webroot").'/pdf/'.$file);
+                        
+                        if (strpos($file, "prezzario") !== FALSE)
+                            unlink(Yii::getAlias("@webroot").'/pdf/'.$file);
+                    }
+                }catch(InvalidArgumentException $e){
+                    throw new InvalidArgumentException("Ops...we got a problem [INVIA_CAT_01]");
+                }
+
+                if($model->files = $this->manageUploadFiles($model))
+                    Yii::$app->session->setFlash('success', "Files caricati correttamente");
+                else{
+                    print_r($model->getErrors());die;
+                }
+                return $this->redirect(['index']);
+            }   
+        }else
+        
+        return $this->render('_form_catalogo', [
+            'model' => $model,
+        ]);
+    }
+
+    /**
+     * check each uploaded media in form.
+     * if !empty, upload to server
+     * path is: /images/blog/category/article_id
+     */
+    protected function manageUploadFiles($model) {
+
+        $uploader   = new FKUploadUtils();
+        $path       = Yii::getAlias('@webroot')."/pdf/";
+        
+        $dirCreated = FileHelper::createDirectory($path);
+        $files      = UploadedFile::getInstances($model, 'files');
+        if (!empty($files)){
+            foreach($files as $file){
+                if($uploader->generateAndSaveFile($file, $path))
+                    return true;
+            }
+            
+        }
+        
+        return false;
     }
 
     /**
@@ -136,16 +198,28 @@ class InviaCatalogoController extends Controller
     protected function sendEmail($model){
         
         if(empty($model)) return false;
+        
+        $existingFiles=\yii\helpers\FileHelper::findFiles(Yii::getAlias("@webroot").'/pdf/', ['recursive' => false] );
+        
+        $files = [];
+        $i = 0;
 
-        return Yii::$app->mailer
+        $message = Yii::$app->mailer
                 ->compose(
                     ['html' => 'invio-catalogo'],
                     ['model' => $model]
                 )
-                ->setFrom(["ordini@opostomio.it"])
+                ->setFrom([Yii::$app->params["infoEmail"]])
                 ->setTo($model->email)
-                ->setSubject($model->name." ecco i nostri cataloghi")
-                ->send();
+                ->setSubject($model->name." ecco i nostri cataloghi");
+
+        foreach($existingFiles as $file) {
+            $file = substr($file, strpos($file, "/home/")+strlen("/home/"));
+            $filename = "https://manager.orcidelcilento.it/".$file;
+            $message->attach($filename);
+        }
+        
+        return $message->send();
     }
 
     /**
