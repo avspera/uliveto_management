@@ -7,11 +7,20 @@ use kartik\select2\Select2;
 use yii\web\JsExpression;
 use kartik\date\DatePicker;
 
-/* @var $this yii\web\View */
-/* @var $model app\models\Quote */
-/* @var $form yii\widgets\ActiveForm */
 ?>
+<style>
+    /* Chrome, Safari, Edge, Opera */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+    }
 
+    /* Firefox */
+    input[type=number] {
+    -moz-appearance: textfield;
+    }
+</style>
 <div class="quote-form">
 
     <?php $form = ActiveForm::begin(); ?>
@@ -57,11 +66,37 @@ use kartik\date\DatePicker;
         </div>
         <div class="card-body table-responsive">
             <div class="row prod" id="prod_0">
-                <div class="col-md-3 col-sm-6 col-12">
-                    <?= $form->field($model, 'product[0]')->dropdownlist(yii\helpers\ArrayHelper::map(app\models\Product::find()->orderBy('name')->all(), 'id', 'name'), ['prompt' => 'Scegli', "onChange" => "getProductInfo(0)"])->label('Prodotto'); ?>
-                </div>
-                <div class="col-md-1 col-sm-4 col-12"><?= $form->field($model, 'amount[0]')->textInput(["onChange" => "updateTotalPrice(value)"]) ?></div>
                 <div class="col-md-2 col-sm-6 col-12">
+                    <div class="form-group field-quote-product-0 required">
+                        <label class="control-label" for="quote-product-0">Prodotto</label>
+                        <select id="quote-product-0" class="form-control" name="Quote[product][0]" onchange="enableAmount(0)" aria-required="true">
+                            <option value="">Scegli</option>
+                            <?php foreach($products as $product) { ?>
+                                <option price="<?= $product->price ?>" value="<?= $product->id ?>"><?= $product->name ?> </option>
+                            <?php } ?>
+                        </select>
+                        <div class="help-block"></div>
+                </div>
+                </div>
+                <div class="col-md-3 col-sm-4 col-12" style="display:inline-block">
+                    <div class="form-group field-quote-amount-0">
+                        <label class="control-label" for="quote-amount-0">Quantità</label>
+                        <div class="input-group inline-group">
+                            <div class="input-group-prepend">
+                                <button onclick="changeAmount(0, 'detract')" class="btn btn-warning btn-minus">
+                                <i class="fa fa-minus"></i>
+                                </button>
+                            </div>
+                            <input type="number" min="1" id="quote-amount-0" class="form-control" readonly name="Quote[amount][0]" onchange="manualChangeAmount(0)" value="0">
+                            <div class="input-group-append">
+                                <button onclick="changeAmount(0, 'add')" class="btn btn-success btn-plus">
+                                <i class="fa fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-1 col-sm-6 col-12">
                     <?= $form->field($model, 'color[0]')->dropdownlist(yii\helpers\ArrayHelper::map(app\models\Color::find()->orderBy('label')->all(), 'id', 'label'), ['prompt' => 'Scegli'])->label('Colore'); ?>
                 </div>
                 <div class="col-md-2 col-sm-4 col-12"><?= $form->field($model, 'custom_color[0]')->textInput(["maxlenght" => true]) ?></div>
@@ -174,38 +209,66 @@ use kartik\date\DatePicker;
     <?php ActiveForm::end(); ?>
 
 </div>
+<?php $prefix_url = Yii::getAlias("@web"); ?>
 
 <script>
-    function getProductInfo(index){
-        let id_product = $(`#quote-product-${index}`).val();
-        console.log("id_prodiuct", id_product)
-        $.ajax({
-            url: '<?= Url::to(['product/get-info']) ?>',
-            type: 'get',
-            dataType: 'json',
-            'data': {
-                'id': id_product,
-            },
-            success: function (data) {
-                let currentTotal = $('#quote-total').val();
-                $('#quote-total').val(parseFloat(currentTotal + data.price).toFixed(2))
-                console.log("currentTotal", parseFloat(currentTotal + data.price).toFixed(2))
-                $('#quote-total_no_vat').val(parseFloat(currentTotal + data.price).toFixed(2))
-            },
-            error: function(error){
-                console.log("error", error)
+    
+    function enableAmount(index){
+        $("#quote-amount-"+index).removeAttr("readonly")
+    }
+
+    function manualChangeAmount(index){
+        
+        $(document).on('focusin', '#quote-amount-'+index, function(){
+            var current = $(this).val();
+        }).on('change','input', function(){
+            var prev = $(this).data('val');
+            var current = $(this).val();
+            
+            let currentTotalNoVat   = $('#quote-total_no_vat').val();
+            let price               = $('#quote-product-'+index+" option:selected").attr("price");
+            
+            if(!prev){
+                currentTotalNoVat = currentTotalNoVat + Math.abs(parseFloat(current*price).toFixed(2));
+            }else if(prev < current){
+                currentTotalNoVat = currentTotalNoVat +  Math.abs(parseFloat(currentTotalNoVat+(current*price)).toFixed(2));
+            }else{
+                currentTotalNoVat = currentTotalNoVat - Math.abs(parseFloat(currentTotalNoVat-(current*price)).toFixed(2));
             }
+            
+            let newTotalWithVat = parseFloat(currentTotalNoVat) + parseFloat(currentTotalNoVat / 100) * 4;
+            
+            $('#quote-total_no_vat').val(currentTotalNoVat);
+            $('#quote-total').val(parseFloat(newTotalWithVat).toFixed(2)); 
         });
     }
 
-    function updateTotalPrice(value){
-        let currentTotal    = $('#quote-total').val();
-        let updatedTotal    = currentTotal*value;
-        console.log("updatedTotal", updatedTotal)
-        let totalWithVat    = updatedTotal + (updatedTotal / 100) * 4;
-        console.log("total_with_cat", totalWithVat);
-        $('#quote-total').val(parseFloat(totalWithVat).toFixed(2))
-        $('#quote-total_no_vat').val(parseFloat(updatedTotal).toFixed(2))
+    function changeAmount(index, target, value){
+        let currentAmount       = $('#quote-amount-'+index).val();
+        let price               = $('#quote-product-'+index+" option:selected").attr("price");
+        price                   = parseFloat(price);
+        let currentTotalNoVat   = $('#quote-total_no_vat').val();
+        currentTotalNoVat       = parseFloat(currentTotalNoVat);
+
+        if (Number.isNaN(currentAmount)) {
+            currentAmount = 0;
+        }else{
+            currentAmount = parseInt(currentAmount);
+        }
+
+        if (Number.isNaN(currentTotalNoVat)) {
+            currentTotalNoVat = 0;
+        }else{
+            currentTotalNoVat = parseInt(currentTotalNoVat);
+        }
+        
+        let newTotalNoVat   = target == "add" ? (currentTotalNoVat+price) : (currentTotalNoVat-price)
+        
+        let newTotalWithVat = newTotalNoVat + (newTotalNoVat / 100) * 4;
+        
+        $('#quote-amount-'+index).val(target == "add" ? currentAmount+1 : currentAmount-1);
+        $('#quote-total_no_vat').val(newTotalNoVat.toFixed(2));
+        $('#quote-total').val(newTotalWithVat.toFixed(2)); 
     }
 
     function subtractDeposit(){
@@ -215,9 +278,41 @@ use kartik\date\DatePicker;
         $('#quote-balance').val(parseFloat(balance).toFixed(2))
     }
 
+    function applySales(value){
+        $.ajax({
+            url: '<?= Url::to(['sales/get-by-id']) ?>',
+            type: 'get',
+            dataType: 'json',
+            'data': {
+                'id': value,
+            },
+            success: function (data) {
+                if(data.status == "200")
+                {
+                    let sale = data.amount;
+                    let currentTotal = $("#quote-total_no_vat").val();
+                    parseFloat(currentTotal);
+                    let newTotalNoVat   = currentTotal - (currentTotal / 100) * sale;
+                    let newTotalWithVat = newTotalNoVat + (newTotalNoVat / 100) * 4;
+                    $("#quote-total_no_vat").val(newTotalNoVat);
+                    $("#quote-total").val(newTotalWithVat);
+                }else{
+                    window.alert("Ops...something wrong here. [PAY-101]")
+                }
+            }
+        });
+    }
+    
     function removeProductLine(index){
-        console.log("index", index);
         let id = `#prod_${index}`;
+        let price   = $('#quote-product-'+index+" option:selected").attr("price");
+        let amount  = $("#quote-amount-"+index).val();
+        let currentTotal =  $("#quote-total_no_vat").val();
+        parseFloat(currentTotal);
+        let newTotalNoVat = currentTotal-parseFloat(price*amount);
+        let newTotalWithVat = newTotalNoVat + (newTotalNoVat / 100) * 4;
+        $('#quote-total_no_vat').val(newTotalNoVat.toFixed(2));
+        $('#quote-total').val(newTotalWithVat.toFixed(2)); 
         $(id).remove()
     }
 
@@ -236,29 +331,40 @@ use kartik\date\DatePicker;
         let node    = $("div[id^='prod_']");
         index       = index.substr(index.indexOf("_")+1, 1);
         index       = parseInt(index+1)
-        let html    = 
+        
+        let html = 
             `<div class="row prod" id="prod_${index}">
-                <div class="col-md-3 col-sm-6 col-12">
+                <div class="col-md-2 col-sm-6 col-12">
                     <div class="form-group field-quote-product-${index} required">
                         <label class="control-label" for="quote-product-${index}">Prodotto</label>
-                        <select id="quote-product-${index}" class="form-control" name="Quote[product][${index}]" onchange="getProductInfo(${index})" aria-required="true">
+                        <select id="quote-product-${index}" class="form-control" name="Quote[product][${index}]" onchange="enableAmount(${index})" aria-required="true">
                             <option value="">Scegli</option>
-                            <option value="3">[U]classic</option>
-                            <option value="4">[U]gliarulo</option>
-                            <option value="2">[U]live</option>
+                            <?php foreach($products as $product) { ?>
+                                <option price="<?= $product->price ?>" value="<?= $product->id ?>"><?= $product->name ?></option>
+                            <?php } ?>
                         </select>
                         <div class="help-block"></div>
                     </div>
                 </div>
-                <div class="col-md-1 col-sm-4 col-12">
-                    <div class="form-group field-quote-amount-${index} required has-error">
+                <div class="col-md-3 col-sm-4 col-12" style="display:inline-block">
+                    <div class="form-group field-quote-amount-${index}">
                         <label class="control-label" for="quote-amount-${index}">Quantità</label>
-                        <input type="text" id="quote-amount-${index}" class="form-control" name="Quote[amount][${index}]" onchange="updateTotalPrice(value)" aria-required="true" aria-invalid="true">
-
-                        <div class="help-block"></div>
+                        <div class="input-group inline-group">
+                            <div class="input-group-prepend">
+                                <button onclick="changeAmount(${index}, 'detract')" class="btn btn-warning btn-minus">
+                                <i class="fa fa-minus"></i>
+                                </button>
+                            </div>
+                            <input type="number" min="1" id="quote-amount-${index}" readonly class="form-control" name="Quote[amount][${index}]" onchange="manualChangeAmount(${index})" value="0">
+                            <div class="input-group-append">
+                                <button onclick="changeAmount(${index}, 'add')" class="btn btn-success btn-plus">
+                                <i class="fa fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-2 col-sm-6 col-12">
+                <div class="col-md-1 col-sm-6 col-12">
                     <div class="form-group field-quote-color-${index} required">
                         <label class="control-label" for="quote-color-${index}">Colore</label>
                         <select id="quote-color-${index}" class="form-control" name="Quote[color][${index}]" aria-required="true">

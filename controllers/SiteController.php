@@ -38,10 +38,14 @@ class SiteController extends Controller
                         'allow' => true,
                         'roles' => ['@'],
                     ],
+                    [
+                        'actions' => "error"
+                    ]
                 ],
             ],
         ];
     }
+    
 
     /**
      * {@inheritdoc}
@@ -59,6 +63,19 @@ class SiteController extends Controller
         ];
     }
 
+    public function beforeAction( $action ) {
+        if ( parent::beforeAction ( $action ) ) {
+    
+             //change layout for error action after 
+             //checking for the error action name 
+             //so that the layout is set for errors only
+            if ( $action->id == 'error' ) {
+                $this->layout = 'error';
+            }
+            return true;
+        } 
+    }
+    
     /**
      * Displays homepage.
      *

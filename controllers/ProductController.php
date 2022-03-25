@@ -39,13 +39,23 @@ class ProductController extends Controller
                             'update', 
                             'delete', 
                             'create', 
-                            'get-info'
+                            'get-info',
+                            'error'
                         ],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
                 ],
             ],
+        ];
+    }
+
+    public function actions()
+    {
+        return [
+            'error' => [
+                'class' => 'yii\web\ErrorAction',
+            ]
         ];
     }
 
@@ -88,7 +98,7 @@ class ProductController extends Controller
             $out["status"]  = "200";
             $out["price"]   = $product->price;
         }
-        
+
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         return $out;
     }

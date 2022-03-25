@@ -94,9 +94,6 @@ use kartik\select2\Select2;
                     data.results.map((item, index) => {
                         html += "<option value="+item.id+">"+item.text+"</option>";
                     })
-                    // $.each( data.results, function (i, val) {
-                    //     html += "<option value="+i+">"+val+"</option>";
-                    // } );
                     $("#payment-id_quote").append(html);
                 }else{
                     window.alert("Ops...something wrong here. [PAY-101]")

@@ -148,8 +148,10 @@ class QuotesController extends Controller
             $model->loadDefaultValues();
         }
         
+        $products = Product::find()->select(["id", "name", "price"])->orderBy(["name" => SORT_ASC])->all();
         return $this->render('create', [
-            'model' => $model
+            'model' => $model,
+            'products' => $products
         ]);
     }
 
