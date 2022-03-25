@@ -37,4 +37,3 @@ $this->params['breadcrumbs'] = [['label' => $this->title]];
         </form>
     </div>
 </div>
-

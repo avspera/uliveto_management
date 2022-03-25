@@ -450,7 +450,7 @@
                 <td valign="top" width="33.333%" style="padding-top: 20px;">
                   <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                     <tr>
-                      <td style="text-align: left; padding-right: 10px;">
+                      <td style="text-align: left; padding-right: 10px; color: white">
                       	<h3 class="heading">Chi siamo</h3>
                       	<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi iaculis nisi at turpis lobortis, egestas mollis nunc lacinia</p>
                       </td>
@@ -460,7 +460,7 @@
                 <td valign="top" width="33.333%" style="padding-top: 20px;">
                   <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                     <tr>
-                      <td style="text-align: left; padding-left: 5px; padding-right: 5px;">
+                      <td style="text-align: left; padding-left: 5px; padding-right: 5px; color: white">
                       	<h3 class="heading">Contattaci</h3>
                       	<ul>
                             <li><span class="text">203 Fake St. Mountain View, San Francisco, California, USA</span></li>
@@ -476,9 +476,9 @@
                       <td style="text-align: left; padding-left: 10px;">
                       	<h3 class="heading">Seguici su</h3>
                       	<ul>
-                            <li><a href="https://www.facebook.com/ulivetotrentinara" style="text-decoration: none;"><span><i class="fa fa-facebook" aria-hidden="true" style="height:20px;width:20px;"></i> Facebook</span></a></a></li>
-                            <li><a href="https://www.instagram.com/aziendaluliveto/" style="text-decoration: none;"><span><i class="fa fa-instagram" aria-hidden="true" style="height:20px;width:20px;"></i> Instagram</span></a></li>
-                            <li><a href="https://www.orcidelcilento.it" style="text-decoration: none;"><span><i class="fa fa-web" aria-hidden="true" style="height:20px;width:20px;"></i> Web</span></a></li>
+                            <li><a href="https://www.facebook.com/ulivetotrentinara" style="text-decoration: none;"><span>Facebook</span></a></a></li>
+                            <li><a href="https://www.instagram.com/aziendaluliveto/" style="text-decoration: none;"><span>Instagram</span></a></li>
+                            <li><a href="https://www.orcidelcilento.it" style="text-decoration: none;"><span>Web</span></a></li>
                         </ul>
                       </td>
                     </tr>

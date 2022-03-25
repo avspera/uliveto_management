@@ -19,6 +19,8 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="card-header">
             <?= Html::a('<i class="fas fa-plus"></i> Aggiungi', ['create'], ['class' => 'btn btn-success']) ?>
             <?= Html::a('<i class="fas fa-file-pdf"></i> Carica cataloghi', ['upload-files'], ['class' => 'btn btn-info']) ?>
+            <?= Html::a('<i class="fas fa-trash"></i> Cancella cataloghi', ['view-catalogs'], ['class' => 'btn btn-danger']) ?>
+
         </div>
         <div class="card-body table-responsive">
             <?= GridView::widget([

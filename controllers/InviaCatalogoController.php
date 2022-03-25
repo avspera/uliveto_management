@@ -39,7 +39,9 @@ class InviaCatalogoController extends Controller
                             'update', 
                             'delete', 
                             'create',
-                            'upload-files'
+                            'upload-files',
+                            'view-catalogs',
+                            'delete-catalog'
                         ],
                         'allow' => true,
                         'roles' => ['@'],
@@ -78,6 +80,21 @@ class InviaCatalogoController extends Controller
         ]);
     }
 
+
+    public function actionViewCatalogs(){
+        $existingFiles = [];
+
+        try{
+            $existingFiles=\yii\helpers\FileHelper::findFiles(Yii::getAlias("@webroot").'/pdf', ['recursive' => false] );
+        }catch(InvalidArgumentException $e){
+            throw new InvalidArgumentException("Ops...we got a problem [VIEW_CATS_01]");
+        }
+
+        return $this->render('view-catalogs', [
+            'existingFiles' => $existingFiles
+        ]);
+    }
+
     /**
      * Creates a new InviaCatalogo model.
      * If creation is successful, the browser will be redirected to the 'view' page.
@@ -103,6 +120,16 @@ class InviaCatalogoController extends Controller
             'model' => $model,
         ]);
     }
+
+
+    public function actionDeleteCatalog($name){
+        if(unlink($name)){
+            return $this->redirect("index");
+        }else{
+            return $this->redirect("view-catalogs");
+        }
+    }
+
 
     public function actionUploadFiles(){
         
