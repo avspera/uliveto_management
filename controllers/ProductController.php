@@ -83,9 +83,15 @@ class ProductController extends Controller
      */
     public function actionView($id)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
+        if($model = $this->findModel($id)){
+            return $this->render('view', [
+                'model' => $this->findModel($id),
+            ]);
+        }else{
+            Yii::$app->session->setFlash('error', "Ops...something went wrong [PROD-100]");
+            return $this->redirect("index");
+        }
+        
     }
 
     public function actionGetInfo($id){
@@ -119,12 +125,10 @@ class ProductController extends Controller
                 if($model->save())
                     return $this->redirect(['view', 'id' => $model->id]);
                 else{
-                    print_r($model->getErrors());die;     
+                    Yii::$app->session->setFlash('error', "Ops...something went wrong [PROD-101]");
                 }
             }else{
-                $message = json_encode($model->getErrors());
-                print_r($message);die;
-                Yii::$app->session->setFlash('error', $message);
+                Yii::$app->session->setFlash('error', "Ops...something went wrong [PROD-102]");
             }
         } else {
             $model->loadDefaultValues();
@@ -178,7 +182,7 @@ class ProductController extends Controller
             if($model->save())
                 return $this->redirect(['view', 'id' => $model->id]);
             else{
-                print_r($model->getErrors());die;
+                Yii::$app->session->setFlash('error', "Ops...something went wrong [PROD-103]");
             }
         }
 
@@ -197,6 +201,7 @@ class ProductController extends Controller
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
+        Yii::$app->session->setFlash('success', "Elemento cancellato con successo");
 
         return $this->redirect(['index']);
     }

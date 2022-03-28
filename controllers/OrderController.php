@@ -86,6 +86,10 @@ class OrderController extends Controller
     public function actionView($id)
     {
         $model = $this->findModel($id);
+        if(!$model){
+            Yii::$app->session->setFlash('error', "Ops...something went wrong [OR-100]");
+            return $this->render('index');
+        }
         $client = Client::find()->select(["name", "surname"])->where(["id" => $model->id_client])->one();
         
         $detailsModel = new QuoteDetailsSearch();
@@ -124,7 +128,6 @@ class OrderController extends Controller
                 if($model->save())
                     return $this->redirect(['view', 'id' => $model->id]);
                 else{
-                    print_r($model->getErrors());die;
                     Yii::$app->session->setFlash('error', "Ops...something went wrong [OR-101]");
                 }
             }

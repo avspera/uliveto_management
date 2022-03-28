@@ -7,6 +7,7 @@ use app\models\PackagingSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 
 /**
  * PackagingsController implements the CRUD actions for Packaging model.
@@ -18,17 +19,31 @@ class PackagingsController extends Controller
      */
     public function behaviors()
     {
-        return array_merge(
-            parent::behaviors(),
-            [
-                'verbs' => [
-                    'class' => VerbFilter::className(),
-                    'actions' => [
-                        'delete' => ['POST'],
+        return [
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'delete' => ['POST'],
+                ],
+            ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index', 
+                            'view', 
+                            'update', 
+                            'delete', 
+                            'create', 
+                            'get-by-id',
+                        ],
+                        'allow' => true,
+                        'roles' => ['@'],
                     ],
                 ],
-            ]
-        );
+            ],
+        ];
     }
 
     /**
@@ -60,6 +75,21 @@ class PackagingsController extends Controller
         ]);
     }
 
+    public function actionGetById($id){
+        if(empty($id)) return;
+        $out = ["status" => "100", "price" => 0];
+        
+        $packaging = Packaging::find()->select(["price"])->where(["id" => $id])->one();
+        
+        if(!empty($packaging)){
+            $out["status"]  = "200";
+            $out["price"]   = $packaging->price;
+        }
+        
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        return $out;
+    }
+
     /**
      * Creates a new Packaging model.
      * If creation is successful, the browser will be redirected to the 'view' page.
@@ -75,7 +105,7 @@ class PackagingsController extends Controller
                 if($model->save())
                     return $this->redirect(['view', 'id' => $model->id]);
             }else{
-                print_r($model->getErrors());
+                Yii::$app->session->setFlash('error', "Ops...something went wrong [PACK-100]");
             }
         } else {
             $model->loadDefaultValues();
@@ -99,6 +129,8 @@ class PackagingsController extends Controller
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
+        }else{
+            Yii::$app->session->setFlash('error', "Ops...something went wrong [PACK-101]");
         }
 
         return $this->render('update', [
@@ -116,6 +148,7 @@ class PackagingsController extends Controller
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
+        Yii::$app->session->setFlash('success', "Elemento cancellato con successo");
 
         return $this->redirect(['index']);
     }

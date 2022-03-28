@@ -25,6 +25,7 @@ use yii\grid\ActionColumn;
                     'method' => 'post',
                 ],
             ]) ?>
+            <?= Html::a('<i class="fas fa-file-pdf"></i> Genera PDF', ['/quotes/generate-pdf', 'id' => $model->id], ['class' => 'btn btn-success']) ?>
         </div>
 
         <div class="card-body">

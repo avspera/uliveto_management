@@ -25,7 +25,10 @@
         "kartik-v/yii2-widget-datepicker": "dev-master",
         "kartik-v/yii2-widget-fileinput": "@dev",
         "kartik-v/yii2-export": "dev-master",
-        "kartik-v/yii2-mpdf": "dev-master"
+        "kartik-v/yii2-mpdf": "dev-master",
+        "mpdf/mpdf":"*",
+        "setasign/fpdf": "^1.8",
+        "setasign/fpdi-fpdf": "^2.3"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

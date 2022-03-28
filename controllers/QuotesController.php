@@ -14,6 +14,9 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\filters\AccessControl;
+use kartik\mpdf\Pdf;
+use Mpdf\Mpdf;
+use \setasign\Fpdi\Fpdi;
 /**
  * QuotesController implements the CRUD actions for Quote model.
  */
@@ -52,7 +55,6 @@ class QuotesController extends Controller
             ],
         ];
     }
-
     public function beforeAction($action)
     {
         if (!parent::beforeAction($action)) {
@@ -63,7 +65,12 @@ class QuotesController extends Controller
             }
         }
 
+        if ( $action->id == 'error' ) {
+            $this->layout = 'error';
+        }
+
         return true;
+
     }
     /**
      * Lists all Quote models.
@@ -90,15 +97,24 @@ class QuotesController extends Controller
      */
     public function actionView($id)
     {
-        $model = $this->findModel($id);
-        $detailsModel = new QuoteDetailsSearch();
-        $detailsModel->id_quote = $id;
-        $quoteDetails = $detailsModel->search($this->request->queryParams);
+        try{
+            $model = $this->findModel($id);
         
-        return $this->render('view', [
-            'model'         => $model,
-            'quoteDetails'  => $quoteDetails
-        ]);
+            $detailsModel = new QuoteDetailsSearch();
+            $detailsModel->id_quote = $id;
+            $quoteDetails = $detailsModel->search($this->request->queryParams);
+            
+            return $this->render('view', [
+                'model'         => $model,
+                'quoteDetails'  => $quoteDetails
+            ]);
+        }catch(NotFoundHttpException $e){
+            if(empty($model)){
+                Yii::$app->session->setFlash('error','Ops...preventivo non trovato');
+                $this->redirect("index");
+            }
+        }
+        
     }
 
     /**
@@ -140,7 +156,6 @@ class QuotesController extends Controller
                 }
                     
                 else{
-                    print_r($model->getErrors());die;
                     Yii::$app->session->setFlash('error', "Ops...something went wrong [QU-101]");
                 }
             }
@@ -149,6 +164,8 @@ class QuotesController extends Controller
         }
         
         $products = Product::find()->select(["id", "name", "price"])->orderBy(["name" => SORT_ASC])->all();
+        $model->total_no_vat    = 0;
+        $model->total           = 0;
         return $this->render('create', [
             'model' => $model,
             'products' => $products
@@ -156,13 +173,22 @@ class QuotesController extends Controller
     }
 
     public function actionConfirm($id){
-        $model = $this->findModel($id);
-        $model->confirmed = 1;
-        if($model->save()){
+        try{
+            $model = $this->findModel($id);
+            $model->confirmed = 1;
+            if($model->save()){
+                return $this->render('view', [
+                    'model' => $model,
+                ]);
+            }
+        }catch(Exception $e){
+            Yii::$app->session->setFlash('error', "Ops...something went wrong [QU-103]");
+            
             return $this->render('view', [
                 'model' => $model,
             ]);
         }
+        
     }
     /**
      * Updates an existing Quote model.
@@ -176,7 +202,10 @@ class QuotesController extends Controller
         $model = $this->findModel($id);
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
+            Yii::$app->session->setFlash('success', "Aggiornamento completato con successo");
             return $this->redirect(['view', 'id' => $model->id]);
+        }else{
+            Yii::$app->session->setFlash('error', "Ops...something went wrong [QU-102]");
         }
 
         return $this->render('update', [
@@ -194,7 +223,7 @@ class QuotesController extends Controller
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
-
+        Yii::$app->session->setFlash('success', "Preventivo cancellato con successo");
         return $this->redirect(['index']);
     }
 
@@ -230,37 +259,77 @@ class QuotesController extends Controller
 
         $client = Client::findOne(["id" => $quote->id_client]);
         
-        $content = $this->renderPartial('snippets/_pdf', [
-            'quote' => $quote,
-            'client' => $client
-        ]);
-
-        $pdf = new Pdf([
-            // set to use core fonts only
-            'mode' => Pdf::MODE_CORE, 
-            // A4 paper format
-            'format' => Pdf::FORMAT_A4, 
-            // portrait orientation
-            'orientation' => Pdf::ORIENT_PORTRAIT, 
-            // stream to browser inline
-            'destination' => Pdf::DEST_BROWSER, 
-            // your html content input
-            'content' => $content,  
-            // format content from your own css file if needed or use the
-            // enhanced bootstrap css built by Krajee for mPDF formatting 
-            'cssFile' => '@vendor/kartik-v/yii2-mpdf/src/assets/kv-mpdf-bootstrap.min.css',
-            // any css to be embedded if required
-            'cssInline' => '.kv-heading-1{font-size:18px}', 
-            // set mPDF properties on the fly
-            'options' => ['title' => 'Krajee Report Title'],
-            // call mPDF methods on the fly
-            'methods' => [ 
-                'SetHeader'=>['Krajee Report Header'], 
-                'SetFooter'=>['{PAGENO}'],
-            ]
-        ]);
+        ob_start();
+        $pdf = new FPDI();
         
-        // if($this->sendEmail())
+        // Reference the PDF you want to use (use relative path)
+        $pagecount = $pdf->setSourceFile(Yii::getAlias("@webroot").'/pdf/preventivo.pdf');
+
+        // Import the first page from the PDF and add to dynamic PDF
+        $tpl = $pdf->importPage(1);
+        $pdf->AddPage();
+        $pdf->useTemplate($tpl);
+        $pdf->SetFont('Helvetica');
+
+        $pdf->setFontSize("10");
+        //order number
+        $pdf->SetXY(100, 18); // set the position of the box
+        $pdf->Cell(0, 10, $quote->order_number, 0, 0, 'C'); // add the text, align to Center of cell
+
+        $pdf->SetXY(113, 25); // set the position of the box
+        $pdf->Cell(0, 10, $quote->formatDate($quote->created_at), 0, 0, 'C'); // add the text, align to Center of cell
+
+        $pdf->SetXY(121, 31); // set the position of the box
+        $pdf->Cell(0, 10, $quote->getClient(), 0, 0, 'C'); // add the text, align to Center of cell
+
+        $pdf->SetXY(116, 38); // set the position of the box
+        $pdf->Cell(0, 10, $client->phone, 0, 0, 'C'); // add the text, align to Center of cell
+
+        $pdf->SetXY(-296, -58); // set the position of the box
+        $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", number_format($quote->total, 2, ",", ".")." €"), 0, 0, 'C');
+
+        $pdf->SetXY(-296, -51); // set the position of the box
+        $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", number_format($quote->deposit, 2, ",", ".")." €"), 0, 0, 'C'); // add the text, align to Center of cell
+
+        $pdf->SetXY(-294, -44); // set the position of the box
+        $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", number_format($quote->balance, 2, ",", ".")." €". " - "), 0, 0, 'C'); // add the text, align to Center of cell
+
+        $pdf->SetXY(-133, -51); // set the position of the box
+        $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quote->shipping == 0 ? "NO" : "SI"), 0, 0, 'C'); // add the text, align to Center of cell
+
+        $pdf->SetXY(-121, -44); // set the position of the box
+        $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quote->formatDate($quote->deadline)), 0, 0, 'C'); // add the text, align to Center of cell
+
+        $filename = "preventivo_".$quote->order_number."_".$client->name."_".$client->surname.".pdf";
+        ob_clean();
+        $pdf->Output($filename, 'F');
+            
+        if($this->sendEmail($quote, $filename, "invio-preventivo")){
+            Yii::$app->session->setFlash('success', "Pdf inviato correttamente");
+        }else{
+            Yii::$app->session->setFlash('error', "Ops...something went wrong");
+        }
+
+        return $this->redirect("index");
+    }
+
+    protected function sendEmail($model, $filename, $view){
+        
+        if(empty($model)) return false;
+        
+        $message = Yii::$app->mailer
+                ->compose(
+                    ['html' => $view],
+                    ['model' => $model]
+                )
+                ->setFrom([Yii::$app->params["infoEmail"]])
+                ->setTo("antoniovincenzospera@gmail.com")
+                ->setSubject($model->getClient()." ecco il tuo preventivo");
+
+        $fullFilename = "https://manager.orcidelcilento.it/web/pdf/".$filename;
+        $message->attachContent($fullFilename,['fileName' => $filename,'contentType' => 'application/pdf']); 
+
+        return $message->send();
     }
 
     /**

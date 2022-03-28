@@ -109,8 +109,11 @@ class InviaCatalogoController extends Controller
             if ($model->load($this->request->post())) {
                 $model->created_at = date("Y-m-d H:i:s");
                 if($model->save() && $this->sendEmail($model)){
+                    Yii::$app->session->setFlash('success', "Catalogo inviato correttamente");
                     return $this->redirect(['view', 'id' => $model->id]);
-                }   
+                }else{
+                    Yii::$app->session->setFlash('error', "Ops...something went wrong [CAT-101]");
+                }
             }
         } else {
             $model->loadDefaultValues();
@@ -201,6 +204,8 @@ class InviaCatalogoController extends Controller
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
+        }else{
+            Yii::$app->session->setFlash('error', "Ops...something went wrong [CAT-102]");
         }
 
         return $this->render('update', [
@@ -218,12 +223,11 @@ class InviaCatalogoController extends Controller
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
-
+        Yii::$app->session->setFlash('success', "Catalogo cancellato con successo");
         return $this->redirect(['index']);
     }
 
     protected function sendEmail($model){
-        
         if(empty($model)) return false;
         
         $existingFiles=\yii\helpers\FileHelper::findFiles(Yii::getAlias("@webroot").'/pdf/', ['recursive' => false] );

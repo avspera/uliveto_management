@@ -58,9 +58,14 @@ class ColorsController extends Controller
      */
     public function actionView($id)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
+        if($model = $this->findModel($id)){
+            return $this->render('view', [
+                'model' => $model
+            ]);
+        }else{
+            Yii::$app->session->setFlash('error', "Ops...colore non trovato [COL-100]");
+            return $this->redirect("index");
+        }
     }
 
     /**
@@ -101,6 +106,8 @@ class ColorsController extends Controller
 
                 if($model->save()){
                     return $this->redirect(['view', 'id' => $model->id]);
+                }else{
+                    Yii::$app->session->setFlash('error', "Ops...something went wrong [COL-104]");
                 }
             }
         } else {
@@ -125,6 +132,9 @@ class ColorsController extends Controller
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
+        }else{
+            Yii::$app->session->setFlash('error', "Ops...something went wrong [COL-102]");
+            return $this->redirect("index");
         }
 
         return $this->render('update', [
@@ -142,6 +152,7 @@ class ColorsController extends Controller
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
+        Yii::$app->session->setFlash('success', "Colore cancellato con successo");
 
         return $this->redirect(['index']);
     }

@@ -77,9 +77,15 @@ class ClientsController extends Controller
      */
     public function actionView($id)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
+        try{
+            return $this->render('view', [
+                'model' => $this->findModel($id),
+            ]);
+        }catch(Exception $e){
+            Yii::$app->session->setFlash('error', "Ops..cliente non trovato [CL-100]");
+            $this->redirect("index");
+        }
+        
     }
 
     public function actionSearchFromSelect($q = ""){
@@ -121,6 +127,8 @@ class ClientsController extends Controller
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
                 return $this->redirect(['view', 'id' => $model->id]);
+            }else{
+                Yii::$app->session->setFlash('error', "Ops...something went wrong [CL-101]");
             }
         } else {
             $model->loadDefaultValues();
@@ -144,6 +152,9 @@ class ClientsController extends Controller
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
+        }else{
+            Yii::$app->session->setFlash('error', "Ops...something went wrong [CL-102]");
+            return $this->redirect(['view', 'id' => $model->id]);
         }
 
         return $this->render('update', [
@@ -161,6 +172,7 @@ class ClientsController extends Controller
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
+        Yii::$app->session->setFlash('success', "Elemento cancellato con successo");
 
         return $this->redirect(['index']);
     }

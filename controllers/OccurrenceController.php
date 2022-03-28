@@ -55,9 +55,15 @@ class OccurrenceController extends Controller
      */
     public function actionView($id)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
+        if($model = $this->findModel($id))
+        {
+            return $this->render('view', [
+                'model' => $this->findModel($id),
+            ]);
+        }else{
+            Yii::$app->session->setFlash('error', "Ops...something went wrong [OCC-101]");
+            return $this->redirec("index");
+        }
     }
 
     /**
@@ -72,6 +78,8 @@ class OccurrenceController extends Controller
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
                 return $this->redirect(['view', 'id' => $model->id]);
+            }else{
+                Yii::$app->session->setFlash('error', "Ops...something went wrong [OCC-102]");
             }
         } else {
             $model->loadDefaultValues();
@@ -95,6 +103,8 @@ class OccurrenceController extends Controller
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
+        }else{
+            Yii::$app->session->setFlash('error', "Ops...something went wrong [OCC-103]");
         }
 
         return $this->render('update', [
@@ -112,7 +122,7 @@ class OccurrenceController extends Controller
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
-
+        Yii::$app->session->setFlash('success', "Elemento cancellato con successo [OCC-102]");
         return $this->redirect(['index']);
     }
 

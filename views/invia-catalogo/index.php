@@ -15,6 +15,24 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="invia-catalogo-index">
 
+    <?php if(Yii::$app->session->hasFlash('error')): ?>
+      <div class="alert alert-warning alert-dismissible" style="color: white">
+        <?php echo Yii::$app->session->getFlash('error'); ?>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    <?php endif; ?> 
+
+    <?php if(Yii::$app->session->hasFlash('success')): ?>
+      <div class="alert alert-success alert-dismissible">
+        <?php echo Yii::$app->session->getFlash('success'); ?>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    <?php endif; ?> 
+
     <div class="card">
         <div class="card-header">
             <?= Html::a('<i class="fas fa-plus"></i> Aggiungi', ['create'], ['class' => 'btn btn-success']) ?>

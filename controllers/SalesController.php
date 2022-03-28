@@ -7,6 +7,7 @@ use app\models\SalesSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 
 /**
  * SalesController implements the CRUD actions for Sales model.
@@ -18,17 +19,31 @@ class SalesController extends Controller
      */
     public function behaviors()
     {
-        return array_merge(
-            parent::behaviors(),
-            [
-                'verbs' => [
-                    'class' => VerbFilter::className(),
-                    'actions' => [
-                        'delete' => ['POST'],
+        return [
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'delete' => ['POST'],
+                ],
+            ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index', 
+                            'view', 
+                            'update', 
+                            'delete', 
+                            'create', 
+                            'get-by-id'
+                        ],
+                        'allow' => true,
+                        'roles' => ['@'],
                     ],
                 ],
-            ]
-        );
+            ],
+        ];
     }
 
     /**
@@ -47,6 +62,22 @@ class SalesController extends Controller
         ]);
     }
 
+    public function actionGetById($id){
+        $packaging = $this->findModel($id);
+
+        if(empty($packaging)) return;
+        $out = ['price' => 0, "status" => "100"];
+
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        
+        if(!empty($out["sale"])){
+            $out["status"] = "200";
+            $out["packaging"] = $packaging->price;
+        }
+            
+        
+        return $out;
+    }
     /**
      * Displays a single Sales model.
      * @param int $id ID
@@ -55,9 +86,15 @@ class SalesController extends Controller
      */
     public function actionView($id)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
+        if($model = $this->findModel($id)){
+            return $this->render('view', [
+                'model' => $this->findModel($id),
+            ]);
+        }else{
+            Yii::$app->session->setFlash('error', "Ops...something went wrong [SALES-100]");
+            return $this->redirect(['index']);
+        }
+
     }
 
     /**
@@ -72,8 +109,12 @@ class SalesController extends Controller
         if ($this->request->isPost) {
             if ($model->load($this->request->post())) {
                 $model->created_at = date("Y-m-d H:i:s");
-                if($model->save())
+                if($model->save()){
                     return $this->redirect(['view', 'id' => $model->id]);
+                }
+                else{
+                    Yii::$app->session->setFlash('error', "Ops...something went wrong [SALES-101]");
+                }
             }
         } else {
             $model->loadDefaultValues();
@@ -97,6 +138,8 @@ class SalesController extends Controller
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
+        }else{
+            Yii::$app->session->setFlash('error', "Ops...something went wrong [SALES-102]");
         }
 
         return $this->render('update', [
@@ -114,7 +157,7 @@ class SalesController extends Controller
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
-
+        Yii::$app->session->setFlash('success', "Elemento cancellato con successo");
         return $this->redirect(['index']);
     }
 

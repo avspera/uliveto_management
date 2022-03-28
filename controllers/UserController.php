@@ -63,9 +63,14 @@ class UserController extends Controller
      */
     public function actionView($id)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
+        if($model = $this->findModel($id)){
+            return $this->render('view', [
+                'model' => $this->findModel($id),
+            ]);
+        }else{
+            Yii::$app->session->setFlash('error', "Ops...something went wrong [PROD-101]");
+            return $this->redirect("index");
+        }
     }
 
     /**
@@ -85,7 +90,7 @@ class UserController extends Controller
             if($model->save())
                 return $this->redirect(['view', 'id' => $model->id]);
             else{
-                print_r($model->getErrors());die;
+                Yii::$app->session->setFlash('error', "Ops...something went wrong [USER-100]");
             }
         }
 
@@ -135,7 +140,7 @@ class UserController extends Controller
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
-
+        Yii::$app->session->setFlash('success', "Elemento cancellato con successo");
         return $this->redirect(['index']);
     }
 
