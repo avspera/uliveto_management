@@ -31,9 +31,20 @@ class UserController extends Controller
                         'allow' => true,
                         'roles' => ['@'],
                     ],
+                    [
+                        'actions' => [
+                            'pay-from-web', 
+                        ],
+                        'allow' => true,
+                        'allow' => ['?'],
+                    ],
                 ],
             ],
         ];
+    }
+
+    public function actionPayFromWeb($token, $amount){
+        if(!$token) return;
     }
 
     /**

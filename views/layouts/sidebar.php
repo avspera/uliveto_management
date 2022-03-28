@@ -3,9 +3,8 @@
 ?>
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
-    <a href="<?= Url::to(["site/index"]) ?>" class="brand-link logo-switch">
-        <img src="<?=Yii::getAlias("@web")."/images/logo.png"?>" alt="AdminLTE Docs Logo Small" class="brand-image-xl logo-xs">
-        <img src="<?=Yii::getAlias("@web")."/images/logo.png"?>" alt="AdminLTE Docs Logo Large" class="brand-image-xs logo-xl" style="left: 12px">
+    <a href="<?= Url::to(["site/index"]) ?>" class="navbar-brand brand-link">
+        <img class="img-responsive" src="<?=Yii::getAlias("@web")."/images/logo_white.png"?>" alt="Azienda Agricola L'Uliveto">
     </a>
 
     <!-- Sidebar -->
@@ -18,21 +17,10 @@
             <div class="info">
                 <a class="d-block" href="<?= Url::to(["user/view", "id" => Yii::$app->user->identity->id]) ?>"><?= isset(Yii::$app->user->identity->username) ? Yii::$app->user->identity->username : "Unlogged user" ?></a>
             </div>
-            
+                
         </div>
 
-        <!-- SidebarSearch Form -->
-        <!-- href be escaped -->
-        <!-- <div class="form-inline">
-            <div class="input-group" data-widget="sidebar-search">
-                <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
-                <div class="input-group-append">
-                    <button class="btn btn-sidebar">
-                        <i class="fas fa-search fa-fw"></i>
-                    </button>
-                </div>
-            </div>
-        </div> -->
+        
 
         <!-- Sidebar Menu -->
         <nav class="mt-2">
