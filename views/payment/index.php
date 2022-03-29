@@ -25,7 +25,6 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="card-body">
                 <?= GridView::widget([
                     'dataProvider' => $dataProvider,
-                    'filterModel' => $searchModel,
                     'columns' => [
                         [
                             'attribute' => 'id_client',

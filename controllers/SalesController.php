@@ -20,12 +20,6 @@ class SalesController extends Controller
     public function behaviors()
     {
         return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['POST'],
-                ],
-            ],
             'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
@@ -63,18 +57,18 @@ class SalesController extends Controller
     }
 
     public function actionGetById($id){
-        $packaging = $this->findModel($id);
-
-        if(empty($packaging)) return;
-        $out = ['price' => 0, "status" => "100"];
-
-        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         
-        if(!empty($out["sale"])){
+        $sale = $this->findModel($id);
+        
+        if(empty($sale)) return;
+        $out = ['amount' => 0, "status" => "100"];
+
+        if(!empty($sale)){
             $out["status"] = "200";
-            $out["packaging"] = $packaging->price;
+            $out["amount"] = $sale->amount;
         }
             
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         
         return $out;
     }

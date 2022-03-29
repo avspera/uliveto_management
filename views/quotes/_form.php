@@ -6,7 +6,7 @@ use yii\widgets\ActiveForm;
 use kartik\select2\Select2;
 use yii\web\JsExpression;
 use kartik\date\DatePicker;
-
+$prefix_url = Yii::getAlias("@web");
 ?>
 <style>
     /* Chrome, Safari, Edge, Opera */
@@ -69,8 +69,9 @@ use kartik\date\DatePicker;
             <div class="row prod" id="prod_0">
                 <div class="col-md-2 col-sm-6 col-12">
                     <div class="form-group field-quote-product-0 required">
+                        <input type="hidden" id="productSubtotal-0" name="productSubtotal-0" value=0>
                         <label class="control-label" for="quote-product-0">Prodotto</label>
-                        <select id="quote-product-0" class="form-control" name="Quote[product][0]" onchange="enableAmount(0)" aria-required="true">
+                        <select id="quote-product-0" class="form-control" name="Quote[product][0]" onchange="enableFields(0)" aria-required="true">
                             <option value="">Scegli</option>
                             <?php foreach($products as $product) { ?>
                                 <option price="<?= $product->price ?>" value="<?= $product->id ?>"><?= $product->name." - ".$product->formatNumber($product->price) ?> </option>
@@ -98,13 +99,13 @@ use kartik\date\DatePicker;
                     </div>
                 </div>
                 <div class="col-md-1 col-sm-6 col-12">
-                    <?= $form->field($model, 'color[0]')->dropdownlist(yii\helpers\ArrayHelper::map(app\models\Color::find()->orderBy('label')->all(), 'id', 'label'), ['prompt' => 'Scegli'])->label('Colore'); ?>
+                    <?= $form->field($model, 'color[0]')->dropdownlist(yii\helpers\ArrayHelper::map(app\models\Color::find()->orderBy('label')->all(), 'id', 'label'), ['prompt' => 'Scegli', 'disabled' => true])->label('Colore'); ?>
                 </div>
-                <div class="col-md-2 col-sm-4 col-12"><?= $form->field($model, 'custom_color[0]')->textInput(["maxlenght" => true]) ?></div>
+                <div class="col-md-2 col-sm-4 col-12"><?= $form->field($model, 'custom_color[0]')->textInput(["maxlenght" => true, "readonly" => true]) ?></div>
                 <div class="col-md-3 col-sm-6 col-12">
                     <div class="form-group field-quote-id_packaging-0 required">
                         <label class="control-label" for="quote-id_packaging-0">Confezione</label>
-                        <select id="quote-id_packaging-0" class="form-control" name="Quote[id_packaging][0]" onchange="addPackagingPrice(0)" aria-required="true">
+                        <select disabled id="quote-id_packaging-0" class="form-control" name="Quote[id_packaging][0]" onchange="addPackagingPrice(0)" aria-required="true">
                             <option price="" value="">Scegli</option>
                             <?php foreach($packagings as $packaging) { ?>
                                 <option price="<?= $packaging->price ?>" value="<?= $packaging->id ?>"><?= $packaging->label." - ".$packaging->formatNumber($packaging->price) ?> </option>
@@ -240,8 +241,12 @@ use kartik\date\DatePicker;
 <script>
 
 
-function enableAmount(index){
-    $("#quote-amount-"+index).removeAttr("readonly")
+function enableFields(index){
+    $("#quote-amount-"+index).removeAttr("readonly");
+    $("#quote-color-"+index).removeAttr("disabled");
+    $("#quote-custom_color-"+index).removeAttr("readonly");
+    $("#quote-id_packaging-"+index).removeAttr("disabled");
+    $("#quote-id_sconto-"+index).removeAttr("disabled");
     $("#quote-id_sconto").removeAttr("disabled");
 }
 
@@ -251,29 +256,27 @@ function manualChangeAmount(index){
     var current = $(`#quote-amount-${index}`).val();
     current = Number.isNaN(current) ? 0 : parseInt(current);
     
-        console.log("prev", prev);
-        console.log("current", current);
         let currentTotalNoVat   = $('#quote-total_no_vat').val();
-        console.log("starting currentTotal", currentTotalNoVat);
         currentTotalNoVat       = Number.isNaN(currentTotalNoVat) ? 0 : parseFloat(currentTotalNoVat)
         let price               = parseFloat($('#quote-product-'+index+" option:selected").attr("price"));
+        let subtotal            = 0;
         
         if(prev < current){
             let difference      = parseInt(current-prev);
-            let subtotal        = parseFloat(difference*price);
-            console.log("subtotal add", subtotal)
+            subtotal        = parseFloat(difference*price);
             currentTotalNoVat   = currentTotalNoVat + subtotal;
         }else{
             let difference      = parseInt(prev-current);
-            let subtotal        = parseFloat(difference*price);
-            console.log("subtotal less", subtotal)
+            subtotal        = parseFloat(difference*price);
             currentTotalNoVat   = currentTotalNoVat - subtotal;
         }
 
         currentTotalNoVat = Math.abs(currentTotalNoVat)
         
+        $("#productSubtotal-"+index).val(currentTotalNoVat);
+
         let newTotalWithVat = currentTotalNoVat + parseFloat(currentTotalNoVat / 100) * 4;
-        console.log("final totanovat", currentTotalNoVat)
+        
         $('#quote-total_no_vat').val(currentTotalNoVat.toFixed(2));
         $('#quote-total').val(parseFloat(newTotalWithVat).toFixed(2)); 
         $(`#quote-amount-${index}`).attr("prevValue", current);
@@ -322,27 +325,37 @@ function addPackagingPrice(index){
     $("#quote-total").val(newTotal.toFixed(2));
 }
 function applySales(value){
-    
     $.ajax({
-        url: '/sales/get-by-id',
+        url: '<?= $prefixUrl ?>/web/sales/get-by-id',
         type: 'get',
         dataType: 'json',
         'data': {
             'id': value,
         },
         success: function (data) {
-            let alertClass = "alert-warning";
-            let alertMsg   = "Ops...something wrong here. [PAY-101]";
+            let alertClass  = "alert-warning";
+            let alertMsg    = "Ops...something wrong here. [PAY-101]";
+            let subtotal    = 0;
+            let amount      = 0;
+            let sumPrice    = 0;
             if(data.status == "200")
             {
-                let sale = data.sale.amount;
-                console.log("sale", sale);
+                let sale = data.amount;
+                $('input:hidden').each(function() {
+                    sumPrice    += $(this).val();
+                    sumPrice    = Number.isNaN(sumPrice) ? 0 : parseFloat(sumPrice)
+                    subtotal    = parseFloat(sumPrice)
+                    console.log("subtotal", subtotal)
+                    subtotal    = subtotal - (subtotal/100)* sale
+                });
+
+                
                 let currentTotal = $("#quote-total_no_vat").val();
                 parseFloat(currentTotal);
-                let newTotalNoVat   = currentTotal - (currentTotal / 100) * sale;
-                let newTotalWithVat = newTotalNoVat + (newTotalNoVat / 100) * 4;
-                $("#quote-total_no_vat").val(newTotalNoVat);
-                $("#quote-total").val(newTotalWithVat);
+                let newTotalNoVat   = currentTotal - subtotal;
+                newTotalNoVat = (newTotalNoVat + (newTotalNoVat / 100) * 4);
+                $("#quote-total_no_vat").val(Math.abs(newTotalNoVat.toFixed(2)));
+                applyIvaToTotal(newTotalNoVat)
                 alertClass  = "alert-success";
                 alertMsg    = "Hai applicato lo sconto del "+sale+"%";
             }
@@ -373,13 +386,34 @@ function applyIvaToTotal(newTotalNoVat){
     return out;
 }
 
+function calculatePrezzoContetti(price){
+    let subtotal = 0;
+    let amount   = 0; 
+    $('input[id^="quote-amount-"]').each(function() {
+        amount      += $(this).val();
+        amount      = Number.isNaN(amount) ? 0 : parseInt(amount)
+        subtotal    = parseFloat(amount*price)
+    });
 
+    return subtotal;
+}
+//FIX THIS
 function addPrezzoConfetti (price) {
+    let subtotal        = this.calculatePrezzoContetti(price)
     let currentTotal    = $('#quote-total_no_vat').val();
-    let newTotalNoVat   = currentTotal+price;
-    $('#quote-total_no_vat').val(parseFloat(newTotalNoVat).toFixed(2))
-    applyIvaToTotal(newTotalNoVat);
-    
+    currentTotal        = Number.isNaN(currentTotal) ? 0 : parseFloat(currentTotal)
+    let newTotalNoVat   = currentTotal+subtotal;
+    $('#quote-total_no_vat').val(newTotalNoVat)
+    applyIvaToTotal(newTotalNoVat); 
+}
+
+function removePrezzoConfetti () {
+    let subtotal        = calculatePrezzoConfetti()
+    let currentTotal    = $('#quote-total_no_vat').val();
+    currentTotal        = Number.isNaN(currentTotal) ? 0 : parseFloat(currentTotal)
+    let newTotalNoVat   = Math.abs(currentTotal-subtotal);
+    $('#quote-total_no_vat').val(newTotalNoVat)
+    applyIvaToTotal(newTotalNoVat); 
 }
 
 function addCustomAmount (price) {
@@ -387,14 +421,6 @@ function addCustomAmount (price) {
     let newTotalNoVat   = currentTotal+price;
     $('#quote-total_no_vat').val(parseFloat(newTotalNoVat).toFixed(2))
     applyIvaToTotal(newTotalNoVat);
-}
-
-function removePrezzoConfetti () {
-    let priceConfetti       = $('#quote-prezzo_confetti').val();
-    let currentTotalNoVat   = $("#quote-total_no_vat").val();
-    currentTotalNoVat       = parseFloat(currentTotalNoVat-priceConfetti).toFixed(2);
-    $('#quote-total_no_vat').val(currenTotalNoVat);
-    applyIvaToTotal(currentTotalNoVat);
 }
 
 function addProductLine(){
@@ -407,8 +433,9 @@ function addProductLine(){
         `<div class="row prod" id="prod_${index}">
             <div class="col-md-2 col-sm-6 col-12">
                 <div class="form-group field-quote-product-${index} required">
+                    <input type="hidden" id="productSubtotal-${index}" name="productSubtotal-${index}" value=0>
                     <label class="control-label" for="quote-product-${index}">Prodotto</label>
-                    <select id="quote-product-${index}" class="form-control" name="Quote[product][${index}]" onchange="enableAmount(${index})" aria-required="true">
+                    <select id="quote-product-${index}" class="form-control" name="Quote[product][${index}]" onchange="enableFields(${index})" aria-required="true">
                         <option value="">Scegli</option>
                         <?php foreach($products as $product) { ?>
                             <option price="<?= $product->price ?>" value="<?= $product->id ?>"><?= $product->name." - ".$product->formatNumber($product->price) ?></option>
@@ -421,14 +448,14 @@ function addProductLine(){
                 <div class="form-group field-quote-amount-${index}">
                     <label class="control-label" for="quote-amount-${index}">Quantità</label>
                     <div class="input-group inline-group">
-                        <input type="number" min="1" id="quote-amount-${index}" readonly class="form-control" name="Quote[amount][${index}]" prevValue=0 onchange="manualChangeAmount(${index})" value="0">
+                        <input readonly type="number" min="1" id="quote-amount-${index}" readonly class="form-control" name="Quote[amount][${index}]" prevValue=0 onchange="manualChangeAmount(${index})" value="0">
                     </div>
                 </div>
             </div>
             <div class="col-md-1 col-sm-6 col-12">
                 <div class="form-group field-quote-color-${index} required">
                     <label class="control-label" for="quote-color-${index}">Colore</label>
-                    <select id="quote-color-${index}" class="form-control" name="Quote[color][${index}]" aria-required="true">
+                    <select disabled id="quote-color-${index}" class="form-control" name="Quote[color][${index}]" aria-required="true">
                         <option value="">Scegli</option>
                         <option value="1">Light blue</option>
                     </select>
@@ -436,9 +463,9 @@ function addProductLine(){
                 </div>
             </div>
             <div class="col-md-2 col-sm-4 col-12">
-                <div class="form-group field-quote-custom_color-0">
-                    <label class="control-label" for="quote-custom_color-0">Colore custom</label>
-                    <input type="text" id="quote-custom_color-0" class="form-control" name="Quote[custom_color][0]" maxlenght="">
+                <div class="form-group field-quote-custom_color-${index}">
+                    <label class="control-label" for="quote-custom_color-${index}">Colore personalizzato</label>
+                    <input readonly type="text" id="quote-custom_color-${index}" class="form-control" name="Quote[custom_color][${index}]" maxlenght="">
 
                     <div class="help-block"></div>
                 </div>
@@ -446,11 +473,11 @@ function addProductLine(){
             <div class="col-md-3 col-sm-6 col-12">
                 <div class="form-group field-quote-packaging required">
                     <label class="control-label" for="quote-packaging">Confezione</label>
-                    <select id="quote-packaging" class="form-control" name="Quote[packaging][${index}]" aria-required="true">
-                        <option value="">Scegli</option>
-                        <option value="3">Scatola </option>
-                        <option value="2">Scatola con Raso</option>
-                        <option value="4">senza scatola </option>
+                    <select disabled="" id="quote-id_packaging-${index}" class="form-control" name="Quote[id_packaging][${index}]" onchange="addPackagingPrice(${index})" aria-required="true">
+                        <option price="" value="">Scegli</option>
+                        <?php foreach($packagings as $package) { ?>
+                            <option price="<?= $package->price ?>" value="<?= $package->id ?>"><?= $package->label." - ".$package->formatNumber($package->price) ?></option>
+                        <?php } ?>
                     </select>
                     <div class="help-block"></div>
                 </div>

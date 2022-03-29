@@ -13,6 +13,27 @@ $this->title = $model->order_number." - ".$client;
 $this->params['breadcrumbs'][] = ['label' => 'Preventivi', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
+/*
+Ho il piacere di presentarle la nostra collezione di orci realizzati e decorati a mano.
+L'orcio in ceramica contiene e custodisce i profumi e i sapori dell'olio extravergine di oliva biologico, prodotto nei nostri uliveti a Trentinara e Giungano.
+
+Scadenza offerta: 25/03/2022
+Rimango a sua completa disposizione
+Cordiali Saluti
+
+Francesco Guariglia 
+
+Mobile: + 39 3203828243
+Maria Guariglia
+mobile: +39 3807544300
+mail: e-commerce@ulivetodimaria.it
+
+Website: www.ulivetodimaria.it
+
+Facebook: https://www.facebook.com/ulivetotrentinara/
+Instagram: https://instagram.com/aziendaluliveto?utm_medium=copy_link
+*/
+$text = json_encode("ciao come stai?")
 ?>
 <div class="quote-view">
 
@@ -26,8 +47,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     'method' => 'post',
                 ],
             ]) ?>
-            <?= Html::a('<i class="fas fa-file-pdf"></i> Genera PDF', ['generate-pdf', 'id' => $model->id], ['class' => 'btn btn-success']) ?>
-            <?= Html::a('<i class="fas fa-check"></i> Conferma', ['confirm', 'id' => $model->id], ['class' => 'btn btn-info']) ?>
+            <?= Html::a('<i class="fas fa-file-pdf"></i> Genera PDF', ['generate-pdf', 'id' => $model->id, 'flag' => "generate"], ['class' => 'btn btn-success']) ?>
+            <?= Html::a('<i class="fas fa-check"></i> Conferma', ['confirm', 'id' => $model->id, 'flag' => "send"], ['class' => 'btn btn-info']) ?>
+            <a href="https://wa.me/00393339128349/?text=".$text>SEND MESSAGE</a>
+
         </div>
 
         <div class="card-body">

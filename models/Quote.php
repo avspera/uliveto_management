@@ -67,7 +67,7 @@ class Quote extends \yii\db\ActiveRecord
             'product'       => 'Prodotto',
             'amount'        => 'Quantità',
             'color'         => 'Colore',
-            'custom_color'  => "Colore custom",
+            'custom_color'  => "Colore personalizzato",
             'packaging'     => 'Confezione',
             'placeholder'   => 'Segnaposto',
             'notes'         => 'Note',
