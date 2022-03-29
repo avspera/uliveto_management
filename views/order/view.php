@@ -26,7 +26,7 @@ use yii\grid\ActionColumn;
                 ],
             ]) ?>
             <?= Html::a('<i class="fas fa-file-pdf"></i> Genera PDF', ['/quotes/generate-pdf', 'id' => $model->id, 'flag' => "generate"], ['class' => 'btn btn-success']) ?>
-            <?= Html::a('<i class="fas fa-envelope"></i> Invia PDF', ['/quotes/generate-pdf', 'id' => $model->id, 'flat' => "send"], ['class' => 'btn btn-success']) ?>
+            <?= Html::a('<i class="fas fa-envelope"></i> Invia PDF', ['/quotes/generate-pdf', 'id' => $model->id, 'flag' => "send"], ['class' => 'btn btn-success']) ?>
         </div>
 
         <div class="card-body">

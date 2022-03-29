@@ -8,6 +8,7 @@ use app\models\QuoteSearch;
 use app\models\QuoteDetails;
 use app\models\QuoteDetailsSearch;
 use app\models\Product;
+use app\models\Packaging;
 use app\models\Client;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -163,12 +164,15 @@ class QuotesController extends Controller
             $model->loadDefaultValues();
         }
         
-        $products = Product::find()->select(["id", "name", "price"])->orderBy(["name" => SORT_ASC])->all();
+        $products   = Product::find()->select(["id", "name", "price"])->orderBy(["name" => SORT_ASC])->all();
+        $packagings = Packaging::find()->select(["id", "label", "price"])->orderBy(["label" => SORT_ASC])->all(); 
+    
         $model->total_no_vat    = 0;
         $model->total           = 0;
         return $this->render('create', [
-            'model' => $model,
-            'products' => $products
+            'model'         => $model,
+            'products'      => $products,
+            'packagings'    => $packagings,
         ]);
     }
 

@@ -47,6 +47,23 @@ class UserController extends Controller
         if(!$token) return;
     }
 
+    protected function manageUploadFiles($model) {
+
+        $uploader   = new FKUploadUtils();
+        $path       = Yii::getAlias('@webroot')."/images/users/";
+    
+        $dirCreated = FileHelper::createDirectory($path);
+        
+        $image = UploadedFile::getInstance($model, 'picture');
+        if (!empty($image)){
+            $filename = $uploader->generateAndSaveFile($image, $path);
+            $model->picture = "images/users/".$filename;
+        }
+        
+        return $model->picture;
+
+    }
+
     /**
      * Lists all User models.
      * @return mixed
@@ -98,6 +115,11 @@ class UserController extends Controller
             $model->last_login  = date("Y-m-d H:i:s");
             $model->status      = User::STATUS_ACTIVE;
             $model->setPassword($model->password);
+            
+            if (!empty($_FILES)) {
+                $model->picture = $this->manageUploadFiles($model);
+            }
+
             if($model->save())
                 return $this->redirect(['view', 'id' => $model->id]);
             else{
@@ -126,6 +148,11 @@ class UserController extends Controller
             if($model->new_password != "" && ($model->new_password == $model->new_password_confirm)){
                 $model->setPassword($model->new_password);
             }
+
+            if (!empty($_FILES)) {
+                $model->picture = $this->manageUploadFiles($model);
+            }
+
             if($model->save()){
                 Yii::$app->session->setFlash('success','Aggiornamento avvenuto con successo');
             }

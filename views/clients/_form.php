@@ -19,7 +19,7 @@ use yii\widgets\ActiveForm;
         </div>
 
         <div class="row">
-            <div class="col-md-4 col-sm-6 col-12"><?= $form->field($model, 'phone')->textInput(['maxlength' => true, 'type' => 'number']) ?></div>
+            <div class="col-md-4 col-sm-6 col-12"><?= $form->field($model, 'phone')->textInput(['maxlength' => true]) ?></div>
             <div class="col-md-4 col-sm-6 col-12"><?= $form->field($model, 'age')->textInput(['maxlength' => true, 'type' => 'number']) ?></div>
             <div class="col-md-4 col-sm-6 col-12">
                 <?= $form->field($model, 'occurrence')->dropdownlist(yii\helpers\ArrayHelper::map(app\models\Occurrence::find()->orderBy('label')->all(), 'id', 'label'), ['prompt' => 'Scegli'])->label('Occorrenza'); ?>

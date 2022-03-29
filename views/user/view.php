@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
@@ -32,6 +33,13 @@ $this->params['breadcrumbs'][] = $this->title;
                     'nome',
                     'username',
                     'email:email',
+                    [
+                        'attribute' => "picture",
+                        'value' => function($model){
+                            return Html::img(Url::to(Yii::getAlias("@web")."/images/users/".$model->picture), ["class" => "img-responsive"]);
+                        },
+                        'format' => "raw"
+                    ],
                     [
                         'attribute' => 'status',
                         'value' => function($model){

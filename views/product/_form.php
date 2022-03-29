@@ -25,8 +25,8 @@ use yii\web\UploadedFile;
     </div>
 
     <div class="row">
-        <div class="col-md-4 col-sm-6 col-12"><?= $form->field($model, 'price')->textInput(['maxlength' => true, 'type' => "decimal"]) ?></div>
-        <div class="col-md-4 col-sm-6 col-12"><?= $form->field($model, 'capacity')->textInput(['maxlength' => true, 'type' => "decimal", "placeholder" => "in ml"]) ?></div>
+        <div class="col-md-4 col-sm-6 col-12"><?= $form->field($model, 'price')->textInput(['maxlength' => true, 'type' => "number", 'min' => 0, 'step' => ".01"]) ?></div>
+        <div class="col-md-4 col-sm-6 col-12"><?= $form->field($model, 'capacity')->textInput(['maxlength' => true, 'type' => "number", 'min' => 0, 'step' => ".01", "placeholder" => "in ml"]) ?></div>
     </div>
 
     <div class="row">

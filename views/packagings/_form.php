@@ -17,7 +17,7 @@ use yii\widgets\ActiveForm;
     </div>
 
     <div class="row">
-        <div class="col-md-6 col-sm-6 col-12"><?= $form->field($model, 'price')->textInput(['maxlength' => true]) ?></div>    
+        <div class="col-md-6 col-sm-6 col-12"><?= $form->field($model, 'price')->textInput(['maxlength' => true, 'type' => "number", 'min' => 0, 'step' => ".01"]) ?></div>    
         <div class="col-md-6 col-sm-6 col-12"><?= $form->field($model, 'image')->fileInput(['maxlength' => true]) ?></div>
     </div>
     

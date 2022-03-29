@@ -77,23 +77,23 @@ use kartik\date\DatePicker;
                             <?php } ?>
                         </select>
                         <div class="help-block"></div>
-                </div>
+                    </div>
                 </div>
                 <div class="col-md-3 col-sm-4 col-12" style="display:inline-block">
                     <div class="form-group field-quote-amount-0">
                         <label class="control-label" for="quote-amount-0">Quantità</label>
                         <div class="input-group inline-group">
-                            <div class="input-group-prepend">
+                            <!-- <div class="input-group-prepend">
                                 <button onclick="changeAmount(0, 'detract')" class="btn btn-warning btn-minus">
                                 <i class="fa fa-minus"></i>
                                 </button>
-                            </div>
-                            <input type="number" min="1" id="quote-amount-0" class="form-control" readonly name="Quote[amount][0]" onchange="manualChangeAmount(0)" value="0">
-                            <div class="input-group-append">
+                            </div> -->
+                            <input type="number" min="1" id="quote-amount-0" class="form-control" readonly name="Quote[amount][0]" prevValue=0 onchange="manualChangeAmount(0)" value="0">
+                            <!-- <div class="input-group-append">
                                 <button onclick="changeAmount(0, 'add')" class="btn btn-success btn-plus">
                                 <i class="fa fa-plus"></i>
                                 </button>
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                 </div>
@@ -102,7 +102,16 @@ use kartik\date\DatePicker;
                 </div>
                 <div class="col-md-2 col-sm-4 col-12"><?= $form->field($model, 'custom_color[0]')->textInput(["maxlenght" => true]) ?></div>
                 <div class="col-md-3 col-sm-6 col-12">
-                    <?= $form->field($model, 'packaging[0]')->dropdownlist(yii\helpers\ArrayHelper::map(app\models\Packaging::find()->orderBy('label')->all(), 'id', 'label'), ['prompt' => 'Scegli', 'onchange' => 'addPackagingPrice(value, 0)'])->label('Confezione'); ?>
+                    <div class="form-group field-quote-id_packaging-0 required">
+                        <label class="control-label" for="quote-id_packaging-0">Confezione</label>
+                        <select id="quote-id_packaging-0" class="form-control" name="Quote[id_packaging][0]" onchange="addPackagingPrice(0)" aria-required="true">
+                            <option price="" value="">Scegli</option>
+                            <?php foreach($packagings as $packaging) { ?>
+                                <option price="<?= $packaging->price ?>" value="<?= $packaging->id ?>"><?= $packaging->label." - ".$packaging->formatNumber($packaging->price) ?> </option>
+                            <?php } ?>
+                        </select>
+                        <div class="help-block"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -127,14 +136,7 @@ use kartik\date\DatePicker;
         </div>
     </div>
 
-    <div class="card card-secondary">
-        <div class="card-header">
-            <div class="text-lg">Altro</div>    
-        </div>
-        <div class="card-body table-responsive">
-            <?= $form->field($model, 'notes')->textarea(['rows' => 6]) ?>
-        </div>
-    </div>
+  
 
     <div class="card card-secondary">
         <div class="card-header">
@@ -207,6 +209,15 @@ use kartik\date\DatePicker;
     
     </div>
 
+    <div class="card card-secondary">
+        <div class="card-header">
+            <div class="text-lg">Altro</div>    
+        </div>
+        <div class="card-body table-responsive">
+            <?= $form->field($model, 'notes')->textarea(['rows' => 6]) ?>
+        </div>
+    </div>
+    
     <?php ActiveForm::end(); ?>
 
     <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
@@ -228,99 +239,87 @@ use kartik\date\DatePicker;
 
 <script>
 
+
 function enableAmount(index){
     $("#quote-amount-"+index).removeAttr("readonly")
     $("#quote-id_sconto").removeAttr("disabled");
 }
 
 function manualChangeAmount(index){
+    var prev = $(`#quote-amount-${index}`).attr("prevValue");;
+    prev    = Number.isNaN(prev) ? 0 : parseInt(prev);
+    var current = $(`#quote-amount-${index}`).val();
+    current = Number.isNaN(current) ? 0 : parseInt(current);
     
-    $(document).on('focusin', '#quote-amount-'+index, function(){
-        var current = $(this).val();
-    }).on('change','input', function(){
-        var prev    = parseFloat($(this).data('val'));
-        prev        = Number.isNaN(prev) ? 0 : parseFloat(prev);
-        var current = parseFloat($(this).val());
-        current     = Number.isNaN(current) ? 0 : parseFloat(current);
-        
+        console.log("prev", prev);
+        console.log("current", current);
         let currentTotalNoVat   = $('#quote-total_no_vat').val();
-        console.log(currentTotalNoVat);
+        console.log("starting currentTotal", currentTotalNoVat);
         currentTotalNoVat       = Number.isNaN(currentTotalNoVat) ? 0 : parseFloat(currentTotalNoVat)
         let price               = parseFloat($('#quote-product-'+index+" option:selected").attr("price"));
         
         if(prev < current){
-            currentTotalNoVat = currentTotalNoVat +  Math.abs(parseFloat(currentTotalNoVat+(current*price)).toFixed(2));
+            let difference      = parseInt(current-prev);
+            let subtotal        = parseFloat(difference*price);
+            console.log("subtotal add", subtotal)
+            currentTotalNoVat   = currentTotalNoVat + subtotal;
         }else{
-            currentTotalNoVat = currentTotalNoVat - Math.abs(parseFloat(currentTotalNoVat-(current*price)).toFixed(2));
+            let difference      = parseInt(prev-current);
+            let subtotal        = parseFloat(difference*price);
+            console.log("subtotal less", subtotal)
+            currentTotalNoVat   = currentTotalNoVat - subtotal;
         }
-        console.log("currentTotalNoVat", currentTotalNoVat);
-        let newTotalWithVat = currentTotalNoVat + parseFloat(currentTotalNoVat / 100) * 4;
+
+        currentTotalNoVat = Math.abs(currentTotalNoVat)
         
+        let newTotalWithVat = currentTotalNoVat + parseFloat(currentTotalNoVat / 100) * 4;
+        console.log("final totanovat", currentTotalNoVat)
         $('#quote-total_no_vat').val(currentTotalNoVat.toFixed(2));
         $('#quote-total').val(parseFloat(newTotalWithVat).toFixed(2)); 
-    });
+        $(`#quote-amount-${index}`).attr("prevValue", current);
+    
 }
 
-
-function changeAmount(index, target, value){
-    let currentAmount       = $('#quote-amount-'+index).val();
-    let price               = $('#quote-product-'+index+" option:selected").attr("price");
-    price                   = parseFloat(price);
-    let currentTotalNoVat   = $('#quote-total_no_vat').val();
-    currentTotalNoVat       = parseFloat(currentTotalNoVat);
-
-    if (Number.isNaN(currentAmount)) {
-        currentAmount = 0;
-    }else{
-        currentAmount = parseInt(currentAmount);
-    }
-
-    if (Number.isNaN(currentTotalNoVat)) {
-        currentTotalNoVat = 0;
-    }else{
-        currentTotalNoVat = parseInt(currentTotalNoVat);
-    }
-    
-    let newTotalNoVat   = target == "add" ? (currentTotalNoVat+price) : (currentTotalNoVat-price)
-    
-    let newTotalWithVat = newTotalNoVat + (newTotalNoVat / 100) * 4;
-    
-    $('#quote-amount-'+index).val(target == "add" ? currentAmount+1 : currentAmount-1);
-    $('#quote-total_no_vat').val(newTotalNoVat.toFixed(2));
-    $('#quote-total').val(newTotalWithVat.toFixed(2)); 
-}
 
 function subtractDeposit(){
     let deposit         = $('#quote-deposit').val();
     let currentTotal    = $('#quote-total').val();
-    let b\lance         = currentTotal-deposit;
+    let balance         = currentTotal-deposit;
     $('#quote-balance').val(parseFloat(balance).toFixed(2))
 }
 
-function addPackagingPrice(value, index){
-    $.ajax({
-        url: '/web/packagings/get-by-id',
-        type: 'get',
-        dataType: 'json',
-        'data': {
-            'id': value,
-        },
-        success: function (data) {
-            let alertClass = "alert-warning";
-            let alertMsg   = "Ops...something wrong here. [PAY-101]";
-            if(data.status == "200")
-            {
-                let price           = data.price.lenght > 0 ? data.price : 0;
-                let totalProducts   = $("#quote-id_product-"+index).val()
-                let currentTotal    = $("#quote-total_no_vat").val();
-                let newTotalNoVat   = parseFloat(totalProducts) + parseFloat(price);
-                $("#quote-total_no_vat").val(newTotalNoVat.toFixed(2));
-                let newTotalWithVat = applyIvaToTotal(newTotalNoVat)
-            }
+function addPackagingPrice(index){
+    let price   = $(`#quote-id_packaging-${index} option:selected`).attr("price");
+    let amount  = $("#quote-amount-"+index).val();
+    let currentTotalNoVat   = $("#quote-total_no_vat").val();
+    let currentTotal        = $("#quote-total").val();
+    let totalNoVat          = 0;
+    let newTotalNoVat       = 0;
+    let newTotal            = 0;
+    let subtotalPackaging   = parseInt(amount) * parseFloat(price);
 
+    if (Number.isNaN(currentTotalNoVat)) {
+        currentTotalNoVat = 0;
+    }else{
+        currentTotalNoVat = parseFloat(currentTotalNoVat);
+    }
 
-        }
-    });
+    if (Number.isNaN(currentTotal)) {
+        currentTotal = 0;
+    }else{
+        currentTotal = parseFloat(currentTotal);
+    }
+    
+    if(price == ""){
+        newTotalNoVat   = currentTotalNoVat - subtotalPackaging;
+        newTotal        = currentTotal - subtotalPackaging;
+    }else{
+        newTotalNoVat   = currentTotalNoVat + subtotalPackaging;
+        newTotal        = currentTotal + subtotalPackaging;
+    }
+
+    $("#quote-total_no_vat").val(newTotalNoVat.toFixed(2));
+    $("#quote-total").val(newTotal.toFixed(2));
 }
 function applySales(value){
     
@@ -422,17 +421,7 @@ function addProductLine(){
                 <div class="form-group field-quote-amount-${index}">
                     <label class="control-label" for="quote-amount-${index}">Quantità</label>
                     <div class="input-group inline-group">
-                        <div class="input-group-prepend">
-                            <button onclick="changeAmount(${index}, 'detract')" class="btn btn-warning btn-minus">
-                            <i class="fa fa-minus"></i>
-                            </button>
-                        </div>
-                        <input type="number" min="1" id="quote-amount-${index}" readonly class="form-control" name="Quote[amount][${index}]" onchange="manualChangeAmount(${index})" value="0">
-                        <div class="input-group-append">
-                            <button onclick="changeAmount(${index}, 'add')" class="btn btn-success btn-plus">
-                            <i class="fa fa-plus"></i>
-                            </button>
-                        </div>
+                        <input type="number" min="1" id="quote-amount-${index}" readonly class="form-control" name="Quote[amount][${index}]" prevValue=0 onchange="manualChangeAmount(${index})" value="0">
                     </div>
                 </div>
             </div>

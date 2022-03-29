@@ -1,7 +1,7 @@
 <?php
 
 namespace app\controllers;
-
+use Yii;
 use app\models\Packaging;
 use app\models\PackagingSearch;
 use yii\web\Controller;
@@ -20,12 +20,6 @@ class PackagingsController extends Controller
     public function behaviors()
     {
         return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['POST'],
-                ],
-            ],
             'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
@@ -127,10 +121,13 @@ class PackagingsController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        }else{
-            Yii::$app->session->setFlash('error', "Ops...something went wrong [PACK-101]");
+        if ($this->request->isPost && $model->load($this->request->post())) {
+            $model->created_at = date("Y-m-d");
+            if($model->save())
+                return $this->redirect(['view', 'id' => $model->id]);
+            else{
+                Yii::$app->session->setFlash('error', "Ops...something went wrong [PACK-101]");
+            }
         }
 
         return $this->render('update', [

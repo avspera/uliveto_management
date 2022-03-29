@@ -15,6 +15,7 @@ use Yii;
  * @property string $password_reset_token
  * @property string $created
  * @property string $last_login
+ * @property string $picture
  * @property int $status
  */
 
@@ -46,8 +47,8 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_DELETED]],
             [['username', 'password', 'created', 'status', 'nome', 'email', 'role'], 'required'],
             [['created','username', 'nome', 'last_login', 'updated',
-                'new_password', 'new_password_confirm'], 'safe'],
-            [['username','email',], 'string'],
+                'new_password', 'new_password_confirm', 'picture'], 'safe'],
+            [['username','email', 'picture'], 'string'],
             [['status', 'role'], 'integer'],
             [['email'], 'email'],
             [['username'], 'unique'],
