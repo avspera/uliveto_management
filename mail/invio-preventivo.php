@@ -350,98 +350,29 @@
             			<div class="text" style="padding: 0 3em; text-align: center;">
             				<h2>Ciao <?= $model->getClient() ?>, in allegato trovi <span>il tuo preventivo</span></h2>
             			</div>
+                  <div class="text" style="padding: 3em;">
+                    <p>
+                      Ho il piacere di presentarle la nostra collezione di orci realizzati e decorati a mano.<br>
+                      L'orcio in ceramica contiene e custodisce i profumi e i sapori dell'olio extravergine di oliva biologico, prodotto nei nostri uliveti a <b>Trentinara e Giungano</b>.<br>
+
+                      Scadenza offerta: <?= $model->formatDate($model->deadline) ?> <br>
+                      Rimango a sua completa disposizione<br>
+                      Cordiali Saluti<br>
+                      <br>
+                      Francesco Guariglia <br>
+                      <br>
+                      Mobile: + 39 3203828243<br>
+                      Maria Guariglia<br>
+                      mobile: +39 3807544300<br>
+                      mail: e-commerce@ulivetodimaria.it<br>
+                    </p>
+                  </div>
             		</td>
             	</tr>
             </table>
           </td>
 	      </tr><!-- end tr -->
-	      <tr>
-		      <td class="bg_white">
-		        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
-		          <tr>
-		            <td class="bg_white email-section">
-		            	<div class="heading-section" style="text-align: center; padding: 0 30px;">
-		              	<h2>LOREM IPSUM</h2>
-		              	<p>lorem ipsum </p>
-		            	</div>
-		            	<table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
-		            		<tr>
-                      <td valign="top" width="50%">
-                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
-                          <tr>
-                            <td style="padding-top: 20px; padding-right: 10px;">
-                              <a href="#"><img src="images/work-1.jpg" alt="" style="width: 100%; max-width: 600px; height: auto; margin: auto; display: block;"></a>
-                              <div class="text-project" style="text-align: center;">
-                              	<h3><a href="#">Bottiglia</a></h3>
-                              	<span>lorem ipsum</span>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td style="padding-top: 20px; padding-right: 10px;">
-                              <a href="#"><img src="images/work-2.jpg" alt="" style="width: 100%; max-width: 600px; height: auto; margin: auto; display: block;"></a>
-                              <div class="text-project" style="text-align: center;">
-                              	<h3><a href="#">Bottiglia</a></h3>
-                              	<span>lorem ipsum</span>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td style="padding-top: 20px; padding-right: 10px;">
-                              <a href="#"><img src="images/work-3.jpg" alt="" style="width: 100%; max-width: 600px; height: auto; margin: auto; display: block;"></a>
-                              <div class="text-project" style="text-align: center;">
-                              	<h3><a href="#">Work</a></h3>
-                              	<span>lorem ipsum</span>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td style="padding-top: 20px; padding-right: 10px;">
-                              <a href="#"><img src="images/work-4.jpg" alt="" style="width: 100%; max-width: 600px; height: auto; margin: auto; display: block;"></a>
-                              <div class="text-project" style="text-align: center;">
-                              	<h3><a href="#">Work</a></h3>
-                              	<span>lorem ipsum</span>
-                              </div>
-                            </td>
-                          </tr>
-                        </table>
-                      </td>
-
-
-
-                      <td valign="top" width="50%">
-                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
-                            <tr>
-                                <td style="padding-top: 20px; padding-left: 10px;">
-                                <a href="#"><img src="images/work-5.jpg" alt="" style="width: 100%; max-width: 600px; height: auto; margin: auto; display: block;"></a>
-                                <div class="text-project" style="text-align: center;">
-                                    <h3><a href="#">Bottiglia</a></h3>
-                                    <span>lorem ipsum</span>
-                                </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="padding-top: 20px; padding-left: 10px;">
-                                <a href="#"><img src="images/work-6.jpg" alt="" style="width: 100%; max-width: 600px; height: auto; margin: auto; display: block;"></a>
-                                <div class="text-project" style="text-align: center;">
-                                    <h3><a href="#">Bottiglia</a></h3>
-                                    <span>lorem ipsum</span>
-                                </div>
-                                </td>
-                            </tr>
-                        </table>
-                      </td>
-                    </tr>
-		            	</table>
-		            </td>
-		          </tr><!-- end: tr -->
-
-		        </table>
-
-		      </td>
-		    </tr><!-- end:tr -->
-      <!-- 1 Column Text + Button : END -->
-      </table>
+	  </table>
       <table align="center" role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin: auto;">
       	<tr>
           <td valign="middle" class="bg_black footer email-section">
@@ -478,7 +409,7 @@
                       	<ul>
                             <li><a href="https://www.facebook.com/ulivetotrentinara" style="text-decoration: none;"><span>Facebook</span></a></a></li>
                             <li><a href="https://www.instagram.com/aziendaluliveto/" style="text-decoration: none;"><span>Instagram</span></a></li>
-                            <li><a href="https://www.orcidelcilento.it" style="text-decoration: none;"><span>Web</span></a></li>
+                            <li><a href="https://www.ulivetodimaria.it" style="text-decoration: none;"><span>Web</span></a></li>
                         </ul>
                       </td>
                     </tr>

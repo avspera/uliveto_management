@@ -13,26 +13,7 @@ $this->title = $model->order_number." - ".$client;
 $this->params['breadcrumbs'][] = ['label' => 'Preventivi', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
-/*
-Ho il piacere di presentarle la nostra collezione di orci realizzati e decorati a mano.
-L'orcio in ceramica contiene e custodisce i profumi e i sapori dell'olio extravergine di oliva biologico, prodotto nei nostri uliveti a Trentinara e Giungano.
 
-Scadenza offerta: 25/03/2022
-Rimango a sua completa disposizione
-Cordiali Saluti
-
-Francesco Guariglia 
-
-Mobile: + 39 3203828243
-Maria Guariglia
-mobile: +39 3807544300
-mail: e-commerce@ulivetodimaria.it
-
-Website: www.ulivetodimaria.it
-
-Facebook: https://www.facebook.com/ulivetotrentinara/
-Instagram: https://instagram.com/aziendaluliveto?utm_medium=copy_link
-*/
 $text = json_encode("ciao come stai?")
 ?>
 <div class="quote-view">
@@ -97,6 +78,13 @@ $text = json_encode("ciao come stai?")
                         'attribute' => 'total',
                         'value' => function($model){
                             return $model->formatNumber($model->total);
+                        },
+                        'format' => "raw"
+                    ],
+                    [
+                        'attribute' => 'id_sconto',
+                        'value' => function($model){
+                            return $model->getSale($model->id_sconto);
                         },
                         'format' => "raw"
                     ],

@@ -76,6 +76,13 @@ use yii\grid\ActionColumn;
                         'format' => "raw"
                     ],
                     [
+                        'attribute' => 'id_sconto',
+                        'value' => function($model){
+                            return $model->getSale($model->id_sconto);
+                        },
+                        'format' => "raw"
+                    ],
+                    [
                         'attribute' => 'deposit',
                         'value' => function($model){
                             return $model->formatNumber($model->deposit);

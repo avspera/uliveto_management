@@ -55,4 +55,8 @@ class Sales extends \yii\db\ActiveRecord
 
         return !empty($value) ? date($format, strtotime($value)) : "";
     }
+
+    public function formatPercentage($value){
+        return !empty($value) ? $value."%" : "";
+    }
 }

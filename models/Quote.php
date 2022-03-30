@@ -5,6 +5,7 @@ namespace app\models;
 use Yii;
 use app\models\Product;
 use app\models\Color;
+use app\models\Sales;
 use app\models\Segnaposto;
 /**
  * This is the model class for table "quote".
@@ -102,6 +103,11 @@ class Quote extends \yii\db\ActiveRecord
     public function getClient(){
         $client = Client::findOne([$this->id_client]);
         return !empty($client) ? $client->name." ".$client->surname : "";
+    }
+
+    public function getSale(){
+        $sale = Sales::findOne([$this->id_sconto]);
+        return !empty($sale) ? $sale->name." ".$sale->formatPercentage($sale->amount) : " - ";
     }
 
     public function getPlaceholder(){

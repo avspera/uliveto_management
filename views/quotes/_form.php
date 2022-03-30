@@ -84,17 +84,7 @@ $prefix_url = Yii::getAlias("@web");
                     <div class="form-group field-quote-amount-0">
                         <label class="control-label" for="quote-amount-0">Quantità</label>
                         <div class="input-group inline-group">
-                            <!-- <div class="input-group-prepend">
-                                <button onclick="changeAmount(0, 'detract')" class="btn btn-warning btn-minus">
-                                <i class="fa fa-minus"></i>
-                                </button>
-                            </div> -->
                             <input type="number" min="1" id="quote-amount-0" class="form-control" readonly name="Quote[amount][0]" prevValue=0 onchange="manualChangeAmount(0)" value="0">
-                            <!-- <div class="input-group-append">
-                                <button onclick="changeAmount(0, 'add')" class="btn btn-success btn-plus">
-                                <i class="fa fa-plus"></i>
-                                </button>
-                            </div> -->
                         </div>
                     </div>
                 </div>
@@ -126,14 +116,21 @@ $prefix_url = Yii::getAlias("@web");
         <div class="card-body table-responsive">
 
             <div class="row">
-                <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'confetti')->dropdownlist([0 => "NO", 1 => "SI"], ['prompt' => "Scegli"]) ?></div>
-                <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'prezzo_confetti')->textInput(['maxlength' => true, "onchange" => "addPrezzoAggiuntivo(value)"]); ?></div>
-                <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'confetti_omaggio')->checkBox(["onChange" => "removePrezzoAggiuntivo(value)"]); ?></div>
+                <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'confetti')->dropdownlist([0 => "NO", 1 => "SI"], ['prompt' => "Scegli", 'onchange' => "enableConfettiFields(value)"]) ?></div>
+                <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'prezzo_confetti')->textInput(['maxlength' => true, "onchange" => "addPrezzoAggiuntivo(value)", "readonly" => true, "type" => "number"]); ?></div>
+                <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'confetti_omaggio')->radio(["onChange" => "removePrezzoAggiuntivo('confetti')", "disabled" => true]); ?></div>
                 <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'placeholder')->dropdownlist(yii\helpers\ArrayHelper::map(app\models\Segnaposto::find()->orderBy('label')->all(), 'id', 'label'), ['prompt' => 'Scegli']); ?></div>
             </div>
 
             <div class="row">
-                <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'custom_amount')->textInput(['maxlength' => true]) ?></div>
+                <div class="col-md-3 col-sm-4 col-12">
+                    <div class="form-group field-quote-custom_amount">
+                        <label class="control-label" for="quote-custom_amount">Costo personalizzazione</label>
+                        <input prevValue=0 onchange="value == 0 ? removePrezzoAggiuntivo('custom_amount') : addPrezzoAggiuntivo(value, 'custom_amount')" type="number" id="quote-custom_amount" class="form-control" name="Quote[custom_amount]">
+
+                        <div class="help-block"></div>
+                    </div>
+                </div>
                 <div class="col-md-9 col-sm-12 col-12"><?= $form->field($model, 'custom')->textarea(['rows' => 6]) ?></div>    
             </div>
         </div>
@@ -149,8 +146,16 @@ $prefix_url = Yii::getAlias("@web");
 
             <div class="row">
                 <div class="col-md-4 col-sm-4 col-12"><?= $form->field($model, 'id_sconto')->dropdownlist(yii\helpers\ArrayHelper::map(app\models\Sales::find()->orderBy('name')->all(), 'id', 'name'), ['prompt' => 'Scegli', "onChange" => "applySales(value)", 'disabled' => true]); ?></div>
-                <div class="col-md-4 col-sm-4 col-12"><?= $form->field($model, 'total_no_vat')->textInput(['maxlength' => true, "readonly" => true]) ?></div>
-                <div class="col-md-4 col-sm-4 col-12"><?= $form->field($model, 'total')->textInput(['maxlength' => true, "readonly" => true]) ?></div>
+                <div class="col-md-4 col-sm-4 col-12">
+                    <?= $form->field($model, 'total_no_vat')->textInput(['maxlength' => true, "readonly" => true]) ?>
+                </div>
+                <div class="col-md-4 col-sm-4 col-12">
+                    <div class="form-group field-quote-total_no_vat">
+                        <label class="control-label" for="quote-total">Totale <i onclick="editTotal()" style="color: orange" class="fas fa-pencil-alt"></i></label>
+                        <input type="text" id="quote-total" class="form-control" name="Quote[total]" value="0" readonly>
+                        <div class="help-block"></div>
+                    </div>
+                </div>
             </div>
             <div class="row">
                 <div class="col-md-4 col-sm-4 col-12"><?= $form->field($model, 'deposit')->textInput(['maxlength' => true, "onchange" => "subtractDeposit()"]) ?></div>
@@ -232,6 +237,7 @@ $prefix_url = Yii::getAlias("@web");
 
 
 function enableFields(index){
+    console.log("Index", index);
     $("#quote-amount-"+index).removeAttr("readonly");
     $("#quote-color-"+index).removeAttr("disabled");
     $("#quote-custom_color-"+index).removeAttr("readonly");
@@ -240,8 +246,30 @@ function enableFields(index){
     $("#quote-id_sconto").removeAttr("disabled");
 }
 
+function editTotal(){
+    let element = $("#quote-total");
+    if(element.attr("readonly"))
+        $("#quote-total").removeAttr("readonly");
+    else{
+        let currentTotal       = element.val();
+        currentTotal           = Number.isNaN(currentTotal) ? 0 : parseFloat(currentTotal)
+        element.attr("readonly", true)
+    }
+        
+}
+
+function enableConfettiFields(value){
+    if(value){
+        $("#quote-prezzo_confetti").removeAttr("readonly");
+        $("#quote-confetti_omaggio").removeAttr("disabled");
+    }else{
+        $("#quote-prezzo_confetti").attr("readonly", true);
+        $("#quote-confetti_omaggio").attr("disabled", true);
+    }
+}
+
 function manualChangeAmount(index){
-    var prev = $(`#quote-amount-${index}`).attr("prevValue");;
+    var prev = $(`#quote-amount-${index}`).attr("prevValue");
     prev    = Number.isNaN(prev) ? 0 : parseInt(prev);
     var current = $(`#quote-amount-${index}`).val();
     current = Number.isNaN(current) ? 0 : parseInt(current);
@@ -253,17 +281,17 @@ function manualChangeAmount(index){
         
         if(prev < current){
             let difference      = parseInt(current-prev);
-            subtotal        = parseFloat(difference*price);
+            subtotal            = parseFloat(difference*price);
             currentTotalNoVat   = currentTotalNoVat + subtotal;
         }else{
             let difference      = parseInt(prev-current);
-            subtotal        = parseFloat(difference*price);
+            subtotal            = parseFloat(difference*price);
             currentTotalNoVat   = currentTotalNoVat - subtotal;
         }
 
         currentTotalNoVat = Math.abs(currentTotalNoVat)
         
-        $("#productSubtotal-"+index).val(currentTotalNoVat);
+        $("#productSubtotal-"+index).val(subtotal);
 
         let newTotalWithVat = currentTotalNoVat + parseFloat(currentTotalNoVat / 100) * 4;
         
@@ -334,24 +362,25 @@ function applySales(value){
                 let sale = parseInt(data.amount);
                 let currentTotal = $("#quote-total_no_vat").val();
                 parseFloat(currentTotal);
+                
                 console.log("currentTotalBeforeSale", currentTotal);
+
                 $("input[id^='productSubtotal-']").each(function() {
                     let currentValue    = $(this).val();
-                    console.log("currentValue", currentValue)
                     currentValue        = Number.isNaN(currentValue) ? 0 : parseFloat(currentValue)
                     sumPrice            += currentValue 
                 });
                 
                 //price sum of all products
                 subtotal    = sumPrice
-                console.log("price sum of all bottles ", subtotal)
-                //subtract from currentTotal (where might be additional services prices)
-                let newTotalNoVat   = (currentTotal - subtotal)
-                console.log("sottrai da currentTotal il prezzo delle bottiglie", newTotalNoVat)
-                subtotal            = subtotal * ((100-sale) / 100) //apply sale
-                console.log("apply sale", subtotal)
-                //update current total by adding the saled price to services prices in currentTotal
-                newTotalNoVat = Math.abs(parseFloat(newTotalNoVat) + subtotal)
+                let percentage      = parseFloat((subtotal*sale)/100)
+                subtotal            = subtotal - percentage
+                console.log("subtotal", subtotal);
+                
+                let newTotalNoVat   = subtotal
+                console.log("subtract from currentTotal", newTotalNoVat);
+                newTotalNoVat = Math.abs(parseFloat(newTotalNoVat))
+                
                 console.log("new totalNoVat", newTotalNoVat)
                 
                 $("#quote-total_no_vat").val(newTotalNoVat.toFixed(2));
@@ -381,14 +410,22 @@ function applySales(value){
 
 function removeProductLine(index){
     let id = `#prod_${index}`;
+    
     let price   = $('#quote-product-'+index+" option:selected").attr("price");
+    price       = Number.isNaN(price) ? 0 : parseFloat(price)
     let amount  = $("#quote-amount-"+index).val();
-    let currentTotal =  $("#quote-total_no_vat").val();
-    parseFloat(currentTotal);
-    let newTotalNoVat = currentTotal-parseFloat(price*amount);
-    let newTotalWithVat = applyIvaToTotal(newTotalNoVat)
+    amount      = Number.isNaN(amount) ? 0 : parseInt(amount)
+    if(amount == 0) 
+        {
+            $(id).remove(); 
+            return
+        }
+    let currentTotal    =  $("#quote-total_no_vat").val();
+    currentTotal        = Number.isNaN(currentTotal) ? 0 : parseFloat(currentTotal);
+    let subtotal        = price*amount;
+    let newTotalNoVat   = Math.abs((currentTotal-subtotal));
     $('#quote-total_no_vat').val(newTotalNoVat.toFixed(2));
-    $('#quote-total').val(newTotalWithVat.toFixed(2)); 
+    let newTotalWithVat = applyIvaToTotal(newTotalNoVat)
     $(id).remove()
 }
 
@@ -400,46 +437,69 @@ function applyIvaToTotal(newTotalNoVat){
 
 function calculatePrezzoAggiuntivo(price){
     let subtotal = 0;
-    let amount   = 0; 
+    let amount   = 0;
     $('input[id^="quote-amount-"]').each(function() {
-        amount      += $(this).val();
-        amount      = Number.isNaN(amount) ? 0 : parseInt(amount)
-        subtotal    = parseFloat(amount*price)
+        amount      = $(this).val();
+        amount      = Number.isNaN(amount) ? 0 : parseInt(amount)  
+        subtotal    += amount 
     });
-
+    
+    subtotal    = parseFloat(subtotal*price)
+    
     return subtotal;
 }
-//FIX THIS
-function addPrezzoAggiuntivo (price) {
+
+function addPrezzoAggiuntivo (price, target= "") {
     let subtotal        = this.calculatePrezzoAggiuntivo(price)
+    console.log("subtotal", subtotal);
     let currentTotal    = $('#quote-total_no_vat').val();
     currentTotal        = Number.isNaN(currentTotal) ? 0 : parseFloat(currentTotal)
+    
     let newTotalNoVat   = currentTotal+subtotal;
+    
+    if(target == "custom_amount"){
+        let currentCustomAmount = $('#quote-custom_amount').val()
+        $('#quote-custom_amount').attr("prevValue", currentCustomAmount)
+    }
     $('#quote-total_no_vat').val(newTotalNoVat.toFixed(2))
     applyIvaToTotal(newTotalNoVat); 
 }
 
-function removePrezzoAggiuntivo (price) {
-    let subtotal        = calculatePrezzoAggiuntivo(price)
+function calculateSumProducts() {
+    let sumProducts = 0;
+    $("input[id^='quote-amount-']").each(function() {
+        let currentValue    = $(this).val();
+        currentValue        = Number.isNaN(currentValue) ? 0 : parseFloat(currentValue)
+        sumProducts            += currentValue 
+    });
+
+    return sumProducts;
+}
+
+function removePrezzoAggiuntivo (target) 
+{   
+    let price           = target == "confetti" ? $('#quote-prezzo_confetti').val() : $('#quote-custom_amount').val();
+    price               = Number.isNaN(price) ? 0 : parseFloat(price)
+    if(price == 0 && target == "custom_amount"){
+        price = $('#quote-custom_amount').attr("prevVal")
+    }
     let currentTotal    = $('#quote-total_no_vat').val();
     currentTotal        = Number.isNaN(currentTotal) ? 0 : parseFloat(currentTotal)
-    let newTotalNoVat   = Math.abs(currentTotal-subtotal);
+    let sumProducts     = this.calculateSumProducts();
+    let subtotal        = sumProducts * price;
+    console.log("currentTotal", currentTotal)
+    console.log("subtotal", subtotal);
+    let newTotalNoVat   = Math.abs(currentTotal-subtotal).toFixed(2);
     $('#quote-total_no_vat').val(newTotalNoVat)
     applyIvaToTotal(newTotalNoVat); 
 }
 
-function addCustomAmount (price) {
-    let currentTotal    = $('#quote-total_no_vat').val();
-    let newTotalNoVat   = currentTotal+price;
-    $('#quote-total_no_vat').val(parseFloat(newTotalNoVat).toFixed(2))
-    applyIvaToTotal(newTotalNoVat);
-}
 
 function addProductLine(){
     let index   = $("div[id^='prod_']").last().attr("id");
     let node    = $("div[id^='prod_']");
     index       = index.substr(index.indexOf("_")+1, 1);
-    index       = parseInt(index+1)
+    index       = parseInt(index)+1
     
     let html = 
         `<div class="row prod" id="prod_${index}">

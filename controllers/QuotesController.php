@@ -148,7 +148,7 @@ class QuotesController extends Controller
                         $quoteDetails->id_quote     = $model->id;
                         $quoteDetails->amount       = $model->amount[$i];
                         $quoteDetails->id_packaging = $model->packaging[$i];
-                        $quoteDetails->id_color     = $model->color[$i];
+                        $quoteDetails->id_color     = isset($model->color[$i]) ? $model->color[$i] : $model->custom_color[$i] ;
                         $quoteDetails->created_at   = date("Y-m-d H:i:s");
                         if(!$quoteDetails->save()){
                             print_r($quoteDetails->getErrors());
