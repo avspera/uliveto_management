@@ -80,7 +80,7 @@ $prefix_url = Yii::getAlias("@web");
                         <div class="help-block"></div>
                     </div>
                 </div>
-                <div class="col-md-3 col-sm-4 col-12" style="display:inline-block">
+                <div class="col-md-2 col-sm-4 col-12" style="display:inline-block">
                     <div class="form-group field-quote-amount-0">
                         <label class="control-label" for="quote-amount-0">Quantità</label>
                         <div class="input-group inline-group">
@@ -98,11 +98,11 @@ $prefix_url = Yii::getAlias("@web");
                         </div>
                     </div>
                 </div>
-                <div class="col-md-1 col-sm-6 col-12">
+                <div class="col-md-2 col-sm-6 col-12">
                     <?= $form->field($model, 'color[0]')->dropdownlist(yii\helpers\ArrayHelper::map(app\models\Color::find()->orderBy('label')->all(), 'id', 'label'), ['prompt' => 'Scegli', 'disabled' => true])->label('Colore'); ?>
                 </div>
-                <div class="col-md-2 col-sm-4 col-12"><?= $form->field($model, 'custom_color[0]')->textInput(["maxlenght" => true, "readonly" => true]) ?></div>
-                <div class="col-md-3 col-sm-6 col-12">
+                <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'custom_color[0]')->textInput(["maxlenght" => true, "readonly" => true]) ?></div>
+                <div class="col-md-2 col-sm-6 col-12">
                     <div class="form-group field-quote-id_packaging-0 required">
                         <label class="control-label" for="quote-id_packaging-0">Confezione</label>
                         <select disabled id="quote-id_packaging-0" class="form-control" name="Quote[id_packaging][0]" onchange="addPackagingPrice(0)" aria-required="true">
@@ -128,7 +128,7 @@ $prefix_url = Yii::getAlias("@web");
             <div class="row">
                 <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'confetti')->dropdownlist([0 => "NO", 1 => "SI"], ['prompt' => "Scegli"]) ?></div>
                 <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'prezzo_confetti')->textInput(['maxlength' => true, "onchange" => "addPrezzoConfetti(value)"]); ?></div>
-                <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'confetti_omaggio')->checkBox(["onChange" => "removePrezzoConfetti()"]); ?></div>
+                <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'confetti_omaggio')->checkBox(["onChange" => "removePrezzoConfetti(value)"]); ?></div>
             </div>
             <div class="row">
                 <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'custom_amount')->textInput(['maxlength' => true]) ?></div>
@@ -220,19 +220,6 @@ $prefix_url = Yii::getAlias("@web");
     </div>
     
     <?php ActiveForm::end(); ?>
-
-    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-    <div class="toast-header">
-        <strong class="mr-auto">Bootstrap</strong>
-        <small>11 mins ago</small>
-        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    <div class="toast-body">
-        Hello, world! This is a toast message.
-    </div>
-</div>
 
 </div>
 <?php $prefix_url = Yii::getAlias("@web"); ?>
@@ -340,27 +327,45 @@ function applySales(value){
             let sumPrice    = 0;
             if(data.status == "200")
             {
-                let sale = data.amount;
-                $('input:hidden').each(function() {
-                    sumPrice    += $(this).val();
-                    sumPrice    = Number.isNaN(sumPrice) ? 0 : parseFloat(sumPrice)
-                    subtotal    = parseFloat(sumPrice)
-                    console.log("subtotal", subtotal)
-                    subtotal    = subtotal - (subtotal/100)* sale
-                });
-
-                
+                let sale = parseInt(data.amount);
                 let currentTotal = $("#quote-total_no_vat").val();
                 parseFloat(currentTotal);
-                let newTotalNoVat   = currentTotal - subtotal;
-                newTotalNoVat = (newTotalNoVat + (newTotalNoVat / 100) * 4);
-                $("#quote-total_no_vat").val(Math.abs(newTotalNoVat.toFixed(2)));
+                console.log("currentTotalBeforeSale", currentTotal);
+                $("input[id^='productSubtotal-']").each(function() {
+                    let currentValue    = $(this).val();
+                    console.log("currentValue", currentValue)
+                    currentValue        = Number.isNaN(currentValue) ? 0 : parseFloat(currentValue)
+                    sumPrice            += currentValue 
+                });
+                
+                //price sum of all products
+                subtotal    = sumPrice
+                console.log("price sum of all bottles ", subtotal)
+                //subtract from currentTotal (where might be additional services prices)
+                let newTotalNoVat   = (currentTotal - subtotal)
+                console.log("sottrai da currentTotal il prezzo delle bottiglie", newTotalNoVat)
+                subtotal            = subtotal * ((100-sale) / 100) //apply sale
+                console.log("apply sale", subtotal)
+                //update current total by adding the saled price to services prices in currentTotal
+                newTotalNoVat = Math.abs(parseFloat(newTotalNoVat) + subtotal)
+                console.log("new totalNoVat", newTotalNoVat)
+                
+                $("#quote-total_no_vat").val(newTotalNoVat.toFixed(2));
+                
                 applyIvaToTotal(newTotalNoVat)
                 alertClass  = "alert-success";
-                alertMsg    = "Hai applicato lo sconto del "+sale+"%";
+                alertMsg    = `Hai applicato lo sconto del ${sale}%. Era ${currentTotal} &euro;`;
+
+                let html = `
+                    <div style="margin-top: 5px;" class="alert ${alertClass}">
+                        ${alertMsg}
+                    </div>
+                `
+
+                $("#quote-total_no_vat").siblings('div:first').html(html)
             }
 
-            $(".alert").prepend(alertMsg)
+            
             $(".alert").addClass(alertClass);
             $(".alert").show()
         }
@@ -386,7 +391,7 @@ function applyIvaToTotal(newTotalNoVat){
     return out;
 }
 
-function calculatePrezzoContetti(price){
+function calculatePrezzoConfetti(price){
     let subtotal = 0;
     let amount   = 0; 
     $('input[id^="quote-amount-"]').each(function() {
@@ -399,16 +404,16 @@ function calculatePrezzoContetti(price){
 }
 //FIX THIS
 function addPrezzoConfetti (price) {
-    let subtotal        = this.calculatePrezzoContetti(price)
+    let subtotal        = this.calculatePrezzoConfetti(price)
     let currentTotal    = $('#quote-total_no_vat').val();
     currentTotal        = Number.isNaN(currentTotal) ? 0 : parseFloat(currentTotal)
     let newTotalNoVat   = currentTotal+subtotal;
-    $('#quote-total_no_vat').val(newTotalNoVat)
+    $('#quote-total_no_vat').val(newTotalNoVat.toFixed(2))
     applyIvaToTotal(newTotalNoVat); 
 }
 
-function removePrezzoConfetti () {
-    let subtotal        = calculatePrezzoConfetti()
+function removePrezzoConfetti (price) {
+    let subtotal        = calculatePrezzoConfetti(price)
     let currentTotal    = $('#quote-total_no_vat').val();
     currentTotal        = Number.isNaN(currentTotal) ? 0 : parseFloat(currentTotal)
     let newTotalNoVat   = Math.abs(currentTotal-subtotal);
@@ -444,7 +449,7 @@ function addProductLine(){
                     <div class="help-block"></div>
                 </div>
             </div>
-            <div class="col-md-3 col-sm-4 col-12" style="display:inline-block">
+            <div class="col-md-2 col-sm-4 col-12" style="display:inline-block">
                 <div class="form-group field-quote-amount-${index}">
                     <label class="control-label" for="quote-amount-${index}">Quantità</label>
                     <div class="input-group inline-group">
@@ -452,7 +457,7 @@ function addProductLine(){
                     </div>
                 </div>
             </div>
-            <div class="col-md-1 col-sm-6 col-12">
+            <div class="col-md-2 col-sm-6 col-12">
                 <div class="form-group field-quote-color-${index} required">
                     <label class="control-label" for="quote-color-${index}">Colore</label>
                     <select disabled id="quote-color-${index}" class="form-control" name="Quote[color][${index}]" aria-required="true">
@@ -462,7 +467,7 @@ function addProductLine(){
                     <div class="help-block"></div>
                 </div>
             </div>
-            <div class="col-md-2 col-sm-4 col-12">
+            <div class="col-md-3 col-sm-4 col-12">
                 <div class="form-group field-quote-custom_color-${index}">
                     <label class="control-label" for="quote-custom_color-${index}">Colore personalizzato</label>
                     <input readonly type="text" id="quote-custom_color-${index}" class="form-control" name="Quote[custom_color][${index}]" maxlenght="">
@@ -470,7 +475,7 @@ function addProductLine(){
                     <div class="help-block"></div>
                 </div>
             </div>
-            <div class="col-md-3 col-sm-6 col-12">
+            <div class="col-md-2 col-sm-6 col-12">
                 <div class="form-group field-quote-packaging required">
                     <label class="control-label" for="quote-packaging">Confezione</label>
                     <select disabled="" id="quote-id_packaging-${index}" class="form-control" name="Quote[id_packaging][${index}]" onchange="addPackagingPrice(${index})" aria-required="true">
