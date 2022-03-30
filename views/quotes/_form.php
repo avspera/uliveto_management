@@ -127,9 +127,11 @@ $prefix_url = Yii::getAlias("@web");
 
             <div class="row">
                 <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'confetti')->dropdownlist([0 => "NO", 1 => "SI"], ['prompt' => "Scegli"]) ?></div>
-                <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'prezzo_confetti')->textInput(['maxlength' => true, "onchange" => "addPrezzoConfetti(value)"]); ?></div>
-                <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'confetti_omaggio')->checkBox(["onChange" => "removePrezzoConfetti(value)"]); ?></div>
+                <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'prezzo_confetti')->textInput(['maxlength' => true, "onchange" => "addPrezzoAggiuntivo(value)"]); ?></div>
+                <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'confetti_omaggio')->checkBox(["onChange" => "removePrezzoAggiuntivo(value)"]); ?></div>
+                <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'placeholder')->dropdownlist(yii\helpers\ArrayHelper::map(app\models\Segnaposto::find()->orderBy('label')->all(), 'id', 'label'), ['prompt' => 'Scegli']); ?></div>
             </div>
+
             <div class="row">
                 <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'custom_amount')->textInput(['maxlength' => true]) ?></div>
                 <div class="col-md-9 col-sm-12 col-12"><?= $form->field($model, 'custom')->textarea(['rows' => 6]) ?></div>    
@@ -198,14 +200,6 @@ $prefix_url = Yii::getAlias("@web");
                     ]);
                 ?></div>
             </div>
-
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="form-group">
-                        <?= Html::submitButton('Salva', ['class' => 'btn btn-success']) ?>
-                    </div>
-                </div>
-            </div>
         </div>
     
     </div>
@@ -216,7 +210,16 @@ $prefix_url = Yii::getAlias("@web");
         </div>
         <div class="card-body table-responsive">
             <?= $form->field($model, 'notes')->textarea(['rows' => 6]) ?>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <?= Html::submitButton('Salva', ['class' => 'btn btn-success']) ?>
+                    </div>
+                </div>
+            </div>
         </div>
+
+        
     </div>
     
     <?php ActiveForm::end(); ?>
@@ -311,6 +314,7 @@ function addPackagingPrice(index){
     $("#quote-total_no_vat").val(newTotalNoVat.toFixed(2));
     $("#quote-total").val(newTotal.toFixed(2));
 }
+
 function applySales(value){
     $.ajax({
         url: '<?= $prefixUrl ?>/web/sales/get-by-id',
@@ -357,8 +361,11 @@ function applySales(value){
                 alertMsg    = `Hai applicato lo sconto del ${sale}%. Era ${currentTotal} &euro;`;
 
                 let html = `
-                    <div style="margin-top: 5px;" class="alert ${alertClass}">
+                    <div style="margin-top: 5px;" class="alert ${alertClass} alert-dismissible">
                         ${alertMsg}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
                 `
 
@@ -391,7 +398,7 @@ function applyIvaToTotal(newTotalNoVat){
     return out;
 }
 
-function calculatePrezzoConfetti(price){
+function calculatePrezzoAggiuntivo(price){
     let subtotal = 0;
     let amount   = 0; 
     $('input[id^="quote-amount-"]').each(function() {
@@ -403,8 +410,8 @@ function calculatePrezzoConfetti(price){
     return subtotal;
 }
 //FIX THIS
-function addPrezzoConfetti (price) {
-    let subtotal        = this.calculatePrezzoConfetti(price)
+function addPrezzoAggiuntivo (price) {
+    let subtotal        = this.calculatePrezzoAggiuntivo(price)
     let currentTotal    = $('#quote-total_no_vat').val();
     currentTotal        = Number.isNaN(currentTotal) ? 0 : parseFloat(currentTotal)
     let newTotalNoVat   = currentTotal+subtotal;
@@ -412,8 +419,8 @@ function addPrezzoConfetti (price) {
     applyIvaToTotal(newTotalNoVat); 
 }
 
-function removePrezzoConfetti (price) {
-    let subtotal        = calculatePrezzoConfetti(price)
+function removePrezzoAggiuntivo (price) {
+    let subtotal        = calculatePrezzoAggiuntivo(price)
     let currentTotal    = $('#quote-total_no_vat').val();
     currentTotal        = Number.isNaN(currentTotal) ? 0 : parseFloat(currentTotal)
     let newTotalNoVat   = Math.abs(currentTotal-subtotal);
@@ -429,7 +436,7 @@ function addCustomAmount (price) {
 }
 
 function addProductLine(){
-    let index   = $("div[id^='prod_']").attr("id");
+    let index   = $("div[id^='prod_']").last().attr("id");
     let node    = $("div[id^='prod_']");
     index       = index.substr(index.indexOf("_")+1, 1);
     index       = parseInt(index+1)

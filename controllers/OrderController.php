@@ -8,6 +8,7 @@ use app\models\QuoteSearch;
 use app\models\QuoteDetailsSearch;
 use app\models\PaymentSearch;
 use app\models\Product;
+use app\models\Segnaposto;
 use app\models\Client;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -95,7 +96,7 @@ class OrderController extends Controller
         $detailsModel = new QuoteDetailsSearch();
         $detailsModel->id_quote = $id;
         $products = $detailsModel->search($this->request->queryParams);
-
+        $segnaposto = Segnaposto::findOne(["id" => $model->placeholder]);
         $paymentModel = new PaymentSearch();
         $paymentModel->id_quote = $id;
         $payments     = $paymentModel->search([]);
@@ -105,7 +106,8 @@ class OrderController extends Controller
             'model'     => $model,
             'client'    => !empty($client) ? $client->name." ".$client->surname : "",
             'products'  => $products,
-            'payments'  => $payments 
+            'payments'  => $payments,
+            'segnaposto' => $segnaposto
         ]);
     }
 

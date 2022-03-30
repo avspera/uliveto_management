@@ -8,6 +8,7 @@ use app\models\QuoteSearch;
 use app\models\QuoteDetails;
 use app\models\QuoteDetailsSearch;
 use app\models\Product;
+use app\models\Segnaposto;
 use app\models\Packaging;
 use app\models\Client;
 use yii\web\Controller;
@@ -104,10 +105,12 @@ class QuotesController extends Controller
             $detailsModel = new QuoteDetailsSearch();
             $detailsModel->id_quote = $id;
             $quoteDetails = $detailsModel->search($this->request->queryParams);
+            $segnaposto   = Segnaposto::findOne(["id" => $model->placeholder]);
             
             return $this->render('view', [
                 'model'         => $model,
-                'quoteDetails'  => $quoteDetails
+                'quoteDetails'  => $quoteDetails,
+                'segnaposto'    => $segnaposto
             ]);
         }catch(NotFoundHttpException $e){
             if(empty($model)){
@@ -166,7 +169,6 @@ class QuotesController extends Controller
         
         $products   = Product::find()->select(["id", "name", "price"])->orderBy(["name" => SORT_ASC])->all();
         $packagings = Packaging::find()->select(["id", "label", "price"])->orderBy(["label" => SORT_ASC])->all(); 
-    
         $model->total_no_vat    = 0;
         $model->total           = 0;
         return $this->render('create', [
@@ -212,8 +214,14 @@ class QuotesController extends Controller
             Yii::$app->session->setFlash('error', "Ops...something went wrong [QU-102]");
         }
 
-        return $this->render('update', [
-            'model' => $model,
+        $products   = Product::find()->select(["id", "name", "price"])->orderBy(["name" => SORT_ASC])->all();
+        $packagings = Packaging::find()->select(["id", "label", "price"])->orderBy(["label" => SORT_ASC])->all(); 
+        $model->total_no_vat    = 0;
+        $model->total           = 0;
+        return $this->render('create', [
+            'model'         => $model,
+            'products'      => $products,
+            'packagings'    => $packagings,
         ]);
     }
 

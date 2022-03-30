@@ -61,7 +61,12 @@ use yii\grid\ActionColumn;
                         },
                     ],
                     'packaging',
-                    'placeholder',
+                    [
+                        'attribute' => 'placeholder',
+                        'value' => function($model){
+                            return $model->getPlaceholder()." - ".$model->getPlaceholderTotal();
+                        }
+                    ],
                     'notes:ntext',
                     [
                         'attribute' => 'total',
@@ -128,6 +133,50 @@ use yii\grid\ActionColumn;
         </div>
         
     </div>
+
+    <?php if(!empty($segnaposto)) { ?>
+        <div class="col-md-6">
+            <div class="card card-info">
+                <div class="card-header">
+                    <div class="text-md">Servizi aggiuntivi</div>
+                </div>
+
+                <div class="card-body">
+            
+                    <?= DetailView::widget([
+                        'model' => $segnaposto,
+                        'attributes' => [
+                            'id',
+                            'label',
+                            [
+                                'attribute' => 'image',
+                                'value' => function($model){
+                                    return !empty($model->image) ? 
+                                        Html::img(Url::to(Yii::getAlias("@web")."/".$model->image), ['class' => 'img-fluid img-responsive', 'alt' => $model->label, 'title' => $model->label]) 
+                                    : "-";
+                                },
+                                'format' => "raw"
+                            ],
+                            [
+                            'attribute' => 'price',
+                            'value' => function($model){
+                                return $model->formatNumber($model->price);
+                            },
+                            'format' => "raw"
+                            ],
+                            [
+                                'attribute' => 'created_at',
+                                'value' => function($model){
+                                    return $model->formatDate($model->created_at);
+                                }
+                            ],
+                        ],
+                    ]) ?>
+                </div>
+                    
+            </div>
+        </div>
+    <?php } ?> 
 
     <div class="card card-success">
         <div class="card-header">

@@ -71,6 +71,15 @@
                         'visible' => Yii::$app->user->identity->role == 0
                     ],
                     [
+                        'label' => 'Segnaposto',
+                        'iconStyle' => 'far',
+                        'items' => [
+                            ['label' => 'Nuovo', 'url' => ["segnaposto/create"], 'iconStyle' => 'far', 'icon' => 'dot-circle'],
+                            ['label' => 'Lista', 'url' => ["segnaposto/index"], 'iconStyle' => 'far', 'icon' => 'dot-circle'],
+                        ],
+                        'visible' => Yii::$app->user->identity->role == 0
+                    ],
+                    [
                         'label' => 'Sconti',
                         'iconStyle' => 'far',
                         'items' => [

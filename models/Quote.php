@@ -5,6 +5,7 @@ namespace app\models;
 use Yii;
 use app\models\Product;
 use app\models\Color;
+use app\models\Segnaposto;
 /**
  * This is the model class for table "quote".
  *
@@ -46,7 +47,7 @@ class Quote extends \yii\db\ActiveRecord
             [['order_number', 'created_at', 'id_client',  'confirmed', 'shipping', 'deadline'], 'required'],
             [['order_number', 'id_client', 'confirmed', 'placeholder', 'shipping', 'id_sconto'], 'integer'],
             [['created_at', 'updated_at', 'deadline', 'product', 'amount', 'color', 'packaging', 'total_no_vat',
-                'date_deposit', 'date_balance','placeholder', 'address', 'custom_color', 
+                'date_deposit', 'date_balance','placeholder', 'address', 'custom_color',  
                     'confetti', 'custom', 'custom_amount', 'id_sconto', 'prezzo_confetti', 'confetti_omaggio'], 'safe'],
             [['notes', 'address'], 'string'],
             [['total', 'deposit', 'balance'], 'number'],
@@ -101,6 +102,18 @@ class Quote extends \yii\db\ActiveRecord
     public function getClient(){
         $client = Client::findOne([$this->id_client]);
         return !empty($client) ? $client->name." ".$client->surname : "";
+    }
+
+    public function getPlaceholder(){
+        $placeholder = Segnaposto::findOne([$this->placeholder]);
+        return !empty($placeholder) ? $placeholder->label." ".$this->formatNumber($placeholder->price) : "";
+    }
+
+    public function getPlaceholderTotal(){
+        $placeholder = Segnaposto::find()->select(["price"])->where(["id" => $this->placeholder])->one();
+        if(empty($placeholder)) return "";
+        $sumProducts = QuoteDetails::find()->where(["id_quote" => $this->id])->sum("amount")->one();
+        return !empty($placeholder) ? $placeholder->price*$sumProducts : 0;
     }
 
     public function formatDate($value, $showHour = false){
