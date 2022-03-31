@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
@@ -40,8 +41,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     [
                         'attribute' => 'id_quote',
                         'value' => function($model){
-                            return $model->getQuote();
-                        }
+                            $quote = $model->getQuote();
+                            return Html::a($quote["quote"], Url::to([$quote["confirmed"] ? "order/view" : "quotes/view", "id" => $model->id_quote]));
+                        },
+                        'format' => "raw"
                     ],
                     [
                         'attribute' => 'amount',
@@ -49,6 +52,12 @@ $this->params['breadcrumbs'][] = $this->title;
                             return $model->formatNumber($model->amount);
                         },
                         'format' => "raw"
+                    ],
+                    [
+                        'attribute' => "fatturato",
+                        'value' => function($model){
+                            return $model->isFatturato();
+                        }
                     ],
                     [
                         'attribute' => 'created_at',

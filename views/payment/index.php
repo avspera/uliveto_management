@@ -35,8 +35,10 @@ $this->params['breadcrumbs'][] = $this->title;
                         [
                             'attribute' => 'id_quote',
                             'value' => function($model){
-                                return $model->getQuote();
-                            }
+                                $quote = $model->getQuote();
+                                return Html::a($quote["quote"], Url::to([$quote["confirmed"] ? "order/view" : "quotes/view", "id" => $model->id_quote]));
+                            },
+                            'format' => "raw"
                         ],
                         [
                             'attribute' => "total",
@@ -52,6 +54,13 @@ $this->params['breadcrumbs'][] = $this->title;
                                 return $model->formatNumber($model->amount);
                             },
                             'format' => "raw"
+                        ],
+                        [
+                            'attribute' => "fatturato",
+                            'value' => function($model){
+                                return $model->isFatturato();
+                            },
+                            'filter' => [0 => "NO", 1 => "SI"]
                         ],
                         [
                             'attribute' => 'created_at',

@@ -112,6 +112,7 @@ class QuotesController extends Controller
                 'quoteDetails'  => $quoteDetails,
                 'segnaposto'    => $segnaposto
             ]);
+            
         }catch(NotFoundHttpException $e){
             if(empty($model)){
                 Yii::$app->session->setFlash('error','Ops...preventivo non trovato');
@@ -171,6 +172,10 @@ class QuotesController extends Controller
         $packagings = Packaging::find()->select(["id", "label", "price"])->orderBy(["label" => SORT_ASC])->all(); 
         $model->total_no_vat    = 0;
         $model->total           = 0;
+        $client                 = ["id" => "", "text" => ""];
+        $queryParams            = $this->request->queryParams;
+        $model->id_client       = isset($queryParams["id_client"]) && !empty($queryParams["id_client"]) ? $queryParams["id_client"] : null;
+        
         return $this->render('create', [
             'model'         => $model,
             'products'      => $products,
@@ -251,16 +256,16 @@ class QuotesController extends Controller
                     ->where(["id_client" => $id_client])
                     ->orderBy(["created_at" => SORT_DESC])
                     ->all();
-            
+        
         $i = 0;
         foreach($data as $item){
             $out["results"][$i]["id"]   = $item->id;
             $out["results"][$i]["text"] = $item->id. " - ".$item->formatDate($item->created_at);
             $i++;
         }
+    
+        $out["status"] = "200";
         
-        if(!empty($out["results"]))
-            $out["status"] = "200";
         return $out;
     }
 

@@ -66,6 +66,13 @@ $text = json_encode("ciao come stai?")
                             return $model->getPlaceholder()." - ".$model->getPlaceholderTotal();
                         }
                     ],
+                    [
+                        'attribute' => "custom_amount",
+                        'value' => function($model){
+                            return !empty($model->custom_amount) ? $model->formatNumber($model->custom_amount) : "-";
+                        }
+                    ],
+                    'custom:ntext',
                     'notes:ntext',
                     [
                         'attribute' => 'total_no_vat',

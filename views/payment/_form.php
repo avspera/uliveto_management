@@ -78,6 +78,7 @@ use kartik\select2\Select2;
 
 <script>
     function getQuotes(id_client){
+        console.log("id_client", id_client);
         $("#payment-id_quote").html("");
         $("#payment-id_quote").append("<option>Scegli</option>");
         $.ajax({

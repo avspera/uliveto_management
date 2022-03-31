@@ -53,20 +53,19 @@ use yii\grid\ActionColumn;
                         },
                         'format' => "raw"
                     ],
-                    'amount',
-                    [
-                        'attribute' => 'color',
-                        'value' => function($model){
-                            return $model->getColor();
-                        },
-                    ],
-                    'packaging',
                     [
                         'attribute' => 'placeholder',
                         'value' => function($model){
                             return $model->getPlaceholder()." - ".$model->getPlaceholderTotal();
                         }
                     ],
+                    [
+                        'attribute' => "custom_amount",
+                        'value' => function($model){
+                            return $model->formatNumber($model->custom_amount);
+                        }
+                    ],
+                    'custom:ntext',
                     'notes:ntext',
                     [
                         'attribute' => 'total',

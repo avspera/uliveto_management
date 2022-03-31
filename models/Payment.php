@@ -56,10 +56,19 @@ class Payment extends \yii\db\ActiveRecord
 
 
     public function getQuote(){
+        $out = ["quote" => "", "confirmed" => 0];
         $quote = Quote::findOne([$this->id_quote]);
-        return !empty($quote) ? $quote->id." - ".$this->formatDate($quote->created_at) : "";
+        if(!empty($quote)){
+            $out["quote"]       = $quote->id." - ".$this->formatDate($quote->created_at);
+            $out["confirmed"]   = $quote->confirmed;
+        }
+        return $out;
     }
 
+    public function isFatturato(){
+        return $this->fatturato ? "SI" : "NO";
+    }
+    
     public function getTotal(){
         $quote = Quote::find()->select(["total"])->where(["id" => $this->id_quote])->one();
         return !empty($quote) ? $quote->total : "";

@@ -1,7 +1,7 @@
 <?php
 
 namespace app\controllers;
-
+use Yii;
 use app\models\Payment;
 use app\models\PaymentSearch;
 use yii\web\Controller;
@@ -87,12 +87,16 @@ class PaymentController extends Controller
     public function actionCreate()
     {
         $model = new Payment();
-
+        $error = false;
         if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
-            }else{
-                Yii::$app->session->setFlash('error', "Ops...something went wrong [PACK-101]");
+            if ($model->load($this->request->post())) {
+                $model->created_at  = date("Y-m-d H:i:s");
+                $model->fatturato   = 0;
+                if($model->save())
+                    return $this->redirect(['view', 'id' => $model->id]);
+                else{
+                    Yii::$app->session->setFlash('error', "Ops...something went wrong [PACK-101]");
+                }
             }
         } else {
             $model->loadDefaultValues();
