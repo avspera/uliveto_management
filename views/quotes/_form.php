@@ -104,7 +104,7 @@ $placeholders = \app\models\Segnaposto::find()->all();
                 <div class="col-md-2 col-sm-6 col-12">
                     <div class="form-group field-quote-id_packaging-0 required">
                         <label class="control-label" for="quote-id_packaging-0">Confezione</label>
-                        <select disabled id="quote-id_packaging-0" class="form-control" name="Quote[id_packaging][0]" onchange="addPackagingPrice(0)" aria-required="true">
+                        <select prevPrice=0 disabled id="quote-id_packaging-0" class="form-control" name="Quote[id_packaging][0]" onchange="addPackagingPrice(0)" aria-required="true">
                             <option price="" value="">Scegli</option>
                             <?php foreach($packagings as $packaging) { ?>
                                 <option price="<?= $packaging->price ?>" value="<?= $packaging->id ?>"><?= $packaging->label." - ".$packaging->formatNumber($packaging->price) ?> </option>
@@ -255,16 +255,32 @@ $placeholders = \app\models\Segnaposto::find()->all();
 
 <script>
 
+    
+        function getPrevSelectValue() {
+            let out;
+            $('select').on('focusin', function(){
+                $(this).data('val', $(this).val());
+            });
 
-function enableFields(index){
-    console.log("Index", index);
-    $("#quote-amount-"+index).removeAttr("readonly");
-    $("#quote-color-"+index).removeAttr("disabled");
-    $("#quote-custom_color-"+index).removeAttr("readonly");
-    $("#quote-id_packaging-"+index).removeAttr("disabled");
-    $("#quote-id_sconto-"+index).removeAttr("disabled");
-    $("#quote-id_sconto").removeAttr("disabled");
-}
+            $('select').on('change', function(){
+                var prev = $(this).data('val');
+                var current = $(this).val();
+                out.prev = prev
+                out.current = current
+                console.log("Prev value " + prev);
+                console.log("New value " + current);
+            });
+            return out;
+        }   
+
+    function enableFields(index){
+        $("#quote-amount-"+index).removeAttr("readonly");
+        $("#quote-color-"+index).removeAttr("disabled");
+        $("#quote-custom_color-"+index).removeAttr("readonly");
+        $("#quote-id_packaging-"+index).removeAttr("disabled");
+        $("#quote-id_sconto-"+index).removeAttr("disabled");
+        $("#quote-id_sconto").removeAttr("disabled");
+    }
 
 function editTotal(){
     let element = $("#quote-total");
@@ -275,7 +291,6 @@ function editTotal(){
         currentTotal           = Number.isNaN(currentTotal) ? 0 : parseFloat(currentTotal)
         element.attr("readonly", true)
     }
-        
 }
 
 function enableConfettiFields(value){
@@ -329,38 +344,45 @@ function subtractDeposit(){
     $('#quote-balance').val(parseFloat(balance).toFixed(2))
 }
 
-function addPackagingPrice(index){
-    let price   = $(`#quote-id_packaging-${index} option:selected`).attr("price");
-    let amount  = $("#quote-amount-"+index).val();
-    let currentTotalNoVat   = $("#quote-total_no_vat").val();
-    let currentTotal        = $("#quote-total").val();
-    let totalNoVat          = 0;
+function calculateNewTotal(prevValue, price, amount) {
+    let subtotalPackaging   = 0;
     let newTotalNoVat       = 0;
-    let newTotal            = 0;
-    let subtotalPackaging   = parseInt(amount) * parseFloat(price);
+    let currentTotalNoVat   = $("#quote-total_no_vat").val();
 
     if (Number.isNaN(currentTotalNoVat)) {
         currentTotalNoVat = 0;
     }else{
         currentTotalNoVat = parseFloat(currentTotalNoVat);
     }
-
-    if (Number.isNaN(currentTotal)) {
-        currentTotal = 0;
+    
+    if(prevValue == 0){
+        subtotalPackaging   = parseInt(amount) * parseFloat(price);
+        newTotalNoVat       = currentTotalNoVat + subtotalPackaging;
     }else{
-        currentTotal = parseFloat(currentTotal);
+        if(prevValue < price){
+            let difference = price - prevValue
+            subtotalPackaging  = parseInt(amount) * parseFloat(difference);
+            newTotalNoVat   = Math.abs(currentTotalNoVat+subtotalPackaging);
+        }else{
+            let difference      = Math.abs(prevValue - price);
+            subtotalPackaging   = parseInt(amount) * parseFloat(difference);
+            newTotalNoVat       = Math.abs(currentTotalNoVat-subtotalPackaging);
+        }
     }
     
-    if(price == ""){
-        newTotalNoVat   = currentTotalNoVat - subtotalPackaging;
-        newTotal        = currentTotal - subtotalPackaging;
-    }else{
-        newTotalNoVat   = currentTotalNoVat + subtotalPackaging;
-        newTotal        = currentTotal + subtotalPackaging;
-    }
-
     $("#quote-total_no_vat").val(newTotalNoVat.toFixed(2));
-    $("#quote-total").val(newTotal.toFixed(2));
+    applyIvaToTotal(newTotalNoVat)
+}
+
+function addPackagingPrice(index){
+    
+    let price       = $(`#quote-id_packaging-${index} option:selected`).attr("price");
+    let prevValue   = $(`#quote-id_packaging-${index}`).attr("prevPrice");
+    prevValue       = isNaN(prevValue) ? 0 : parseFloat(prevValue)
+    $(`#quote-id_packaging-${index}`).attr("prevPrice", price) //update prev value
+    let amount              = $("#quote-amount-"+index).val();
+    calculateNewTotal(prevValue, price, amount);
+
 }
 
 function applySales(value){
