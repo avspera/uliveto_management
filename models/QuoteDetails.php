@@ -32,8 +32,8 @@ class QuoteDetails extends \yii\db\ActiveRecord
     {
         return [
             [['id_quote', 'id_product', 'amount', 'created_at'], 'required'],
-            [['id_quote', 'id_product', 'amount', 'id_packaging'], 'integer'],
-            [['id_packaging',], 'safe'],
+            [['id_quote', 'id_product', 'amount', 'id_packaging', 'id_color'], 'integer'],
+            [['id_packaging', 'custom_color'], 'safe'],
             [['created_at'], 'string'],
         ];
     }
@@ -47,8 +47,10 @@ class QuoteDetails extends \yii\db\ActiveRecord
             'id' => 'ID',
             'id_quote' => 'Preventivo',
             'id_product' => 'Prodotto',
+            'id_color' => "Colore",
             'amount' => 'Quantità',
             'id_packaging' => 'Scatola',
+            'custom_color' => "Altro colore"
         ];
     }
 
@@ -58,7 +60,7 @@ class QuoteDetails extends \yii\db\ActiveRecord
     }
 
     public function getColor(){
-        $color = Color::findOne([$this->color]);
+        $color = Color::findOne([$this->id_color]);
         return !empty($color) ? $color->label : "";
     }
 

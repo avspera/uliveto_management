@@ -17,8 +17,8 @@ class QuoteDetailsSearch extends QuoteDetails
     public function rules()
     {
         return [
-            [['id', 'id_quote', 'id_product', 'amount', 'id_packaging'], 'integer'],
-            [['created_at'], 'string'],
+            [['id', 'id_quote', 'id_product', 'amount', 'id_packaging', 'id_color'], 'integer'],
+            [['created_at', 'custom_color'], 'string'],
         ];
     }
 
@@ -64,6 +64,7 @@ class QuoteDetailsSearch extends QuoteDetails
             'amount'        => $this->amount,
             'id_packaging'  => $this->id_packaging,
             'created_at'    => $this->created_at,
+            'custom_color'  => $this->custom_color,
         ]);
 
         return $dataProvider;

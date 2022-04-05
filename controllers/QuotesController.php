@@ -140,16 +140,17 @@ class QuotesController extends Controller
                 $model->updated_at      = date("Y-m-d H:i:s");
                 $model->confirmed       = 0;
                 $model->total_no_vat    = $model->total / (1 + 4 / 100);
+                
                 if($model->save()){
                     $i = 0;
-                    
                     foreach($model->product as $key => $value){
                         $quoteDetails = new QuoteDetails();
                         $quoteDetails->id_product   = $value;
                         $quoteDetails->id_quote     = $model->id;
                         $quoteDetails->amount       = $model->amount[$i];
                         $quoteDetails->id_packaging = $model->packaging[$i];
-                        $quoteDetails->id_color     = isset($model->color[$i]) ? $model->color[$i] : $model->custom_color[$i] ;
+                        $quoteDetails->id_color     = isset($model->color[$i]) ? $model->color[$i] : NULL;
+                        $quoteDetails->custom_color = isset($model->custom_color[$i]) ? $model->custom_color[$i] : NULL;
                         $quoteDetails->created_at   = date("Y-m-d H:i:s");
                         if(!$quoteDetails->save()){
                             print_r($quoteDetails->getErrors());
@@ -240,6 +241,7 @@ class QuotesController extends Controller
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
+        $quoteDetails = QuoteDetails::deleteAll(["id_quote" => $id]);
         Yii::$app->session->setFlash('success', "Preventivo cancellato con successo");
         return $this->redirect(['index']);
     }

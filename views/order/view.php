@@ -195,6 +195,15 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
                                 },
                             ],
                             [
+                                'attribute' => 'id_color',
+                                'value' => function($model){
+                                    return !empty($model->id_color) ? $model->getColor() : "";
+                                },
+                            ],
+                            [
+                                'attribute' => "custom_color",
+                            ],
+                            [
                                 'attribute' => 'id_packaging',
                                 'value' => function($model){
                                     return $model->getPackaging();
