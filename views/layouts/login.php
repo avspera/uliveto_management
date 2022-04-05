@@ -1,12 +1,11 @@
 <?php
 use yii\helpers\Html;
+use yii\helpers\Url;
 use app\models\LoginForm;
 
 \hail812\adminlte3\assets\FontAwesomeAsset::register($this);
 \hail812\adminlte3\assets\AdminLteAsset::register($this);
 $this->registerCssFile('https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback');
-
-$assetDir = Yii::$app->assetManager->getPublishedUrl('@vendor/almasaeed2010/adminlte/dist');
 
 $model = new LoginForm();
 ?>
@@ -21,12 +20,12 @@ $model = new LoginForm();
     <title>Accedi a Manager - OrciCilento</title>
     <?php $this->head() ?>
 </head>
-<body id="page-top" class="bg-gradient-green">
+<body id="page-top" class="bg-gradient-info">
 <?php $this->beginBody() ?>
 
-    <div class="container">
+    <div class="container" style="margin-top: 20px">
         <div class="d-flex justify-content-center">
-            <img src="<?=$assetDir?>/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+            <img src="<?=Yii::getAlias("@web")?>/images/logo_white.png" alt="L'uliveto" class="brand-image">
         </div>
 
         <div class="card" style="margin-top: 1rem; width: 500px; margin: 0 auto;float: none; margin-top: 20px">
@@ -57,14 +56,14 @@ $model = new LoginForm();
                 <div class="row">
                     <div class="col-8"></div>
                     <div class="col-4">
-                        <?= Html::submitButton('Entra', ['class' => 'btn btn-primary btn-block']) ?>
+                        <?= Html::submitButton('Entra', ['class' => 'btn btn-info btn-block']) ?>
                     </div>
                 </div>
 
                 <?php \yii\bootstrap4\ActiveForm::end(); ?>
 
                 <p class="mb-1">
-                    <a href="forgot-password.html">Ho dimenticato la password</a>
+                    <a style="color: orange" href="<?= Url::to(["site/request-password-reset"]) ?>">Ho dimenticato la password</a>
                 </p>
                 <!-- <p class="mb-0">
                     <a href="register.html" class="text-center">Register a new membership</a>

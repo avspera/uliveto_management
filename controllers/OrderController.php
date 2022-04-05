@@ -15,6 +15,11 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\filters\AccessControl;
+use app\utils\FKUploadUtils; 
+use yii\helpers\FileHelper;
+use yii\web\UploadedFile;
+
+
 /**
  * OrderController implements the CRUD actions for Quote model.
  */
@@ -36,13 +41,16 @@ class OrderController extends Controller
                             'update', 
                             'delete', 
                             'create',
+                            'upload-files',
                         ],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
                 ],
                 'denyCallback' => function ($rule, $action) {
-                    throw new \Exception('You are not allowed to access this page');
+                    $this->layout = 'error';
+                    return $this->render("../site/error");
+                    // throw new \Exception('You are not allowed to access this page');
                 }
             ],
         ];
@@ -158,6 +166,53 @@ class OrderController extends Controller
         }
 
         return $this->render('update', [
+            'model' => $model,
+        ]);
+    }
+
+    protected function manageUploadFiles($model) {
+
+        $uploader   = new FKUploadUtils();
+        $path       = Yii::getAlias('@webroot')."/uploads/documents/".$model->id_client;
+    
+        $dirCreated = FileHelper::createDirectory($path);
+        
+        $attachments = UploadedFile::getInstances($model, 'attachments');
+        
+        if (!empty($attachments)){
+            $files = [];
+            $i = 0;
+        
+            foreach($attachments as $attachment){
+                $filename = $uploader->generateAndSaveFile($attachment, $path);
+                $files[$i] = "uploads/documents/".$model->id_client."/".$filename;
+                $i++;
+            }
+            
+            $model->attachments = json_encode($files); 
+        }
+        
+        return $model->attachments;
+    }
+
+    public function actionUploadFiles($id)
+    {
+        $model = $this->findModel($id);
+
+        if ($this->request->isPost && $model->load($this->request->post())) {
+            
+            if (!empty($_FILES)) {
+                $model->attachments = $this->manageUploadFiles($model);
+            }
+
+            if($model->save())
+                return $this->redirect(['view', 'id' => $model->id]);
+            else{
+                return $model->getErrors();die;
+            }
+        }
+
+        return $this->render('upload-files', [
             'model' => $model,
         ]);
     }

@@ -7,13 +7,18 @@ use kartik\grid\GridView;
 use yii\grid\ActionColumn;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\Quote */
-    $this->title = $model->order_number." - ".$client;
-    $this->params['breadcrumbs'][] = ['label' => 'Ordini', 'url' => ['index']];
-    $this->params['breadcrumbs'][] = $this->title;
-    \yii\web\YiiAsset::register($this);
+/* @var $model app\models\Order */
+$client = $model->getClient();
+$clientPhone = $model->getClientPhone();
+$this->title = $model->order_number." - ".$client;
+$this->params['breadcrumbs'][] = ['label' => 'Preventivi', 'url' => ['index']];
+$this->params['breadcrumbs'][] = $this->title;
+\yii\web\YiiAsset::register($this);
+
+$text   = json_encode("ciao come stai?");
+$phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
 ?>
-<div class="quote-view">
+<div class="order-view">
 
     <div class="card">
         <div class="card-header">
@@ -25,8 +30,12 @@ use yii\grid\ActionColumn;
                     'method' => 'post',
                 ],
             ]) ?>
-            <?= Html::a('<i class="fas fa-file-pdf"></i> Genera PDF', ['/quotes/generate-pdf', 'id' => $model->id, 'flag' => "generate"], ['class' => 'btn btn-success']) ?>
-            <?= Html::a('<i class="fas fa-envelope"></i> Invia PDF', ['/quotes/generate-pdf', 'id' => $model->id, 'flag' => "send"], ['class' => 'btn btn-success']) ?>
+            <?= Html::a('<i class="fas fa-file-pdf"></i> Genera PDF', ['generate-pdf', 'id' => $model->id, 'flag' => "generate"], ['class' => 'btn btn-success']) ?>
+            <?= $phone ? Html::a('<i class="fas fa-comment"></i> Whatsapp', Url::to("https://wa.me/".$phone."/?text=".$text), ['class' => 'btn btn-primary']) : "" ?>
+            <?= Html::a('<i class="fas fa-check"></i> Conferma', ['confirm', 'id' => $model->id, 'flag' => "send"], ['class' => 'btn btn-info']) ?>
+            <?= Html::a('<span style="color:white"><i class="fas fa-upload"></i> Carica allegati</span>', ['upload-files', 'id' => $model->id], ['class' => 'btn btn-warning']) ?>
+            
+
         </div>
 
         <div class="card-body">
@@ -53,6 +62,7 @@ use yii\grid\ActionColumn;
                         },
                         'format' => "raw"
                     ],
+                    'packaging',
                     [
                         'attribute' => 'placeholder',
                         'value' => function($model){
@@ -60,13 +70,38 @@ use yii\grid\ActionColumn;
                         }
                     ],
                     [
+                        'attribute' => "confetti",
+                        'value' => function($model){
+                            $html = "";
+                            if($model->confetti){
+                                if($model->confetti_omaggio){
+                                    $html .= "<span style='text-decoration: line-through;'>".$model->formatNumber($model->prezzo_confetti)."</span> <span style='color: green'> - in omaggio</span>";
+                                }
+                                else{
+                                    $html .= "<span>".$model->formatNumber($model->prezzo_confetti)."</span>";
+                                }
+                            }else{
+                                $html .= "-";
+                            }
+                            return $html;
+                        },
+                        'format' => "raw"
+                    ],
+                    [
                         'attribute' => "custom_amount",
                         'value' => function($model){
-                            return $model->formatNumber($model->custom_amount);
+                            return !empty($model->custom_amount) ? $model->formatNumber($model->custom_amount) : "-";
                         }
                     ],
                     'custom:ntext',
                     'notes:ntext',
+                    [
+                        'attribute' => 'total_no_vat',
+                        'value' => function($model){
+                            return $model->formatNumber($model->total_no_vat);
+                        },
+                        'format' => "raw"
+                    ],
                     [
                         'attribute' => 'total',
                         'value' => function($model){
@@ -95,7 +130,12 @@ use yii\grid\ActionColumn;
                         },
                         'format' => "raw"
                     ],
-                    'shipping',
+                    [
+                        'attribute' => 'shipping',
+                        'value' => function($model){
+                            return $model->shipping ? $model->address : "NO";
+                        }
+                    ],
                     [
                         'attribute' => 'deadline',
                         'value' => function($model){
@@ -103,125 +143,115 @@ use yii\grid\ActionColumn;
                         },
                         'format' => "raw"
                     ],
+                    [
+                        'attribute' => "confirmed",
+                        "value" => function($model){
+                            return $model->confirmed ? "SI" : "NO";
+                        }
+                    ],
+                    [
+                        'attribute' => "attachments",
+                        'value' => function($model){
+                            if(!empty($model->attachments)){
+                                $html = "<div class='row'>";
+                                $attachments = json_decode($model->attachments, true);
+                                foreach($attachments as $file){
+                                    $html .= "<div style='margin: 5px'>";
+                                    $html .= Html::a("<i class='fas fa-file'></i> Allegato", Url::to([$file]));
+                                    $html .= "</div>";
+                                }
+                                $html .= "</div>";
+
+                                return $html;
+                            }else{
+                                return "-";
+                            }
+                        },
+                        'format' => "raw"
+                    ]
                 ],
             ]) ?>
 
         </div>
-    </div>    
-
-    <div class="card card-info">
-        <div class="card-header">
-            <div class="text-md">Dettagli prodotti</div>
-        </div>
-
-        <div class="card-body">
-       
-            <?= GridView::widget([
-                'dataProvider'  => $products,
-                'columns' => [
-                    ['class' => 'yii\grid\SerialColumn'],
-                    [
-                        'attribute' => 'id_product',
-                        'value' => function($model){
-                            return $model->getProduct();
-                        },
-                    ],
-                    [
-                        'attribute' => 'id_packaging',
-                        'value' => function($model){
-                            return $model->getPackaging();
-                        },
-                    ],
-                    'amount',
-                    [ 'class' => ActionColumn::className() ]
-                ]
-            ]); ?>
-        </div>
-        
-    </div>
-
-    <?php if(!empty($segnaposto)) { ?>
+    </div>  
+    
+    <div class="row">
         <div class="col-md-6">
             <div class="card card-info">
                 <div class="card-header">
-                    <div class="text-md">Servizi aggiuntivi</div>
+                    <div class="text-md">Dettagli prodotti</div>
                 </div>
 
                 <div class="card-body">
             
-                    <?= DetailView::widget([
-                        'model' => $segnaposto,
-                        'attributes' => [
-                            'id',
-                            'label',
+                    <?= GridView::widget([
+                        'dataProvider'  => $products,
+                        'columns' => [
+                            ['class' => 'yii\grid\SerialColumn'],
                             [
-                                'attribute' => 'image',
+                                'attribute' => 'id_product',
                                 'value' => function($model){
-                                    return !empty($model->image) ? 
-                                        Html::img(Url::to(Yii::getAlias("@web")."/".$model->image), ['class' => 'img-fluid img-responsive', 'alt' => $model->label, 'title' => $model->label]) 
-                                    : "-";
+                                    return $model->getProduct();
                                 },
-                                'format' => "raw"
                             ],
                             [
-                            'attribute' => 'price',
-                            'value' => function($model){
-                                return $model->formatNumber($model->price);
-                            },
-                            'format' => "raw"
-                            ],
-                            [
-                                'attribute' => 'created_at',
+                                'attribute' => 'id_packaging',
                                 'value' => function($model){
-                                    return $model->formatDate($model->created_at);
-                                }
+                                    return $model->getPackaging();
+                                },
                             ],
-                        ],
-                    ]) ?>
+                            'amount',
+                            [ 'class' => ActionColumn::className() ]
+                        ]
+                    ]); ?>
                 </div>
-                    
+                
             </div>
         </div>
-    <?php } ?> 
+        <?php if(!empty($segnaposto)) { ?>
+            <div class="col-md-6">
+                <div class="card card-info">
+                        <div class="card-header">
+                            <div class="text-md">Servizi aggiuntivi</div>
+                        </div>
 
-    <div class="card card-success">
-        <div class="card-header">
-            <div class="text-md">Pagamenti</div>
-        </div>
-
-        <div class="card-body">
-            <?= GridView::widget([
-                'dataProvider' => $payments,
-                'columns' => [
-                    ['class' => 'yii\grid\SerialColumn'],
-                    [
-                        'attribute' => 'id_client',
-                        'value' => function($model){
-                            return $model->getClient();
-                        }
-                    ],
-                    [
-                        'attribute' => 'id_quote',
-                        'value' => function($model){
-                            return $model->getQuote();
-                        }
-                    ],
-                    [
-                        'attribute' => 'amount',
-                        'value' => function($model){
-                            return $model->formatNumber($model->amount);
-                        },
-                        'format' => "raw"
-                    ],
-                    [
-                        'attribute' => 'created_at',
-                        'value' => function($model){
-                            return $model->formatDate($model->created_at);
-                        }
-                    ],
-                ]
-            ]); ?>
-        </div>
-
+                        <div class="card-body">
+                    
+                            <?= DetailView::widget([
+                                'model' => $segnaposto,
+                                'attributes' => [
+                                    'id',
+                                    'label',
+                                    [
+                                        'attribute' => 'image',
+                                        'value' => function($model){
+                                            return !empty($model->image) ? 
+                                                Html::img(Url::to(Yii::getAlias("@web")."/".$model->image), ['class' => 'img-fluid img-responsive', 'alt' => $model->label, 'title' => $model->label]) 
+                                            : "-";
+                                        },
+                                        'format' => "raw"
+                                    ],
+                                    [
+                                    'attribute' => 'price',
+                                    'value' => function($model){
+                                        return $model->formatNumber($model->price);
+                                    },
+                                    'format' => "raw"
+                                    ],
+                                    [
+                                        'attribute' => 'created_at',
+                                        'value' => function($model){
+                                            return $model->formatDate($model->created_at);
+                                        }
+                                    ],
+                                ],
+                            ]) ?>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        <?php } ?> 
     </div>
+
 </div>

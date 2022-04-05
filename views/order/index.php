@@ -92,6 +92,12 @@ $this->params['breadcrumbs'][] = $this->title;
                     //'deadline',
                     [
                         'class' => ActionColumn::className(),
+                        'visibleButtons' => [
+                            'update' => function ($model, $key, $index) {
+                                return false;
+                             },
+                        ]
+                        
                     ],
                 ],
             ]); ?>

@@ -52,6 +52,8 @@ class Quote extends \yii\db\ActiveRecord
                     'confetti', 'custom', 'custom_amount', 'id_sconto', 'prezzo_confetti', 'confetti_omaggio'], 'safe'],
             [['notes', 'address'], 'string'],
             [['total', 'deposit', 'balance'], 'number'],
+            [['attachments'], 'file', 'skipOnEmpty' => true, 'extensions' => 'jpg, png, pdf'],
+
         ];
     }
 
@@ -85,7 +87,7 @@ class Quote extends \yii\db\ActiveRecord
             'custom_amount' => "Costo personalizzazione",
             'confetti'      => "Confetti",
             'invoice'       => "Fattura",
-            'attachements'  => "Allegati",
+            'attachments'  => "Allegati",
             'id_sconto'     => "Sconto"
         ];
     }
@@ -103,6 +105,11 @@ class Quote extends \yii\db\ActiveRecord
     public function getClient(){
         $client = Client::findOne([$this->id_client]);
         return !empty($client) ? $client->name." ".$client->surname : "";
+    }
+
+    public function getClientPhone(){
+        $client = Client::findOne([$this->id_client]);
+        return !empty($client) ? $client->phone : "";
     }
 
     public function getSale(){

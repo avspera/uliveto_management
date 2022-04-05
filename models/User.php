@@ -127,6 +127,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
 
         $timestamp = (int) substr($token, strrpos($token, '_') + 1);
         $expire = Yii::$app->params['user.passwordResetTokenExpire'];
+        
         return $timestamp + $expire >= time();
     }
 
@@ -137,6 +138,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
      * @return static|null
      */
     public static function findByPasswordResetToken($token) {
+        
         if (!static::isPasswordResetTokenValid($token)) {
             return null;
         }
@@ -241,4 +243,5 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
         $hash = Yii::$app->getSecurity()->generatePasswordHash($password);
         return Yii::$app->getSecurity()->validatePassword($password, $hash);
     }
+    
 }

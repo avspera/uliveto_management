@@ -125,7 +125,7 @@ $placeholders = \app\models\Segnaposto::find()->all();
         <div class="card-body table-responsive">
 
             <div class="row">
-                <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'confetti')->dropdownlist([0 => "NO", 1 => "SI"], ['prompt' => "Scegli", 'onchange' => "enableConfettiFields(value)"]) ?></div>
+                <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'confetti')->dropdownlist([0 => "NO", 1 => "SI"], ['onchange' => "enableConfettiFields(value)"]) ?></div>
                 <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'prezzo_confetti')->textInput(['maxlength' => true, "onchange" => "addPrezzoAggiuntivo(value)", "readonly" => true, "type" => "number", "prevValue" => 0]); ?></div>
                 <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'confetti_omaggio')->radio(["onChange" => "removePrezzoAggiuntivo('confetti')", "disabled" => true]); ?></div>
                 <div class="col-md-3 col-sm-4 col-12">

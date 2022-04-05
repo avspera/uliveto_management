@@ -6,4 +6,5 @@ return [
     'orderEmail'    => 'ordini@orcidelcilento.it',
     'orderName'     => 'Ordini :: OrciDelCilento.it',
     'bsVersion'     => '4.x',
+    'user.passwordResetTokenExpire' => 3600,
 ];

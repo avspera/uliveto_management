@@ -85,7 +85,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?php if(!empty($quotes)) { ?>
                         <?= GridView::widget([
                             'dataProvider'=> $quotes,
-                            
                             'columns' => [
                                 'order_number',
                                 [

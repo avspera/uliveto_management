@@ -13,6 +13,7 @@ AdminLteAsset::register($this);
 $this->registerCssFile('https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback');
 
 $assetDir = Yii::$app->assetManager->getPublishedUrl('@vendor/almasaeed2010/adminlte/dist');
+
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>

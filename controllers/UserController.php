@@ -26,14 +26,14 @@ class UserController extends Controller
                             'create', 
                             'view', 
                             'update', 
-                            'delete'
+                            'delete',
                         ],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
                     [
                         'actions' => [
-                            'pay-from-web', 
+                            'check-email'
                         ],
                         'allow' => true,
                         'allow' => ['?'],
@@ -43,9 +43,6 @@ class UserController extends Controller
         ];
     }
 
-    public function actionPayFromWeb($token, $amount){
-        if(!$token) return;
-    }
 
     protected function manageUploadFiles($model) {
 
@@ -64,6 +61,18 @@ class UserController extends Controller
 
     }
 
+    public function actionCheckEmail($email){
+        if(empty($email)) return;
+        $out = ["status" => "100"];
+        
+        $client = User::findOne(["email" => $email]);
+        if(!empty($client)){
+            $out["status"]  = "200";
+        }
+
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        return $out;
+    }
     /**
      * Lists all User models.
      * @return mixed

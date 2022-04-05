@@ -6,6 +6,7 @@ use app\models\Client;
 use app\models\ClientSearch;
 use yii\web\Controller;
 use app\models\Quote;
+use app\models\QuoteSearch;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
@@ -79,11 +80,12 @@ class ClientsController extends Controller
     public function actionView($id)
     {
         try{
-            $quotes = Quote::findAll(["id_client" => $id]);
-            
+            $quotes = new QuoteSearch();
+            $quotes->id_client = $id;
+            $dataProvider = $quotes->search([]);
             return $this->render('view', [
                 'model'     => $this->findModel($id),
-                'quotes'    => $quotes
+                'quotes'    => $dataProvider
             ]);
 
         }catch(Exception $e){

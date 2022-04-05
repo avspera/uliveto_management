@@ -4,9 +4,12 @@ namespace app\controllers;
 use Yii;
 use app\models\Payment;
 use app\models\PaymentSearch;
+use app\models\Client;
+use app\models\Quote;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 
 /**
  * PaymentController implements the CRUD actions for Payment model.
@@ -18,17 +21,28 @@ class PaymentController extends Controller
      */
     public function behaviors()
     {
-        return array_merge(
-            parent::behaviors(),
-            [
-                'verbs' => [
-                    'class' => VerbFilter::className(),
-                    'actions' => [
-                        'delete' => ['POST'],
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => [
+                            'external-payment', 
+                        ],
+                        'allow' => true,
+                        'allow' => ['?'],
                     ],
+                    [
+                        'actions' => ['view', 'index', 'craete', 'update', 'delete'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                    [
+                        'actions' => "error"
+                    ]
                 ],
-            ]
-        );
+            ],
+        ];
     }
 
     public function beforeAction($action)
@@ -44,6 +58,21 @@ class PaymentController extends Controller
         return true;
     }
 
+    public function actionExternalPayment($idClient, $idQuote){
+        if(empty($idClient) || empty($idQuote)) return;
+
+        $this->layout = "external-payment";
+
+        $user   = Client::findOne([$idClient]);
+        $quote  = Quote::findOne([$idQuote]);
+
+        if(empty($user) || empty($quote)) return;
+
+        return $this->render('external-payment', [
+            'user' => $user,
+            'quote' => $quote
+        ]);
+    }
     /**
      * Lists all Payment models.
      *

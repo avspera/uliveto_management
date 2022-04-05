@@ -9,12 +9,14 @@ use yii\grid\ActionColumn;
 /* @var $this yii\web\View */
 /* @var $model app\models\Quote */
 $client = $model->getClient();
+$clientPhone = $model->getClientPhone();
 $this->title = $model->order_number." - ".$client;
 $this->params['breadcrumbs'][] = ['label' => 'Preventivi', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 
-$text = json_encode("ciao come stai?")
+$text   = json_encode("ciao come stai?");
+$phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
 ?>
 <div class="quote-view">
 
@@ -29,7 +31,7 @@ $text = json_encode("ciao come stai?")
                 ],
             ]) ?>
             <?= Html::a('<i class="fas fa-file-pdf"></i> Genera PDF', ['generate-pdf', 'id' => $model->id, 'flag' => "generate"], ['class' => 'btn btn-success']) ?>
-            <?= Html::a('<i class="fas fa-comment"></i> Whatsapp', Url::to("https://wa.me/00393339128349/?text=".$text), ['class' => 'btn btn-primary']) ?>
+            <?= $phone ? Html::a('<i class="fas fa-comment"></i> Whatsapp', Url::to("https://wa.me/".$phone."/?text=".$text), ['class' => 'btn btn-primary']) : "" ?>
             <?= Html::a('<i class="fas fa-check"></i> Conferma', ['confirm', 'id' => $model->id, 'flag' => "send"], ['class' => 'btn btn-info']) ?>
             
 
@@ -65,6 +67,24 @@ $text = json_encode("ciao come stai?")
                         'value' => function($model){
                             return $model->getPlaceholder()." - ".$model->getPlaceholderTotal();
                         }
+                    ],
+                    [
+                        'attribute' => "confetti",
+                        'value' => function($model){
+                            $html = "";
+                            if($model->confetti){
+                                if($model->confetti_omaggio){
+                                    $html .= "<span style='text-decoration: line-through;'>".$model->formatNumber($model->prezzo_confetti)."</span> <span style='color: green'> - in omaggio</span>";
+                                }
+                                else{
+                                    $html .= "<span>".$model->formatNumber($model->prezzo_confetti)."</span>";
+                                }
+                            }else{
+                                $html .= "-";
+                            }
+                            return $html;
+                        },
+                        'format' => "raw"
                     ],
                     [
                         'attribute' => "custom_amount",
@@ -112,7 +132,7 @@ $text = json_encode("ciao come stai?")
                     [
                         'attribute' => 'shipping',
                         'value' => function($model){
-                            return $model->shipping ? "SI" : "NO";
+                            return $model->shipping ? $model->address : "NO";
                         }
                     ],
                     [

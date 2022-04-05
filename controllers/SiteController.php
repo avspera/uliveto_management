@@ -12,6 +12,8 @@ use app\models\ContactForm;
 use app\models\Quote;
 use app\models\Client;
 use app\models\Message;
+use app\models\PasswordResetRequestForm;
+use app\models\ResetPasswordForm;
 
 class SiteController extends Controller
 {
@@ -64,6 +66,7 @@ class SiteController extends Controller
     }
 
     public function beforeAction( $action ) {
+        
         if ( parent::beforeAction ( $action ) ) {
     
             if ( $action->id == 'error' ) {
@@ -80,6 +83,9 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
+        if(Yii::$app->user->isGuest)
+            return $this->redirect(["login"]);
+            
         $quotesCount    = Quote::find()->count();
         $clientsCount   = Client::find()->count();
         $messagesCount  = Message::find()->where(["not", ["replied_at" => null]])->count();
@@ -142,6 +148,67 @@ class SiteController extends Controller
             return $this->refresh();
         }
         return $this->render('contact', [
+            'model' => $model,
+        ]);
+    }
+
+     /**
+     * Requests password reset.
+     *
+     * @return mixed
+     */
+    public function actionRequestPasswordReset()
+    {
+        $this->layout = "request-password-reset";
+        $model = new PasswordResetRequestForm();
+        if ($model->load(Yii::$app->request->post())) {
+            
+            if($model->validate()){
+                if ($model->sendEmail()) {
+                    Yii::$app->session->setFlash('success', 'Ti abbiamo inviato un\'email con le istruzioni da seguire per reimpostare la password');
+                } else {
+                    Yii::$app->session->setFlash('error', 'Sorry, we are unable to reset password for the provided email address.');
+                }
+            }else{
+                $errors = $model->getErrors();
+                Yii::$app->session->setFlash('error', 'Sorry, we are unable to reset password for the provided email address.');
+                $out = ["status" => "100", "message" => $errors["email"]];
+            }
+            
+        }
+
+        return $this->render('requestPasswordResetToken', [
+            'model' => $model,
+        ]);
+    }
+
+    /**
+     * Resets password.
+     *
+     * @param string $token
+     * @return mixed
+     * @throws BadRequestHttpException
+     */
+    public function actionResetPassword($token)
+    {
+        $this->layout="resetPassword";
+        
+        try {
+            $model = new ResetPasswordForm($token);
+        } catch (InvalidArgumentException $e) {
+            throw new BadRequestHttpException($e->getMessage());
+        }
+        
+        if ($model->load(Yii::$app->request->post())) {
+            if($model->validate() && $model->resetPassword()){
+                Yii::$app->session->setFlash('success', 'Password modificata correttamente');
+                return $this->goHome();
+            }else{
+                Yii::$app->session->setFlash('error', 'Ops...c\'è stato qualche problema');
+            }
+        }
+
+        return $this->render('resetPassword', [
             'model' => $model,
         ]);
     }
