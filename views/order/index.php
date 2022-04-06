@@ -1,6 +1,5 @@
 <?php
 
-use Yii;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\ActionColumn;
@@ -33,7 +32,6 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <div class="card">
-        <div class="card-header"><?= Html::a('Aggiungi', ['create'], ['class' => 'btn btn-success']) ?></div>
         <div class="card-body">
             <?= GridView::widget([
                 'dataProvider' => $dataProvider,
@@ -92,12 +90,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     //'deadline',
                     [
                         'class' => ActionColumn::className(),
-                        'visibleButtons' => [
-                            'update' => function ($model, $key, $index) {
-                                return false;
-                             },
-                        ]
-                        
                     ],
                 ],
             ]); ?>

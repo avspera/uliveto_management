@@ -72,7 +72,6 @@ $placeholders = \app\models\Segnaposto::find()->all();
                 <div class="text-md" style="cursor:pointer" onclick="addProductLine()"><i style="margin-top:7px; margin-left:7px" class="fas fa-plus-circle" ></i></div>
                 <div class="text-md" style="cursor:pointer" onclick="enableServiziAggiuntivi()"><i style="margin-top:7px; margin-left:7px" class="fas fa-check" ></i></div>
             </div>
-            
         </div>
         <div class="card-body table-responsive">
             <div class="row prod" id="prod_0">

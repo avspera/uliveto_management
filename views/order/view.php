@@ -11,7 +11,7 @@ use yii\grid\ActionColumn;
 $client = $model->getClient();
 $clientPhone = $model->getClientPhone();
 $this->title = $model->order_number." - ".$client;
-$this->params['breadcrumbs'][] = ['label' => 'Preventivi', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Ordini', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 

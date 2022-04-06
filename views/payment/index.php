@@ -72,7 +72,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         'attribute' => "saldo",
                         'value' => function($model){
                             $totale = $model->getTotal();
-                            return ($totale - $model->amount) < 0 ? 0 : $model->formatNumber($totale - $model->amount);
+                            if(!is_numeric($total)) return;
+                            return $totale - $model->amount < 0 ? 0 : $model->formatNumber($totale - $model->amount);
                         },
                         'format' => "raw",
                         'label' => "Saldo"

@@ -59,6 +59,11 @@ class QuoteDetails extends \yii\db\ActiveRecord
         return !empty($product) ? $product->name : "";
     }
 
+    public function getQuoteInfo(){
+        $quote = Quote::findOne([$this->id_quote]);
+        return !empty($quote) ? $quote->order_number." - ".$quote->getClient() : "";
+    }
+
     public function getColor(){
         $color = Color::findOne([$this->id_color]);
         return !empty($color) ? $color->label : "";

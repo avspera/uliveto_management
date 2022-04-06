@@ -6,9 +6,12 @@ use Yii;
 use app\models\Quote;
 use app\models\QuoteSearch;
 use app\models\QuoteDetailsSearch;
+use app\models\QuoteDetails;
 use app\models\PaymentSearch;
 use app\models\Product;
+use app\models\Color;
 use app\models\Segnaposto;
+use app\models\Packaging;
 use app\models\Client;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -162,11 +165,41 @@ class OrderController extends Controller
         $model = $this->findModel($id);
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
+            $i = 0;
+            foreach($model->product as $key => $value){
+                $quoteDetails = new QuoteDetails();
+                $quoteDetails->id_product   = $value;
+                $quoteDetails->id_quote     = $model->id;
+                $quoteDetails->amount       = !empty($model->amount[$i]) ? $model->amount[$i] : 0;
+                $quoteDetails->id_packaging = $model->packaging[$i];
+                $quoteDetails->id_color     = isset($model->color[$i]) ? $model->color[$i] : NULL;
+                $quoteDetails->custom_color = isset($model->custom_color[$i]) ? $model->custom_color[$i] : NULL;
+                $quoteDetails->created_at   = date("Y-m-d H:i:s");
+
+                if(!$quoteDetails->save()){
+                    Yii::$app->session->setFlash('error', json_encode($quoteDetails->getErrors()));
+                    return $this->redirect(['update', 'id' => $model->id]);
+                }
+                $i++;
+            }
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
+        $detailsModel   = new QuoteDetailsSearch();
+        $detailsModel->id_quote = $id;
+        $quoteDetails   = $detailsModel->search($this->request->queryParams);
+        $segnaposto     = Segnaposto::findOne(["id" => $model->placeholder]);
+        $products       = Product::find()->select(["id", "name", "price"])->all();
+        $colors         = Color::find()->select(["id", "label"])->all();
+        $packagings     = Packaging::find()->select(["id", "label", "price"])->all();
         return $this->render('update', [
             'model' => $model,
+            'detailsModel' => $detailsModel,
+            'segnaposto'    => $segnaposto,
+            'quoteDetails'  => $quoteDetails,
+            'products'      => $products,
+            'colors'        => $colors,
+            'packagings'    => $packagings
         ]);
     }
 
