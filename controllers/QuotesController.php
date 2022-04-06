@@ -189,8 +189,12 @@ class QuotesController extends Controller
             $model = $this->findModel($id);
             $model->confirmed = 1;
             if($model->save()){
+                $quoteModel = new QuoteDetailsSearch();
+                $quoteModel->id_quote = $id;
+                $quoteDetails = $quoteModel->search([]); 
                 return $this->render('view', [
                     'model' => $model,
+                    'quoteDetails' => $quoteDetails
                 ]);
             }
         }catch(Exception $e){

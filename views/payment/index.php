@@ -1,9 +1,11 @@
 <?php
 
 use yii\helpers\Html;
+
 use yii\helpers\Url;
 use yii\grid\ActionColumn;
 use kartik\grid\GridView;
+use app\models\Quote;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\PaymentSearch */
@@ -81,9 +83,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     [
                         'attribute' => "data_saldo",
                         'value' => function($model){
-                            $date = new DateTime($model->created_at);
-                            $date->add(new DateInterval('P10D'));
-                            return $date->format('d/m/y');
+                            // $date = new DateTime($model->created_at);
+                            // $date->add(new DateInterval('P10D'));
+                            $quote = Quote::findOne($model->id_quote);
+                            return $model->formatDate($quote->date_balance);
                         },
                         'format' => "raw",
                         'label' => "Data Saldo"
@@ -98,16 +101,33 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                     [
                         'class' => ActionColumn::className(),
+                        'template' => '{changeData} {view} {update} {delete}',
+                        'buttons' => [
+                            'changeData' => function ($url) {
+                                return '<span style="cursor:pointer; color:orange" onclick=openModal() class="fas fa-clock"></span>';
+                            },
+                        ],
                     ],
                 ],
             ]); ?>
         </div>
     </div>
 
+    <?php 
+        // Modal::begin([
+        //     'header' => '<h3>Crear Evento</h3>',
+        //     'id'=>'create',
+        //     'size'=>'modal-lg',
+        // ]);
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
-
-   
-
-
+        // echo "<div id='modalCreate'></div>";
+        // Modal::end();
+    ?>
 </div>
+
+
+<script>
+    function openModal(){
+        console.log("stocazzo")
+    }
+</script>
