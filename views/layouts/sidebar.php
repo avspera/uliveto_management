@@ -28,7 +28,8 @@
             echo \hail812\adminlte\widgets\Menu::widget([
                 'items' => [
                     ['label' => 'ORCI', 'header' => true],
-                    ['label' => 'Preventivi', 'url' => ['quotes/index'], 'icon' => 'file-alt', 'visible' => (Yii::$app->user->identity->role == 0 || Yii::$app->user->identity->role == 1)],
+                    ['label' => 'Preventivi Bomboniere', 'url' => ['quotes/index'], 'icon' => 'file-alt', 'visible' => (Yii::$app->user->identity->role == 0 || Yii::$app->user->identity->role == 1)],
+                    ['label' => 'Preventivi Segnaposto', 'url' => ['quote-placeholder/index'], 'icon' => 'file-alt', 'visible' => (Yii::$app->user->identity->role == 0 || Yii::$app->user->identity->role == 1)],
                     ['label' => 'Ordini', 'url' => ['order/index'], 'icon' => 'credit-card', 'visible' => Yii::$app->user->identity->role == 0],
                     ['label' => 'Clienti',  'icon' => 'users', 'url' => ['/clients/index'], 'target' => '_self', 'visible' => (Yii::$app->user->identity->role == 0 || Yii::$app->user->identity->role == 2)],
                     ['label' => 'Pagamenti',  'icon' => 'coins', 'url' => ['/payment/index'], 'target' => '_self', 'visible' => (Yii::$app->user->identity->role == 0 || Yii::$app->user->identity->role == 3)],

@@ -32,7 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <div class="card">
-        <div class="card-header"><?= Html::a('<i class="fas fa-plus"></i> Aggiungi', ['create'], ['class' => 'btn btn-success']) ?></div>
+        <div class="card-header"><?= Html::a('<i class="fas fa-plus"></i> Aggiungi', ['choose-quote'], ['class' => 'btn btn-success']) ?></div>
         <div class="card-body table table-responsive">
             <?= GridView::widget([
                 'dataProvider' => $dataProvider,

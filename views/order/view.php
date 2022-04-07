@@ -40,8 +40,6 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
             <?= $phone ? Html::a('<i class="fas fa-comment"></i> Whatsapp', Url::to("https://wa.me/".$phone."/?text=".$text), ['class' => 'btn btn-primary', 'target' => "_blank"]) : "" ?>
             <?= Html::a('<i class="fas fa-check"></i> Conferma', ['confirm', 'id' => $model->id, 'flag' => "send"], ['class' => 'btn btn-info']) ?>
             <?= Html::a('<span style="color:white"><i class="fas fa-upload"></i> Carica allegati</span>', ['upload-files', 'id' => $model->id], ['class' => 'btn btn-warning']) ?>
-            
-
         </div>
 
         <div class="card-body">
@@ -52,13 +50,13 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
                     [
                         'attribute' => 'created_at',
                         'value' => function($model){
-                            return $model->formatDate($model->created_at);
+                            return $model->formatDate($model->created_at, true);
                         }
                     ],
                     [
                         'attribute' => 'updated_at',
                         'value' => function($model){
-                            return $model->formatDate($model->updated_at);
+                            return $model->formatDate($model->updated_at, true);
                         }
                     ],
                     [

@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 
 $encodedText = 
-    "Ho il piacere di presentarle la nostra collezione di orci realizzati e decorati a mano.L'orcio in ceramica contiene e custodisce i profumi e i sapori dell'olio extravergine di oliva biologico, prodotto nei nostri uliveti a *Trentinara e Giungano*<br /><br />Scadenza offerta: ".$model->formatDate($model->deadline)."<br /><br />Rimango a sua completa disposizione<br />Cordiali Saluti<br /><br />Francesco Guariglia<br />Mobile: 39 3203828243<br />Maria Guariglia <br />mobile: 39 3807544300<br />mail: e-commerce@ulivetodimaria.it"
+    "Ciao, ".$client."<br />Ho il piacere di presentarle la nostra collezione di orci realizzati e decorati a mano.L'orcio in ceramica contiene e custodisce i profumi e i sapori dell'olio extravergine di oliva biologico, prodotto nei nostri uliveti a *Trentinara e Giungano*<br /><br />Scadenza offerta: ".$quoteModel->formatDate($quoteModel->deadline)."<br /><br />Rimango a sua completa disposizione<br />Cordiali Saluti<br /><br />Francesco Guariglia<br />Mobile: 39 3203828243<br />Maria Guariglia <br />mobile: 39 3807544300<br />mail: e-commerce@ulivetodimaria.it"
 ;
 $decodedText = str_ireplace("<br />", "\r\n", $encodedText);
 $text   = urlencode($decodedText);
@@ -35,7 +35,7 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
                 ],
             ]) ?>
             <?= Html::a('<i class="fas fa-file-pdf"></i> Genera PDF', ['generate-pdf', 'id' => $quoteModel->id, 'flag' => "generate"], ['class' => 'btn btn-success']) ?>
-            <?= $phone ? Html::a('<i class="fas fa-comment"></i> Whatsapp', Url::to("https://wa.me/".$phone."/?text=".$text), ['class' => 'btn btn-primary']) : "" ?>
+            <?= $phone ? Html::a('<i class="fas fa-comment"></i> Whatsapp', Url::to("https://wa.me/".$phone."/?text=".$text), ['class' => 'btn btn-primary', 'target' => "_blank"]) : "" ?>
             <?= Html::a('<i class="fas fa-check"></i> Conferma', ['confirm', 'id' => $quoteModel->id, 'flag' => "send"], ['class' => 'btn btn-info']) ?>
             
 
@@ -166,7 +166,7 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
                         [
                             'attribute' => 'total_segnaposto',
                             'value' => function($model){
-                                return $model->getPlaceholderTotal();
+                                return $model->getSegnapostoTotale();
                             },
                             'format' => "raw",
                             'label' => "Totale Segnaposto"
@@ -227,47 +227,51 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
     </div>
         
     <?php if(!empty($segnaposto)) { ?>
-        
-            <div class="card card-info">
-                    <div class="card-header">
-                        <div class="text-md">Segnaposto</div>
-                    </div>
-
-                    <div class="card-body">
-                
-                        <?= DetailView::widget([
-                            'model' => $segnaposto,
-                            'attributes' => [
-                                'label',
-                                [
-                                    'attribute' => 'image',
-                                    'value' => function($model){
-                                        return !empty($model->image) ? 
-                                            Html::img(Url::to(Yii::getAlias("@web")."/".$model->image), ['class' => 'img-fluid img-responsive', 'alt' => $model->label, 'title' => $model->label]) 
-                                        : "-";
-                                    },
-                                    'format' => "raw"
-                                ],
-                                [
-                                    'attribute' => 'price',
-                                    'value' => function($model){
-                                        return $model->formatNumber($model->price);
-                                    },
-                                    'format' => "raw"
-                                ],
-                                [
-                                    'attribute' => 'created_at',
-                                    'value' => function($model){
-                                        return $model->formatDate($model->created_at);
-                                    }
-                                ],
+        <div class="card card-info">
+                <div class="card-header">
+                    <div class="text-md">Segnaposto</div>
+                </div>
+                <div class="card-body">
+                    <?= GridView::widget([
+                        'dataProvider'  => $segnaposto,
+                        'filterModel'   => $quotePlaceholderModel,
+                        'columns' => [
+                            ['class' => 'yii\grid\SerialColumn'],
+                            [
+                            'attribute' => 'id_quote',
+                            'value' => function($model){
+                                return Html::a($model->getQuoteInfo(), Url::to(["quote/view", "id" => $model->id]));
+                                },
+                                'format' => "raw"
                             ],
-                        ]) ?>
-                    </div>
-                    
+                            [
+                                'attribute' => 'id_placeholder',
+                                'value' => function($model){
+                                    return $model->getPlaceholderInfo();
+                                },
+                                'format' => "raw"
+                            ],
+                            'amount',
+                            [
+                                'attribute' => 'created_at',
+                                'value' => function($model){
+                                    return $model->formatDate($model->created_at);
+                                }
+                            ],
+                            [
+                                'attribute' => 'updated_at',
+                                'value' => function($model){
+                                    return $model->formatDate($model->updated_at);
+                                }
+                            ],
+                            [
+                                'class' => ActionColumn::className(),
+                            ],
+                        ],
+                    ]); ?>
                 </div>
             </div>
-        
+        </div>
     <?php } ?> 
     
 </div>

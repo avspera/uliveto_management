@@ -164,26 +164,29 @@ class OrderController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            
-            $i = 0;
+        if ($this->request->isPost && $model->load($this->request->post())) {
+            $model->updated_at = date("Y-m-d H:i:s");
+            if($model->save()){
+                $i = 0;
 
-            foreach($model->product as $key => $value){
-                $quoteDetails = new QuoteDetails();
-                $quoteDetails->id_product   = $value;
-                $quoteDetails->id_quote     = $model->id;
-                $quoteDetails->amount       = !empty($model->amount[$i]) ? $model->amount[$i] : 0;
-                $quoteDetails->id_packaging = $model->packaging[$i];
-                $quoteDetails->id_color     = isset($model->color[$i]) ? $model->color[$i] : NULL;
-                $quoteDetails->custom_color = isset($model->custom_color[$i]) ? $model->custom_color[$i] : NULL;
-                $quoteDetails->created_at   = date("Y-m-d H:i:s");
-
-                if(!$quoteDetails->save()){
-                    Yii::$app->session->setFlash('error', json_encode($quoteDetails->getErrors()));
-                    return $this->redirect(['update', 'id' => $model->id]);
+                foreach($model->product as $key => $value){
+                    $quoteDetails = new QuoteDetails();
+                    $quoteDetails->id_product   = $value;
+                    $quoteDetails->id_quote     = $model->id;
+                    $quoteDetails->amount       = !empty($model->amount[$i]) ? $model->amount[$i] : 0;
+                    $quoteDetails->id_packaging = $model->packaging[$i];
+                    $quoteDetails->id_color     = isset($model->color[$i]) ? $model->color[$i] : NULL;
+                    $quoteDetails->custom_color = isset($model->custom_color[$i]) ? $model->custom_color[$i] : NULL;
+                    $quoteDetails->created_at   = date("Y-m-d H:i:s");
+    
+                    if(!$quoteDetails->save()){
+                        Yii::$app->session->setFlash('error', json_encode($quoteDetails->getErrors()));
+                        return $this->redirect(['update', 'id' => $model->id]);
+                    }
+                    $i++;
                 }
-                $i++;
             }
+            
             return $this->redirect(['view', 'id' => $model->id]);
         }
 

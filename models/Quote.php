@@ -7,6 +7,7 @@ use app\models\Product;
 use app\models\Color;
 use app\models\Sales;
 use app\models\Segnaposto;
+use app\models\QuotePlaceholder;
 /**
  * This is the model class for table "quote".
  *
@@ -48,7 +49,7 @@ class Quote extends \yii\db\ActiveRecord
             [['order_number', 'created_at', 'id_client',  'confirmed', 'shipping', 'deadline'], 'required'],
             [['order_number', 'id_client', 'confirmed', 'placeholder', 'shipping', 'id_sconto'], 'integer'],
             [['created_at', 'updated_at', 'deadline', 'product', 'amount', 'color', 'packaging', 'total_no_vat',
-                'date_deposit', 'date_balance','placeholder', 'address', 'custom_color',  
+                'date_deposit', 'date_balance','placeholder', 'address', 'custom_color', 'placeholder_amount',
                     'confetti', 'custom', 'custom_amount', 'id_sconto', 'prezzo_confetti', 'confetti_omaggio'], 'safe'],
             [['notes', 'address'], 'string'],
             [['total', 'deposit', 'balance'], 'number'],
@@ -107,6 +108,12 @@ class Quote extends \yii\db\ActiveRecord
         return !empty($client) ? $client->name." ".$client->surname : "";
     }
 
+    public function getSegnapostoTotale(){
+        $quotePlaceholder   = QuotePlaceholder::find()->where(["id_quote" => $this->id])->one();
+        $placeholder        = Segnaposto::findOne($quotePlaceholder->id_placeholder);
+        $total              = $quotePlaceholder->amount * floatval($placeholder->price);
+        return $this->formatNumber($total);
+    }
     public function getClientPhone(){
         $client = Client::findOne([$this->id_client]);
         return !empty($client) ? $client->phone : "";

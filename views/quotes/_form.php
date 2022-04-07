@@ -30,228 +30,221 @@ $placeholders = \app\models\Segnaposto::find()->all();
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <div class="card card-success">
-    <div class="card-body table-responsive">
-            <div class="row">
-                <div class="col-md-6 col-sm-6 col-12"><?= $form->field($model, 'order_number')->textInput(["readonly" => true]) ?></div>
-                <div class="col-md-6 col-sm-6 col-12">
-                   <?php 
-                        $client = Client::find()->select(["id", "name", "surname"])->where(["id" => $model->id_client])->one();
-                        $data   = !empty($client) ? [$client->id => $client->name." ".$client->surname] : []
-                    ?> 
-                    <?= $form->field($model, 'id_client')->widget(Select2::classname(), [
-                            'options' => [
-                                'multiple'=>false, 
-                                'placeholder' => 'Cerca cliente ...',
-                            ],
-                            'data' => $data,
-                            'pluginOptions' => [
-                                'allowClear' => true,
-                                'minimumInputLength' => 3,
-                                'language' => [
-                                    'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-                                ],
-                                'ajax' => [
-                                    'url' => Url::to(["clients/search-from-select"]),
-                                    'dataType' => 'json',
-                                    'data' => new JsExpression('function(params) { return {q:params.term}; }')
-                                ],
-                                'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                                'templateResult' => new JsExpression('function(client) { return client.text; }'),
-                                'templateSelection' => new JsExpression('function (client) { return client.text; }'),
-                            ],
-                        ]);
-                    ?>
-            </div>
-        </div>
-    </div>
-    <div class="card card-info">
-        <div class="card-header">
-            <div class="row">
-                <div class="text-lg">Prodotti</div>    
-                <div class="text-md" style="cursor:pointer" onclick="addProductLine()"><i style="margin-top:7px; margin-left:7px" class="fas fa-plus-circle" ></i></div>
-                <div class="text-md" style="cursor:pointer" onclick="enableServiziAggiuntivi()"><i style="margin-top:7px; margin-left:7px" class="fas fa-check" ></i></div>
-            </div>
-        </div>
-        <div class="card-body table-responsive">
-            <div class="row prod" id="prod_0">
-                <div class="col-md-2 col-sm-6 col-12">
-                    <div class="form-group field-quote-product-0 required">
-                        <input type="hidden" id="productSubtotal-0" name="productSubtotal-0" value=0>
-                        <label class="control-label" for="quote-product-0">Prodotto</label>
-                        <select id="quote-product-0" class="form-control" name="Quote[product][0]" onchange="enableFields(0)" aria-required="true">
-                            <option value="">Scegli</option>
-                            <?php foreach($products as $product) { ?>
-                                <option price="<?= $product->price ?>" value="<?= $product->id ?>"><?= $product->name." - ".$product->formatNumber($product->price) ?> </option>
-                            <?php } ?>
-                        </select>
-                        <div class="help-block"></div>
+        <div class="card card-success">
+            <div class="card-body table-responsive">
+                    <div class="row">
+                        <div class="col-md-6 col-sm-6 col-12"><?= $form->field($model, 'order_number')->textInput(["readonly" => true]) ?></div>
+                        <div class="col-md-6 col-sm-6 col-12">
+                        <?php 
+                                $client = Client::find()->select(["id", "name", "surname"])->where(["id" => $model->id_client])->one();
+                                $data   = !empty($client) ? [$client->id => $client->name." ".$client->surname] : []
+                            ?> 
+                            <?= $form->field($model, 'id_client')->widget(Select2::classname(), [
+                                    'options' => [
+                                        'multiple'=>false, 
+                                        'placeholder' => 'Cerca cliente ...',
+                                    ],
+                                    'data' => $data,
+                                    'pluginOptions' => [
+                                        'allowClear' => true,
+                                        'minimumInputLength' => 3,
+                                        'language' => [
+                                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                                        ],
+                                        'ajax' => [
+                                            'url' => Url::to(["clients/search-from-select"]),
+                                            'dataType' => 'json',
+                                            'data' => new JsExpression('function(params) { return {q:params.term}; }')
+                                        ],
+                                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                                        'templateResult' => new JsExpression('function(client) { return client.text; }'),
+                                        'templateSelection' => new JsExpression('function (client) { return client.text; }'),
+                                    ],
+                                ]);
+                            ?>
                     </div>
                 </div>
-                <div class="col-md-2 col-sm-4 col-12" style="display:inline-block">
-                    <div class="form-group field-quote-amount-0">
-                        <label class="control-label" for="quote-amount-0">Quantità</label>
-                        <div class="input-group inline-group">
-                            <input type="number" min="1" id="quote-amount-0" class="form-control" readonly name="Quote[amount][0]" prevValue=0 onchange="manualChangeAmount(0)" value="0">
+            </div>
+        </div>
+        <div class="card card-info">
+            <div class="card-header">
+                <div class="row">
+                    <div class="text-lg">Prodotti</div>    
+                    <div class="text-md" style="cursor:pointer" onclick="addProductLine()"><i style="margin-top:7px; margin-left:7px" class="fas fa-plus-circle" ></i></div>
+                </div>
+            </div>
+            <div class="card-body table-responsive">
+                <div class="row prod" id="prod_0">
+                    <div class="col-md-2 col-sm-6 col-12">
+                        <div class="form-group field-quote-product-0 required">
+                            <input type="hidden" id="productSubtotal-0" name="productSubtotal-0" value=0>
+                            <label class="control-label" for="quote-product-0">Prodotto</label>
+                            <select id="quote-product-0" class="form-control" name="Quote[product][0]" onchange="enableFields(0)" aria-required="true">
+                                <option value="">Scegli</option>
+                                <?php foreach($products as $product) { ?>
+                                    <option price="<?= $product->price ?>" value="<?= $product->id ?>"><?= $product->name." - ".$product->formatNumber($product->price) ?> </option>
+                                <?php } ?>
+                            </select>
+                            <div class="help-block"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-4 col-12" style="display:inline-block">
+                        <div class="form-group field-quote-amount-0">
+                            <label class="control-label" for="quote-amount-0">Quantità</label>
+                            <div class="input-group inline-group">
+                                <input type="number" min="1" id="quote-amount-0" class="form-control" readonly name="Quote[amount][0]" prevValue=0 onchange="manualChangeAmount(0)" value="0">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-6 col-12">
+                        <div class="form-group field-quote-color-0 required">
+                            <label class="control-label" for="quote-color-0">Colore</label>
+                            <select disabled id="quote-color-0" class="form-control" name="Quote[color][0]" aria-required="true">
+                                <option value="">Scegli</option>
+                                <?php foreach($colors as $color){ ?>
+                                    <option value="<?= $color->id ?>"><?= $color->label ?></option>
+                                <?php } ?>
+                            </select>
+                            <div class="help-block"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'custom_color[0]')->textInput(["maxlenght" => true, "readonly" => true]) ?></div>
+                    <div class="col-md-2 col-sm-6 col-12">
+                        <div class="form-group field-quote-id_packaging-0 required">
+                            <label class="control-label" for="quote-id_packaging-0">Confezione</label>
+                            <select prevPrice=0 disabled id="quote-id_packaging-0" class="form-control" name="Quote[id_packaging][0]" onchange="addPackagingPrice(0)" aria-required="true">
+                                <option price="" value="">Scegli</option>
+                                <?php foreach($packagings as $packaging) { ?>
+                                    <option price="<?= $packaging->price ?>" value="<?= $packaging->id ?>"><?= $packaging->label." - ".$packaging->formatNumber($packaging->price) ?> </option>
+                                <?php } ?>
+                            </select>
+                            <div class="help-block"></div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-2 col-sm-6 col-12">
-                    <?= $form->field($model, 'color[0]')->dropdownlist(yii\helpers\ArrayHelper::map(app\models\Color::find()->orderBy('label')->all(), 'id', 'label'), ['prompt' => 'Scegli', 'disabled' => true])->label('Colore'); ?>
+            </div>
+        </div>
+
+        <div class="card card-info">
+            <div class="card-header">
+                <div class="text-lg text-white">Servizi aggiuntivi</div>    
+            </div>
+            <div class="card-body table-responsive">
+
+                <div class="row">
+                    <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'confetti')->dropdownlist([0 => "NO", 1 => "SI"], ['onchange' => "enableConfettiFields(value)"]) ?></div>
+                    <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'prezzo_confetti')->textInput(['maxlength' => true, "onchange" => "addPrezzoAggiuntivo(value)", "readonly" => true, "type" => "number", "prevValue" => 0]); ?></div>
+                    <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'confetti_omaggio')->radio(["onChange" => "removePrezzoAggiuntivo('confetti')", "disabled" => true]); ?></div>
                 </div>
-                <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'custom_color[0]')->textInput(["maxlenght" => true, "readonly" => true]) ?></div>
-                <div class="col-md-2 col-sm-6 col-12">
-                    <div class="form-group field-quote-id_packaging-0 required">
-                        <label class="control-label" for="quote-id_packaging-0">Confezione</label>
-                        <select prevPrice=0 disabled id="quote-id_packaging-0" class="form-control" name="Quote[id_packaging][0]" onchange="addPackagingPrice(0)" aria-required="true">
-                            <option price="" value="">Scegli</option>
-                            <?php foreach($packagings as $packaging) { ?>
-                                <option price="<?= $packaging->price ?>" value="<?= $packaging->id ?>"><?= $packaging->label." - ".$packaging->formatNumber($packaging->price) ?> </option>
-                            <?php } ?>
-                        </select>
-                        <div class="help-block"></div>
+
+                <div class="row">
+                    <div class="col-md-3 col-sm-4 col-12">
+                        <div class="form-group field-quote-custom_amount">
+                            <label class="control-label" for="quote-custom_amount">Costo personalizzazione</label>
+                            <input prevValue=0 onchange="value == 0 ? removePrezzoAggiuntivo('custom_amount') : addPrezzoAggiuntivo(value, 'custom_amount')" type="number" id="quote-custom_amount" class="form-control" name="Quote[custom_amount]">
+
+                            <div class="help-block"></div>
+                        </div>
                     </div>
+                    <div class="col-md-9 col-sm-12 col-12"><?= $form->field($model, 'custom')->textarea(['rows' => 6]) ?></div>    
                 </div>
             </div>
         </div>
-    </div>
 
-    
-    <div class="card card-info">
-        <div class="card-header">
-            <div class="text-lg text-white">Servizi aggiuntivi</div>    
-        </div>
-        <div class="card-body table-responsive">
+        <div class="card card-secondary">
+            <div class="card-header">
+                <div class="text-lg">Costi</div>    
+            </div>
+            <div class="card-body table-responsive">
 
-            <div class="row">
-                <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'confetti')->dropdownlist([0 => "NO", 1 => "SI"], ['onchange' => "enableConfettiFields(value)"]) ?></div>
-                <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'prezzo_confetti')->textInput(['maxlength' => true, "onchange" => "addPrezzoAggiuntivo(value)", "readonly" => true, "type" => "number", "prevValue" => 0]); ?></div>
-                <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'confetti_omaggio')->radio(["onChange" => "removePrezzoAggiuntivo('confetti')", "disabled" => true]); ?></div>
-                <div class="col-md-3 col-sm-4 col-12">
-                    <div class="form-group field-quote-placeholder required">
-                        <label class="control-label" for="quote-placeholder">Segnaposto</label>
-                        <select id="quote-placeholder" class="form-control" name="Quote[placeholder]" onchange="addPrezzoAggiuntivo(this, 'segnaposto')" aria-required="true">
-                            <option value="">Scegli</option>
-                            <?php foreach($placeholders as $placeholder) { ?>
-                                <option price="<?= $placeholder->price ?>" value="<?= $placeholder->id ?>"><?= $placeholder->label." - ".$placeholder->formatNumber($placeholder->price) ?> </option>
-                            <?php } ?>
-                        </select>
-                        <div class="help-block"></div>
+                <div class="row">
+                    <div class="col-md-4 col-sm-4 col-12"><?= $form->field($model, 'id_sconto')->dropdownlist(yii\helpers\ArrayHelper::map(app\models\Sales::find()->orderBy('name')->all(), 'id', 'name'), ['prompt' => 'Scegli', "onChange" => "applySales(value)", 'disabled' => true]); ?></div>
+                    <div class="col-md-4 col-sm-4 col-12">
+                        <?= $form->field($model, 'total_no_vat')->textInput(['maxlength' => true, "readonly" => true]) ?>
+                    </div>
+                    <div class="col-md-4 col-sm-4 col-12">
+                        <div class="form-group field-quote-total_no_vat">
+                            <label class="control-label" for="quote-total">Totale <i onclick="editTotal()" style="color: orange" class="fas fa-pencil-alt"></i></label>
+                            <input type="text" id="quote-total" class="form-control" name="Quote[total]" value="0" readonly>
+                            <div class="help-block"></div>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-3 col-sm-4 col-12">
-                    <div class="form-group field-quote-custom_amount">
-                        <label class="control-label" for="quote-custom_amount">Costo personalizzazione</label>
-                        <input prevValue=0 onchange="value == 0 ? removePrezzoAggiuntivo('custom_amount') : addPrezzoAggiuntivo(value, 'custom_amount')" type="number" id="quote-custom_amount" class="form-control" name="Quote[custom_amount]">
-
-                        <div class="help-block"></div>
-                    </div>
-                </div>
-                <div class="col-md-9 col-sm-12 col-12"><?= $form->field($model, 'custom')->textarea(['rows' => 6]) ?></div>    
-            </div>
-        </div>
-    </div>
-
-  
-
-    <div class="card card-secondary">
-        <div class="card-header">
-            <div class="text-lg">Costi</div>    
-        </div>
-        <div class="card-body table-responsive">
-
-            <div class="row">
-                <div class="col-md-4 col-sm-4 col-12"><?= $form->field($model, 'id_sconto')->dropdownlist(yii\helpers\ArrayHelper::map(app\models\Sales::find()->orderBy('name')->all(), 'id', 'name'), ['prompt' => 'Scegli', "onChange" => "applySales(value)", 'disabled' => true]); ?></div>
-                <div class="col-md-4 col-sm-4 col-12">
-                    <?= $form->field($model, 'total_no_vat')->textInput(['maxlength' => true, "readonly" => true]) ?>
-                </div>
-                <div class="col-md-4 col-sm-4 col-12">
-                    <div class="form-group field-quote-total_no_vat">
-                        <label class="control-label" for="quote-total">Totale <i onclick="editTotal()" style="color: orange" class="fas fa-pencil-alt"></i></label>
-                        <input type="text" id="quote-total" class="form-control" name="Quote[total]" value="0" readonly>
-                        <div class="help-block"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-4 col-sm-4 col-12"><?= $form->field($model, 'deposit')->textInput(['maxlength' => true, "onchange" => "subtractDeposit()"]) ?></div>
-                <div class="col-md-4 col-sm-4 col-12"><?php
-                    echo '<label class="form-label">Data </label>';
-                    echo DatePicker::widget([
-                        'value' => date("Y-m-d"),
-                        'name' => 'Quote[date_deposit]',
-                        'type' => DatePicker::TYPE_INPUT,
-                        'pluginOptions' => [
-                            'autoclose' => true,
-                            'format' => 'yyyy-mm-dd'
-                        ]
-                    ]);
-                ?></div>
-            </div>
-            <div class="row">
-                <div class="col-md-4 col-sm-4 col-12"><?= $form->field($model, 'balance')->textInput(['maxlength' => true, "readonly" => true]) ?></div>
-                <div class="col-md-4 col-sm-4 col-12">
-                    <?php
-                        echo '<label class="form-label">Data saldo</label>';
+                <div class="row">
+                    <div class="col-md-4 col-sm-4 col-12"><?= $form->field($model, 'deposit')->textInput(['maxlength' => true, "onchange" => "subtractDeposit()"]) ?></div>
+                    <div class="col-md-4 col-sm-4 col-12"><?php
+                        echo '<label class="form-label">Data </label>';
                         echo DatePicker::widget([
                             'value' => date("Y-m-d"),
-                            'name' => 'Quote[date_balance]',
+                            'name' => 'Quote[date_deposit]',
                             'type' => DatePicker::TYPE_INPUT,
                             'pluginOptions' => [
                                 'autoclose' => true,
                                 'format' => 'yyyy-mm-dd'
                             ]
                         ]);
-                    ?>
+                    ?></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 col-sm-4 col-12"><?= $form->field($model, 'balance')->textInput(['maxlength' => true, "readonly" => true]) ?></div>
+                    <div class="col-md-4 col-sm-4 col-12">
+                        <?php
+                            echo '<label class="form-label">Data saldo</label>';
+                            echo DatePicker::widget([
+                                'value' => date("Y-m-d"),
+                                'name' => 'Quote[date_balance]',
+                                'type' => DatePicker::TYPE_INPUT,
+                                'pluginOptions' => [
+                                    'autoclose' => true,
+                                    'format' => 'yyyy-mm-dd'
+                                ]
+                            ]);
+                        ?>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 col-sm-4 col-12"><?= $form->field($model, 'shipping')->dropdownlist([0 => "NO", 1 => "SI"]) ?></div>
+                    <div class="col-md-4 col-sm-6 col-12"><?= $form->field($model, 'address')->textInput(["maxlength" => true]) ?></div>
+                    <div class="col-md-4 col-sm-4 col-12"><?php
+                        echo '<label class="form-label">Consegna (entro il) </label>';
+                        echo DatePicker::widget([
+                            'value' => date("Y-m-d"),
+                            'name' => 'Quote[deadline]',
+                            'type' => DatePicker::TYPE_INPUT,
+                            'pluginOptions' => [
+                                'autoclose' => true,
+                                'format' => 'yyyy-mm-dd'
+                            ]
+                        ]);
+                    ?></div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-4 col-sm-4 col-12"><?= $form->field($model, 'shipping')->dropdownlist([0 => "NO", 1 => "SI"]) ?></div>
-                <div class="col-md-4 col-sm-6 col-12"><?= $form->field($model, 'address')->textInput(["maxlength" => true]) ?></div>
-                <div class="col-md-4 col-sm-4 col-12"><?php
-                    echo '<label class="form-label">Consegna (entro il) </label>';
-                    echo DatePicker::widget([
-                        'value' => date("Y-m-d"),
-                        'name' => 'Quote[deadline]',
-                        'type' => DatePicker::TYPE_INPUT,
-                        'pluginOptions' => [
-                            'autoclose' => true,
-                            'format' => 'yyyy-mm-dd'
-                        ]
-                    ]);
-                ?></div>
-            </div>
+        
         </div>
-    
-    </div>
 
-    <div class="card card-secondary">
-        <div class="card-header">
-            <div class="text-lg">Altro</div>    
-        </div>
-        <div class="card-body table-responsive">
-            <?= $form->field($model, 'notes')->textarea(['rows' => 6]) ?>
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="form-group">
-                        <?= Html::submitButton('Salva', ['class' => 'btn btn-success']) ?>
+        <div class="card card-secondary">
+            <div class="card-header">
+                <div class="text-lg">Altro</div>    
+            </div>
+            <div class="card-body table-responsive">
+                <?= $form->field($model, 'notes')->textarea(['rows' => 6]) ?>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <?= Html::submitButton('Salva', ['class' => 'btn btn-success']) ?>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        
-    </div>
+            
+        </div>
     
     <?php ActiveForm::end(); ?>
 
 </div>
-<?php $prefix_url = Yii::getAlias("@web"); ?>
-<script src="<?= $prefix_url ?>/js/quote.js"></script>
 
+<?php $prefix_url = Yii::getAlias("@web"); ?>
 <script>
 
     
@@ -618,7 +611,9 @@ function addProductLine(){
                     <label class="control-label" for="quote-color-${index}">Colore</label>
                     <select disabled id="quote-color-${index}" class="form-control" name="Quote[color][${index}]" aria-required="true">
                         <option value="">Scegli</option>
-                        <option value="1">Light blue</option>
+                        <?php foreach($colors as $color) { ?>
+                            <option value="<?= $color->id ?>"><?= $color->label ?></option>
+                        <?php } ?>
                     </select>
                     <div class="help-block"></div>
                 </div>

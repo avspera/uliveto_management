@@ -7,10 +7,12 @@ use app\models\Quote;
 use app\models\QuoteSearch;
 use app\models\QuoteDetails;
 use app\models\QuoteDetailsSearch;
+use app\models\QuotePlaceholderSearch;
 use app\models\Product;
 use app\models\Segnaposto;
 use app\models\Packaging;
 use app\models\Client;
+use app\models\Color;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -48,7 +50,8 @@ class QuotesController extends Controller
                             'create', 
                             'get-by-client-id',
                             'confirm',
-                            'generate-pdf'
+                            'generate-pdf',
+                            'choose-quote'
                         ],
                         'allow' => true,
                         'roles' => ['@'],
@@ -105,12 +108,15 @@ class QuotesController extends Controller
             $detailsModel = new QuoteDetailsSearch();
             $detailsModel->id_quote = $id;
             $quoteDetails = $detailsModel->search($this->request->queryParams);
-            $segnaposto   = Segnaposto::findOne(["id" => $model->placeholder]);
+            $quotePlaceholderModel = new QuotePlaceholderSearch();
+            $quotePlaceholderModel->id_quote = $model->id;
+            $segnaposto = $quotePlaceholderModel->search([]);
             
             return $this->render('view', [
                 'quoteModel'    => $model,
                 'quoteDetails'  => $quoteDetails,
-                'segnaposto'    => $segnaposto
+                'segnaposto'    => $segnaposto,
+                "quotePlaceholderModel" => $quotePlaceholderModel
             ]);
             
         }catch(NotFoundHttpException $e){
@@ -122,6 +128,9 @@ class QuotesController extends Controller
         
     }
 
+    public function actionChooseQuote(){
+        return $this->render('choose-quote');
+    }
     /**
      * Creates a new Quote model.
      * If creation is successful, the browser will be redirected to the 'view' page.
@@ -176,11 +185,13 @@ class QuotesController extends Controller
         $client                 = ["id" => "", "text" => ""];
         $queryParams            = $this->request->queryParams;
         $model->id_client       = isset($queryParams["id_client"]) && !empty($queryParams["id_client"]) ? $queryParams["id_client"] : null;
+        $colors                 = Color::find()->select(["id", "label"])->all();
         
         return $this->render('create', [
             'model'         => $model,
             'products'      => $products,
             'packagings'    => $packagings,
+            'colors'        => $colors
         ]);
     }
 

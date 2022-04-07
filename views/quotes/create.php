@@ -10,8 +10,9 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="quote-create">
     <?= $this->render('_form', [
-        'model'     => $model,
-        "products"  => $products, 
-        'packagings' => $packagings,
+        'model'         => $model,
+        "products"      => $products, 
+        'packagings'    => $packagings,
+        'colors'        => $colors
     ]) ?>
 </div>

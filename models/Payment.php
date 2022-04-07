@@ -50,7 +50,7 @@ class Payment extends \yii\db\ActiveRecord
             'id_quote' => 'Preventivo',
             'amount' => 'Acconto',
             'created_at' => 'Effettuato il',
-            'fatturat' => "Fatturato"
+            'fatturato' => "Fatturato"
         ];
     }
 

@@ -2,18 +2,18 @@
 
 namespace app\controllers;
 
-use app\models\Segnaposto;
-use app\models\SegnapostoSearch;
-use app\models\Quote;
-use app\models\Client;
+use Yii;
+use app\models\QuotePlaceholder;
+use app\models\QuotePlaceholderSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
+
 /**
- * SegnapostoController implements the CRUD actions for Segnaposto model.
+ * QuotePlaceholderController implements the CRUD actions for QuotePlaceholder model.
  */
-class SegnapostoController extends Controller
+class QuotePlaceholderController extends Controller
 {
     /**
      * @inheritDoc
@@ -21,6 +21,12 @@ class SegnapostoController extends Controller
     public function behaviors()
     {
         return [
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'delete' => ['POST'],
+                ],
+            ],
             'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
@@ -30,8 +36,7 @@ class SegnapostoController extends Controller
                             'view', 
                             'update', 
                             'delete', 
-                            'create',
-                            'search-from-select' 
+                            'create', 
                         ],
                         'allow' => true,
                         'roles' => ['@'],
@@ -41,49 +46,16 @@ class SegnapostoController extends Controller
         ];
     }
 
-    public function actionSearchFromSelect($q = ""){
-        $term = $q;
-
-        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-        $out = ['results' => [], "status" => "100"];
-        
-        if (!is_null($term)) {
-            $client = Client::find()
-                        ->select(["id", "name", "surname"])
-                        ->where(["LIKE", "surname", $term])
-                        ->orWhere(["LIKE", "name", $term])
-                        ->one();
-
-            $data = Quote::find()
-                        ->select(["id", "order_number"])
-                        ->where(["id_client" => $client->id])
-                        ->orderBy(["created_at" => SORT_DESC])
-                        ->all();
-                
-            $i = 0;
-            foreach($data as $item){
-                $out["results"][$i]["id"]   = $item->id;
-                $out["results"][$i]["text"] = $item->order_number." - ".$client->name." ".$client->surname;
-                $i++;
-            }
-            
-            if(!empty($out["results"])){
-                $out["status"] = "200";
-            }
-        }
-       
-        return $out;
-    }
     /**
-     * Lists all Segnaposto models.
+     * Lists all QuotePlaceholder models.
      *
      * @return string
      */
     public function actionIndex()
     {
-        $searchModel = new SegnapostoSearch();
+        $searchModel = new QuotePlaceholderSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
-
+        
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -91,7 +63,7 @@ class SegnapostoController extends Controller
     }
 
     /**
-     * Displays a single Segnaposto model.
+     * Displays a single QuotePlaceholder model.
      * @param int $id ID
      * @return string
      * @throws NotFoundHttpException if the model cannot be found
@@ -104,21 +76,23 @@ class SegnapostoController extends Controller
     }
 
     /**
-     * Creates a new Segnaposto model.
+     * Creates a new QuotePlaceholder model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return string|\yii\web\Response
      */
     public function actionCreate()
     {
-        $model = new Segnaposto();
-
+        $model = new QuotePlaceholder();
+        
         if ($this->request->isPost) {
-            if ($model->load($this->request->post()) ) {
+            
+            if ($model->load($this->request->post())) {
                 $model->created_at = date("Y-m-d H:i:s");
                 if($model->save())
                     return $this->redirect(['view', 'id' => $model->id]);
                 else{
-                    Yii::$app->session->setFlash('error', "Ops...something went wrong [SEGNAPOSTO-101]");
+                    Yii::$app->session->setFlash('error', "Ops...something went wrong [QUOTE-PLAC-101]");
+                    
                 }
             }
         } else {
@@ -131,7 +105,7 @@ class SegnapostoController extends Controller
     }
 
     /**
-     * Updates an existing Segnaposto model.
+     * Updates an existing QuotePlaceholder model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param int $id ID
      * @return string|\yii\web\Response
@@ -141,8 +115,10 @@ class SegnapostoController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($this->request->isPost && $model->load($this->request->post())) {
+            $model->updated_at = date("Y-m-d H:i:s");
+            if($model->save())
+                return $this->redirect(['view', 'id' => $model->id]);
         }
 
         return $this->render('update', [
@@ -151,7 +127,7 @@ class SegnapostoController extends Controller
     }
 
     /**
-     * Deletes an existing Segnaposto model.
+     * Deletes an existing QuotePlaceholder model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param int $id ID
      * @return \yii\web\Response
@@ -165,15 +141,15 @@ class SegnapostoController extends Controller
     }
 
     /**
-     * Finds the Segnaposto model based on its primary key value.
+     * Finds the QuotePlaceholder model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param int $id ID
-     * @return Segnaposto the loaded model
+     * @return QuotePlaceholder the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Segnaposto::findOne(['id' => $id])) !== null) {
+        if (($model = QuotePlaceholder::findOne(['id' => $id])) !== null) {
             return $model;
         }
 
