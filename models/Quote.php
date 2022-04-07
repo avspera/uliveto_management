@@ -117,16 +117,21 @@ class Quote extends \yii\db\ActiveRecord
         return !empty($sale) ? $sale->name." ".$sale->formatPercentage($sale->amount) : " - ";
     }
 
+    public function getTotalAmount(){
+        $amount = QuoteDetails::find()->where(["id_quote" => $this->id])->sum("amount");
+        return $amount;
+    }
+
     public function getPlaceholder(){
         $placeholder = Segnaposto::findOne([$this->placeholder]);
-        return !empty($placeholder) ? $placeholder->label." ".$this->formatNumber($placeholder->price) : "";
+        return !empty($placeholder) ? $placeholder->label : "";
     }
 
     public function getPlaceholderTotal(){
         $placeholder = Segnaposto::find()->select(["price"])->where(["id" => $this->placeholder])->one();
-        if(empty($placeholder)) return "";
-        $sumProducts = QuoteDetails::find()->where(["id_quote" => $this->id])->sum("amount")->one();
-        return !empty($placeholder) ? $placeholder->price*$sumProducts : 0;
+        if(empty($placeholder)) return "-";
+        $sumProducts = QuoteDetails::find()->where(["id_quote" => $this->id])->sum("amount");
+        return !empty($placeholder) ? $this->formatNumber($placeholder->price*$sumProducts) : 0;
     }
 
     public function formatDate($value, $showHour = false){

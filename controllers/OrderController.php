@@ -107,18 +107,18 @@ class OrderController extends Controller
         $detailsModel = new QuoteDetailsSearch();
         $detailsModel->id_quote = $id;
         $products = $detailsModel->search($this->request->queryParams);
-        $segnaposto = Segnaposto::findOne(["id" => $model->placeholder]);
+        $segnaposto   = Segnaposto::findOne(["id" => $model->placeholder]);
         $paymentModel = new PaymentSearch();
         $paymentModel->id_quote = $id;
         $payments     = $paymentModel->search([]);
         $payments->sort->defaultOrder = ["created_at" => SORT_DESC];
-
+        
         return $this->render('view', [
-            'model'     => $model,
-            'client'    => !empty($client) ? $client->name." ".$client->surname : "",
-            'products'  => $products,
-            'payments'  => $payments,
-            'segnaposto' => $segnaposto
+            'model'         => $model,
+            'client'        => !empty($client) ? $client->name." ".$client->surname : "",
+            'products'      => $products,
+            'payments'      => $payments,
+            'segnaposto'    => $segnaposto
         ]);
     }
 
@@ -165,7 +165,9 @@ class OrderController extends Controller
         $model = $this->findModel($id);
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
+            
             $i = 0;
+
             foreach($model->product as $key => $value){
                 $quoteDetails = new QuoteDetails();
                 $quoteDetails->id_product   = $value;
@@ -192,6 +194,7 @@ class OrderController extends Controller
         $products       = Product::find()->select(["id", "name", "price"])->all();
         $colors         = Color::find()->select(["id", "label"])->all();
         $packagings     = Packaging::find()->select(["id", "label", "price"])->all();
+        $currentBottleAmount = QuoteDetails::find()->where(["id_quote" => $id])->sum("amount");
         return $this->render('update', [
             'model' => $model,
             'detailsModel' => $detailsModel,
@@ -199,7 +202,8 @@ class OrderController extends Controller
             'quoteDetails'  => $quoteDetails,
             'products'      => $products,
             'colors'        => $colors,
-            'packagings'    => $packagings
+            'packagings'    => $packagings,
+            "currentBottleAmount" => $currentBottleAmount
         ]);
     }
 

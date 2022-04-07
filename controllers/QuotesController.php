@@ -108,7 +108,7 @@ class QuotesController extends Controller
             $segnaposto   = Segnaposto::findOne(["id" => $model->placeholder]);
             
             return $this->render('view', [
-                'model'         => $model,
+                'quoteModel'    => $model,
                 'quoteDetails'  => $quoteDetails,
                 'segnaposto'    => $segnaposto
             ]);
@@ -192,7 +192,7 @@ class QuotesController extends Controller
                 $quoteModel = new QuoteDetailsSearch();
                 $quoteModel->id_quote = $id;
                 $quoteDetails = $quoteModel->search([]); 
-                return $this->render('view', [
+                return $this->render('/order/view', [
                     'model' => $model,
                     'quoteDetails' => $quoteDetails
                 ]);

@@ -59,6 +59,14 @@ class Segnaposto extends \yii\db\ActiveRecord
         return !empty($value) ? date($format, strtotime($value)) : "";
     }
 
+    public function getTotal($quoteId){
+        
+        $amount = QuoteDetails::find()->where(["id_quote" => $quoteId])->sum("amount");
+        $amount = is_numeric($amount) ? intVal($amount) : 0;
+
+        return $this->formatNumber($model->price * $amount);
+    }
+
     public function formatNumber($value){
         if(empty($value)) return;
         return number_format($value, 2, ",", ".")." &euro;";

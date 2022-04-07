@@ -8,38 +8,42 @@ use yii\grid\ActionColumn;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Quote */
-$client = $model->getClient();
-$clientPhone = $model->getClientPhone();
-$this->title = $model->order_number." - ".$client;
+$client = $quoteModel->getClient();
+$clientPhone = $quoteModel->getClientPhone();
+$this->title = $quoteModel->order_number." - ".$client;
 $this->params['breadcrumbs'][] = ['label' => 'Preventivi', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 
-$text   = json_encode("ciao come stai?");
+$encodedText = 
+    "Ho il piacere di presentarle la nostra collezione di orci realizzati e decorati a mano.L'orcio in ceramica contiene e custodisce i profumi e i sapori dell'olio extravergine di oliva biologico, prodotto nei nostri uliveti a *Trentinara e Giungano*<br /><br />Scadenza offerta: ".$model->formatDate($model->deadline)."<br /><br />Rimango a sua completa disposizione<br />Cordiali Saluti<br /><br />Francesco Guariglia<br />Mobile: 39 3203828243<br />Maria Guariglia <br />mobile: 39 3807544300<br />mail: e-commerce@ulivetodimaria.it"
+;
+$decodedText = str_ireplace("<br />", "\r\n", $encodedText);
+$text   = urlencode($decodedText);
 $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
 ?>
 <div class="quote-view">
 
     <div class="card">
         <div class="card-header">
-            <?= Html::a('<i class="fas fa-pencil-alt"></i> Modifica', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-            <?= Html::a('<i class="fas fa-trash"></i> Cancella', ['delete', 'id' => $model->id], [
+            <?= Html::a('<i class="fas fa-pencil-alt"></i> Modifica', ['update', 'id' => $quoteModel->id], ['class' => 'btn btn-primary']) ?>
+            <?= Html::a('<i class="fas fa-trash"></i> Cancella', ['delete', 'id' => $quoteModel->id], [
                 'class' => 'btn btn-danger',
                 'data' => [
                     'confirm' => 'Sei sicuro di voler cancellare questo elemento?',
                     'method' => 'post',
                 ],
             ]) ?>
-            <?= Html::a('<i class="fas fa-file-pdf"></i> Genera PDF', ['generate-pdf', 'id' => $model->id, 'flag' => "generate"], ['class' => 'btn btn-success']) ?>
+            <?= Html::a('<i class="fas fa-file-pdf"></i> Genera PDF', ['generate-pdf', 'id' => $quoteModel->id, 'flag' => "generate"], ['class' => 'btn btn-success']) ?>
             <?= $phone ? Html::a('<i class="fas fa-comment"></i> Whatsapp', Url::to("https://wa.me/".$phone."/?text=".$text), ['class' => 'btn btn-primary']) : "" ?>
-            <?= Html::a('<i class="fas fa-check"></i> Conferma', ['confirm', 'id' => $model->id, 'flag' => "send"], ['class' => 'btn btn-info']) ?>
+            <?= Html::a('<i class="fas fa-check"></i> Conferma', ['confirm', 'id' => $quoteModel->id, 'flag' => "send"], ['class' => 'btn btn-info']) ?>
             
 
         </div>
 
         <div class="card-body">
             <?= DetailView::widget([
-                'model' => $model,
+                'model' => $quoteModel,
                 'attributes' => [
                     'order_number',
                     [
@@ -63,12 +67,6 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
                     ],
                     'packaging',
                     [
-                        'attribute' => 'placeholder',
-                        'value' => function($model){
-                            return $model->getPlaceholder()." - ".$model->getPlaceholderTotal();
-                        }
-                    ],
-                    [
                         'attribute' => "confetti",
                         'value' => function($model){
                             $html = "";
@@ -85,6 +83,12 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
                             return $html;
                         },
                         'format' => "raw"
+                    ],
+                    [
+                        'attribute' => 'placeholder',
+                        'value' => function($model){
+                            return $model->getPlaceholder();
+                        }
                     ],
                     [
                         'attribute' => "custom_amount",
@@ -150,96 +154,120 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
                     ]
                 ],
             ]) ?>
-
         </div>
     </div>  
     
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card card-info">
-                <div class="card-header">
-                    <div class="text-md">Dettagli prodotti</div>
-                </div>
-
-                <div class="card-body">
-            
-                    <?= GridView::widget([
-                        'dataProvider'  => $quoteDetails,
-                        'columns' => [
-                            ['class' => 'yii\grid\SerialColumn'],
-                            [
-                                'attribute' => 'id_product',
-                                'value' => function($model){
-                                    return $model->getProduct();
-                                },
-                            ],
-                            [
-                                'attribute' => 'id_color',
-                                'value' => function($model){
-                                    return !empty($model->id_color) ? $model->getColor() : "";
-                                },
-                            ],
-                            [
-                                'attribute' => "custom_color",
-                            ],
-                            [
-                                'attribute' => 'id_packaging',
-                                'value' => function($model){
-                                    return $model->getPackaging();
-                                },
-                            ],
-                            'amount',
-                            [ 'class' => ActionColumn::className() ]
+    <div class="card card-secondary">
+        <div class="card-header"><div class="text-md">Totale servizi aggiuntivi</div></div>
+        <div class="card-body">
+            <?= DetailView::widget([
+                    'model' => $quoteModel,
+                    'attributes' => [
+                        [
+                            'attribute' => 'total_segnaposto',
+                            'value' => function($model){
+                                return $model->getPlaceholderTotal();
+                            },
+                            'format' => "raw",
+                            'label' => "Totale Segnaposto"
+                        ],
+                        [
+                            'attribute' => 'total_confetti',
+                            'value' => function($model){
+                                return $model->confetti_omaggio ? "In omaggio" : $model->formatNumber($model->getTotalAmount()*$model->prezzo_confetti);
+                            },
+                            'format' => "raw",
+                            'label' => "Totale Confetti"
                         ]
-                    ]); ?>
-                </div>
-                
-            </div>
+                        
+                    ]
+            ]) ?>
         </div>
-        <?php if(!empty($segnaposto)) { ?>
-            <div class="col-md-6">
-                <div class="card card-info">
-                        <div class="card-header">
-                            <div class="text-md">Servizi aggiuntivi</div>
-                        </div>
+    </div>
+    
+        
+    <div class="card card-info">
+        <div class="card-header">
+            <div class="text-md">Dettagli prodotti</div>
+        </div>
 
-                        <div class="card-body">
-                    
-                            <?= DetailView::widget([
-                                'model' => $segnaposto,
-                                'attributes' => [
-                                    'id',
-                                    'label',
-                                    [
-                                        'attribute' => 'image',
-                                        'value' => function($model){
-                                            return !empty($model->image) ? 
-                                                Html::img(Url::to(Yii::getAlias("@web")."/".$model->image), ['class' => 'img-fluid img-responsive', 'alt' => $model->label, 'title' => $model->label]) 
-                                            : "-";
-                                        },
-                                        'format' => "raw"
-                                    ],
-                                    [
+        <div class="card-body">
+    
+            <?= GridView::widget([
+                'dataProvider'  => $quoteDetails,
+                'columns' => [
+                    ['class' => 'yii\grid\SerialColumn'],
+                    [
+                        'attribute' => 'id_product',
+                        'value' => function($model){
+                            return $model->getProduct();
+                        },
+                    ],
+                    [
+                        'attribute' => 'id_color',
+                        'value' => function($model){
+                            return !empty($model->id_color) ? $model->getColor() : "";
+                        },
+                    ],
+                    [
+                        'attribute' => "custom_color",
+                    ],
+                    [
+                        'attribute' => 'id_packaging',
+                        'value' => function($model){
+                            return $model->getPackaging();
+                        },
+                    ],
+                    'amount',
+                    [ 'class' => ActionColumn::className() ]
+                ]
+            ]); ?>
+        </div>
+        
+    </div>
+        
+    <?php if(!empty($segnaposto)) { ?>
+        
+            <div class="card card-info">
+                    <div class="card-header">
+                        <div class="text-md">Segnaposto</div>
+                    </div>
+
+                    <div class="card-body">
+                
+                        <?= DetailView::widget([
+                            'model' => $segnaposto,
+                            'attributes' => [
+                                'label',
+                                [
+                                    'attribute' => 'image',
+                                    'value' => function($model){
+                                        return !empty($model->image) ? 
+                                            Html::img(Url::to(Yii::getAlias("@web")."/".$model->image), ['class' => 'img-fluid img-responsive', 'alt' => $model->label, 'title' => $model->label]) 
+                                        : "-";
+                                    },
+                                    'format' => "raw"
+                                ],
+                                [
                                     'attribute' => 'price',
                                     'value' => function($model){
                                         return $model->formatNumber($model->price);
                                     },
                                     'format' => "raw"
-                                    ],
-                                    [
-                                        'attribute' => 'created_at',
-                                        'value' => function($model){
-                                            return $model->formatDate($model->created_at);
-                                        }
-                                    ],
                                 ],
-                            ]) ?>
-                        </div>
-                        
+                                [
+                                    'attribute' => 'created_at',
+                                    'value' => function($model){
+                                        return $model->formatDate($model->created_at);
+                                    }
+                                ],
+                            ],
+                        ]) ?>
                     </div>
+                    
                 </div>
             </div>
-        <?php } ?> 
-    </div>
-
+        
+    <?php } ?> 
+    
 </div>
