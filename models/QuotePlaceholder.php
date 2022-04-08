@@ -58,10 +58,27 @@ class QuotePlaceholder extends \yii\db\ActiveRecord
 
     public function getPlaceholderInfo(){
         $segnaposto = Segnaposto::findOne([$this->id_placeholder]);
-        
         return !empty($segnaposto) ? $segnaposto->label." - ".$segnaposto->formatNumber($segnaposto->price) : "";
     }
 
+    public function getTotal($flag = "no_vat"){
+        $placeholder = Segnaposto::findOne(["id" => $this->id_placeholder]);
+        $price = !empty($placeholder) ? floatval($placeholder->price) : 0;
+        $totalNoVat = intval($this->amount) * floatval($price);
+        if($flag == "no_vat")
+            return $this->formatNumber($totalNoVat);
+        else{
+            $total = ($totalNoVat + ($totalNoVat / 100) * 22);
+            $total = is_numeric($total) ? $this->formatNumber($total) : 0;
+            return $total;
+        }
+    }
+
+    public function formatNumber($value){
+        if(empty($value)) return;
+        return number_format($value, 2, ",", ".")." &euro;";
+    }
+    
     public function formatDate($value, $showHour = false){
         $format = "d/m/Y";
         if($showHour)

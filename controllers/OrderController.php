@@ -8,6 +8,7 @@ use app\models\QuoteSearch;
 use app\models\QuoteDetailsSearch;
 use app\models\QuoteDetails;
 use app\models\PaymentSearch;
+use app\models\QuotePlaceholderSearch;
 use app\models\Product;
 use app\models\Color;
 use app\models\Segnaposto;
@@ -104,11 +105,15 @@ class OrderController extends Controller
         }
         $client = Client::find()->select(["name", "surname"])->where(["id" => $model->id_client])->one();
         
-        $detailsModel = new QuoteDetailsSearch();
-        $detailsModel->id_quote = $id;
-        $products = $detailsModel->search($this->request->queryParams);
-        $segnaposto   = Segnaposto::findOne(["id" => $model->placeholder]);
-        $paymentModel = new PaymentSearch();
+        $detailsSearch  = new QuoteDetailsSearch();
+        $detailsSearch->id_quote = $id;
+        $products       = $detailsSearch->search([]);
+        
+        $quotePlaceholderModel = new QuotePlaceholderSearch();
+        $quotePlaceholderModel->id_quote = $model->id;
+        $segnaposto = $quotePlaceholderModel->search([]);
+
+        $paymentModel   = new PaymentSearch();
         $paymentModel->id_quote = $id;
         $payments     = $paymentModel->search([]);
         $payments->sort->defaultOrder = ["created_at" => SORT_DESC];

@@ -108,6 +108,11 @@ class Quote extends \yii\db\ActiveRecord
         return !empty($client) ? $client->name." ".$client->surname : "";
     }
 
+    public function getSegnaposto(){
+        $segnaposto = QuotePlaceholder::findOne(["id_quote" => $this->id]);
+        return $segnaposto;
+    }    
+
     public function getSegnapostoTotale(){
         $quotePlaceholder   = QuotePlaceholder::find()->where(["id_quote" => $this->id])->one();
         $placeholder        = Segnaposto::findOne($quotePlaceholder->id_placeholder);

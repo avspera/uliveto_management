@@ -247,46 +247,67 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
     </div>
         
     <?php if(!empty($segnaposto)) { ?>
-        
-            <div class="card card-info">
-                    <div class="card-header">
-                        <div class="text-md">Segnaposto</div>
-                    </div>
-
-                    <div class="card-body">
-                
-                        <?= DetailView::widget([
-                            'model' => $segnaposto,
-                            'attributes' => [
-                                'label',
-                                [
-                                    'attribute' => 'image',
-                                    'value' => function($model){
-                                        return !empty($model->image) ? 
-                                            Html::img(Url::to(Yii::getAlias("@web")."/".$model->image), ['class' => 'img-fluid img-responsive', 'alt' => $model->label, 'title' => $model->label]) 
-                                        : "-";
-                                    },
-                                    'format' => "raw"
-                                ],
-                                [
-                                    'attribute' => 'price',
-                                    'value' => function($model){
-                                        return $model->formatNumber($model->price);
-                                    },
-                                    'format' => "raw"
-                                ],
-                                [
-                                    'attribute' => 'created_at',
-                                    'value' => function($model){
-                                        return $model->formatDate($model->created_at);
-                                    }
-                                ],
+        <div class="card card-info">
+                <div class="card-header">
+                    <div class="text-md">Segnaposto</div>
+                </div>
+                <div class="card-body">
+                    <?= GridView::widget([
+                        'dataProvider'  => $segnaposto,
+                        'filterModel'   => $quotePlaceholderModel,
+                        'columns' => [
+                            ['class' => 'yii\grid\SerialColumn'],
+                            [
+                            'attribute' => 'id_quote',
+                            'value' => function($model){
+                                return Html::a($model->getQuoteInfo(), Url::to(["quote/view", "id" => $model->id]));
+                                },
+                                'format' => "raw"
                             ],
-                        ]) ?>
-                    </div>
-                    
+                            [
+                                'attribute' => 'id_placeholder',
+                                'value' => function($model){
+                                    return $model->getPlaceholderInfo();
+                                },
+                                'format' => "raw",
+                                'filter' => yii\helpers\ArrayHelper::map(app\models\Segnaposto::find()->orderBy('label')->all(), 'id', 'label')
+                            ],
+                            'amount',
+                            [
+                                'attribute' => "total_no_vat",
+                                'value' => function($model){
+                                    return $model->getTotal();
+                                },
+                                'format' => "raw",
+                                'label' => "Totale senza iva"
+                            ],
+                            [
+                                'attribute' => "total",
+                                'value' => function($model){
+                                    return $model->getTotal("vat");
+                                },
+                                'format' => "raw",
+                                'label' => "Totale"
+                            ],
+                            [
+                                'attribute' => 'created_at',
+                                'value' => function($model){
+                                    return $model->formatDate($model->created_at);
+                                }
+                            ],
+                            [
+                                'attribute' => 'updated_at',
+                                'value' => function($model){
+                                    return $model->formatDate($model->updated_at);
+                                }
+                            ],
+                            [
+                                'class' => ActionColumn::className(),
+                            ],
+                        ],
+                    ]); ?>
                 </div>
             </div>
-        
+        </div>
     <?php } ?> 
 </div>

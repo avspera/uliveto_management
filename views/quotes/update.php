@@ -13,7 +13,16 @@ $this->params['breadcrumbs'][] = 'Modifica';
 <div class="quote-update">
     <div class="card">
         <div class="card-body table-responsive">
-            <?= $this->render('_form', ['model' => $model]) ?>
+            <?= $this->render('_form', [
+                'model'             => $model, 
+                'segnaposto'        => $segnaposto,
+                'quoteDetails'      => $quoteDetails,
+                'products'          => $products,
+                'detailsModel'      => $detailsModel,
+                'colors'            => $colors,
+                'packagings'        => $packagings,
+                'currentBottleAmount' => $currentBottleAmount
+            ]) ?>
         </div>
     </div>
 </div>

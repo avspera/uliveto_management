@@ -54,9 +54,26 @@ $this->params['breadcrumbs'][] = $this->title;
                         'value' => function($model){
                             return $model->getPlaceholderInfo();
                         },
-                        'format' => "raw"
+                        'format' => "raw",
+                        'filter' => yii\helpers\ArrayHelper::map(app\models\Segnaposto::find()->orderBy('label')->all(), 'id', 'label')
                     ],
                     'amount',
+                    [
+                        'attribute' => "total_no_vat",
+                        'value' => function($model){
+                            return $model->getTotal();
+                        },
+                        'format' => "raw",
+                        'label' => "Totale senza iva"
+                    ],
+                    [
+                        'attribute' => "total",
+                        'value' => function($model){
+                            return $model->getTotal("vat");
+                        },
+                        'format' => "raw",
+                        'label' => "Totale"
+                    ],
                     [
                         'attribute' => 'created_at',
                         'value' => function($model){

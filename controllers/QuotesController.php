@@ -200,13 +200,7 @@ class QuotesController extends Controller
             $model = $this->findModel($id);
             $model->confirmed = 1;
             if($model->save()){
-                $quoteModel = new QuoteDetailsSearch();
-                $quoteModel->id_quote = $id;
-                $quoteDetails = $quoteModel->search([]); 
-                return $this->render('/order/view', [
-                    'model' => $model,
-                    'quoteDetails' => $quoteDetails
-                ]);
+                return $this->redirect(['/order/view', "id" => $id]);
             }
         }catch(Exception $e){
             Yii::$app->session->setFlash('error', "Ops...something went wrong [QU-103]");
@@ -228,21 +222,47 @@ class QuotesController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            Yii::$app->session->setFlash('success', "Aggiornamento completato con successo");
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($this->request->isPost && $model->load($this->request->post())) {
+            if($model->save()){
+                $i = 0;
+                    foreach($model->product as $key => $value){
+                        $quoteDetails = new QuoteDetails();
+                        $quoteDetails->id_product   = $value;
+                        $quoteDetails->id_quote     = $model->id;
+                        $quoteDetails->amount       = $model->amount[$i];
+                        $quoteDetails->id_packaging = $model->packaging[$i];
+                        $quoteDetails->id_color     = isset($model->color[$i]) ? $model->color[$i] : NULL;
+                        $quoteDetails->custom_color = isset($model->custom_color[$i]) ? $model->custom_color[$i] : NULL;
+                        $quoteDetails->created_at   = date("Y-m-d H:i:s");
+                        if(!$quoteDetails->save()){
+                            print_r($quoteDetails->getErrors());
+                        }
+                    }
+                Yii::$app->session->setFlash('success', "Aggiornamento completato con successo");
+                return $this->redirect(['view', 'id' => $model->id]);    
+            }
+            
         }else{
             Yii::$app->session->setFlash('error', "Ops...something went wrong [QU-102]");
         }
 
-        $products   = Product::find()->select(["id", "name", "price"])->orderBy(["name" => SORT_ASC])->all();
-        $packagings = Packaging::find()->select(["id", "label", "price"])->orderBy(["label" => SORT_ASC])->all(); 
-        $model->total_no_vat    = 0;
-        $model->total           = 0;
-        return $this->render('create', [
-            'model'         => $model,
+        $detailsModel   = new QuoteDetailsSearch();
+        $detailsModel->id_quote = $id;
+        $quoteDetails   = $detailsModel->search($this->request->queryParams);
+        $segnaposto     = Segnaposto::findOne(["id" => $model->placeholder]);
+        $products       = Product::find()->select(["id", "name", "price"])->all();
+        $colors         = Color::find()->select(["id", "label"])->all();
+        $packagings     = Packaging::find()->select(["id", "label", "price"])->all();
+        $currentBottleAmount = QuoteDetails::find()->where(["id_quote" => $id])->sum("amount");
+        return $this->render('update', [
+            'model' => $model,
+            'detailsModel' => $detailsModel,
+            'segnaposto'    => $segnaposto,
+            'quoteDetails'  => $quoteDetails,
             'products'      => $products,
+            'colors'        => $colors,
             'packagings'    => $packagings,
+            "currentBottleAmount" => $currentBottleAmount
         ]);
     }
 

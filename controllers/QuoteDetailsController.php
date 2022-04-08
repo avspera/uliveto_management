@@ -58,7 +58,7 @@ class QuoteDetailsController extends Controller
      * @return \yii\web\Response
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id)
+    public function actionDelete($id, $flag = "order")
     {
         $model              = $this->findModel($id);
         $price              = Product::find()->select(["price"])->where(["id" => $model->id_product])->one();
@@ -80,8 +80,11 @@ class QuoteDetailsController extends Controller
             Yii::$app->session->setFlash('success', "Elemento cancellato con successo");
         else
             Yii::$app->session->setFlash('error', "Ops...something went wront [QUOTEDETAILS - 101]");
-    
-        return $this->redirect(['order/update', "id" => $model->id_quote]);
+        
+        if($flag != "order")
+            return $this->redirect(['quotes/update', "id" => $model->id_quote]);
+        else
+            return $this->redirect(['order/update', "id" => $model->id_quote]);
     }
 
     /**

@@ -6,8 +6,11 @@ use yii\helpers\ArrayHelper;
 use yii\widgets\ActiveForm;
 use kartik\select2\Select2;
 use app\models\Client;
+use kartik\grid\GridView;
 use yii\web\JsExpression;
 use kartik\date\DatePicker;
+use yii\grid\ActionColumn;
+
 $prefix_url = Yii::getAlias("@web");
 $placeholders = \app\models\Segnaposto::find()->all();
 
@@ -29,6 +32,60 @@ $placeholders = \app\models\Segnaposto::find()->all();
 <div class="quote-form">
 
     <?php $form = ActiveForm::begin(); ?>
+
+    <div class="card card-info">
+            <div class="card-header">
+                <div class="row"><div class="text-lg">Dettaglio prodotti</div></div>
+            </div>
+            <div class="card-body table-responsive">
+                
+                <?= GridView::widget([
+                    'dataProvider' => $quoteDetails,
+                    'columns' => [
+                        ['class' => 'yii\grid\SerialColumn'],
+                        [
+                            'attribute' => 'id_product',
+                            'value' => function($model){
+                                return $model->getProduct();
+                            },
+                        ],
+                        [
+                            'attribute' => 'id_color',
+                            'value' => function($model){
+                                return !empty($model->id_color) ? $model->getColor() : "";
+                            },
+                        ],
+                        [
+                            'attribute' => "custom_color",
+                        ],
+                        [
+                            'attribute' => 'id_packaging',
+                            'value' => function($model){
+                                return $model->getPackaging();
+                            },
+                        ],
+                        'amount',
+                        [ 
+                            'class' => ActionColumn::className(),
+                            'template' => "{delete}",
+                            'buttons' => [
+                                'delete' => function ($url, $model) {
+                                    return Html::a(
+                                        '<span class="fas fa-trash"></span>',
+                                        Url::to(["quote-details/delete", "id" => $model->id, "flag" => "quote"]), 
+                                        [
+                                            'title' => 'Cancella',
+                                            'data-pjax' => '0',
+                                        ]
+                                    );
+                                },
+                            ],
+                        ]
+                    ]
+                ]); ?>
+                
+            </div>
+        </div>
 
         <div class="card card-success">
             <div class="card-body table-responsive">
@@ -163,11 +220,10 @@ $placeholders = \app\models\Segnaposto::find()->all();
                         <?= $form->field($model, 'total_no_vat')->textInput(['maxlength' => true, "readonly" => true]) ?>
                     </div>
                     <div class="col-md-4 col-sm-4 col-12">
-                        <div class="form-group field-quote-total_no_vat">
-                            <label class="control-label" for="quote-total">Totale <i onclick="editTotal()" style="color: orange" class="fas fa-pencil-alt"></i></label>
-                            <input type="text" id="quote-total" class="form-control" name="Quote[total]" value="0" readonly>
-                            <div class="help-block"></div>
-                        </div>
+                        <?= $form
+                                ->field($model, 'total')
+                                ->textInput(['maxlength' => true, "readonly" => true])
+                                ->label('Totale <i onclick="editTotal()" style="color: orange; cursor:pointer" class="fas fa-pencil-alt"></i>') ?>
                     </div>
                 </div>
                 <div class="row">

@@ -48,6 +48,15 @@ $this->params['breadcrumbs'][] = $this->title;
                         'format' => "raw"
                     ],
                     [
+                        'attribute' => "has_segnaposto",
+                        'value' => function($model){
+                            $segnaposto = $model->getSegnaposto();
+                            return !empty($segnaposto) ? Html::a("Vai al preventivo", Url::to(["/quote-placeholder/view", "id" => $segnaposto->id])) : "-" ;
+                        },
+                        'format' => "raw",
+                        'label' => "Segnaposto"
+                    ],
+                    [
                        'attribute' => 'product',
                        'value' => function($model){
                            return $model->getProduct();

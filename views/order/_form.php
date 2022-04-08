@@ -91,7 +91,7 @@ $clientData     = !empty($client) ? $client->name." ".$client->surname : ""
         <div class="card card-success">
             <div class="card-header">
                 <div class="row">
-                    <div class="text-lg">Aggiunti prodotti</div>    
+                    <div class="text-lg">Aggiungi prodotti</div>    
                     <div class="text-md" style="cursor:pointer" onclick="addProductLine()"><i style="margin-top:7px; margin-left:7px" class="fas fa-plus-circle" ></i></div>
                 </div>
             </div>
@@ -149,18 +149,6 @@ $clientData     = !empty($client) ? $client->name." ".$client->surname : ""
                     <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'confetti')->dropdownlist([0 => "NO", 1 => "SI"], ['onchange' => "enableConfettiFields(value)"]) ?></div>
                     <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'prezzo_confetti')->textInput(['maxlength' => true, "onchange" => "addPrezzoAggiuntivo(value)", "readonly" => true, "type" => "number", "prevValue" => 0]); ?></div>
                     <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'confetti_omaggio')->radio(["onChange" => "removePrezzoAggiuntivo('confetti')", "disabled" => true]); ?></div>
-                    <div class="col-md-3 col-sm-4 col-12">
-                        <div class="form-group field-quote-placeholder required">
-                            <label class="control-label" for="quote-placeholder">Segnaposto</label>
-                            <select id="quote-placeholder" class="form-control" name="Quote[placeholder]" onchange="addPrezzoAggiuntivo(this, 'segnaposto')" aria-required="true">
-                                <option value="">Scegli</option>
-                                <?php foreach($placeholders as $placeholder) { ?>
-                                    <option price="<?= $placeholder->price ?>" value="<?= $placeholder->id ?>"><?= $placeholder->label." - ".$placeholder->formatNumber($placeholder->price) ?> </option>
-                                <?php } ?>
-                            </select>
-                            <div class="help-block"></div>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="row">
