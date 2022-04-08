@@ -7,8 +7,10 @@ use app\models\Quote;
 use app\models\QuoteSearch;
 use app\models\QuoteDetails;
 use app\models\QuoteDetailsSearch;
+use app\models\QuotePlaceholder;
 use app\models\QuotePlaceholderSearch;
 use app\models\Product;
+use app\models\Payment;
 use app\models\Segnaposto;
 use app\models\Packaging;
 use app\models\Client;
@@ -276,7 +278,9 @@ class QuotesController extends Controller
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
-        $quoteDetails = QuoteDetails::deleteAll(["id_quote" => $id]);
+        $quoteDetails   = QuoteDetails::deleteAll(["id_quote" => $id]);
+        $payments       = Payment::deleteAll(["id_quote" => $id]);
+        $quotePlaceholder = QuotePlaceholder::deleteAll(["id_quote" => $id]);
         Yii::$app->session->setFlash('success', "Preventivo cancellato con successo");
         return $this->redirect(['index']);
     }

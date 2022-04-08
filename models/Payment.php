@@ -57,7 +57,7 @@ class Payment extends \yii\db\ActiveRecord
 
     public function getQuote(){
         $out = ["quote" => "", "confirmed" => 0];
-        $quote = Quote::findOne([$this->id_quote]);
+        $quote = Quote::find()->select(["id", "created_at", "confirmed"])->where(["id" => $this->id_quote])->one();
         if(!empty($quote)){
             $out["quote"]       = $quote->id." - ".$this->formatDate($quote->created_at);
             $out["confirmed"]   = $quote->confirmed;

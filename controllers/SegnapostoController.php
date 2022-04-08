@@ -48,20 +48,17 @@ class SegnapostoController extends Controller
         $out = ['results' => [], "status" => "100"];
         
         if (!is_null($term)) {
-            $client = Client::find()
-                        ->select(["id", "name", "surname"])
+            $clients = Quote::find()
+                        ->select(["quote.order_number", "quote.id", "quote.id_client"])
+                        ->innerJoin('client', '`client`.`id` = `quote`.`id_client`')
                         ->where(["LIKE", "surname", $term])
                         ->orWhere(["LIKE", "name", $term])
-                        ->one();
-
-            $data = Quote::find()
-                        ->select(["id", "order_number"])
-                        ->where(["id_client" => $client->id])
-                        ->orderBy(["created_at" => SORT_DESC])
+                        ->orderBy(["name" => SORT_ASC])
                         ->all();
-                
+            
             $i = 0;
-            foreach($data as $item){
+            foreach($clients as $item){
+                $client = Client::findOne($item->id_client);
                 $out["results"][$i]["id"]   = $item->id;
                 $out["results"][$i]["text"] = $item->order_number." - ".$client->name." ".$client->surname;
                 $i++;

@@ -33,59 +33,61 @@ $placeholders = \app\models\Segnaposto::find()->all();
 
     <?php $form = ActiveForm::begin(); ?>
 
+    <?php if(!empty($quoteDetails)){ ?>
     <div class="card card-info">
-            <div class="card-header">
-                <div class="row"><div class="text-lg">Dettaglio prodotti</div></div>
-            </div>
-            <div class="card-body table-responsive">
-                
-                <?= GridView::widget([
-                    'dataProvider' => $quoteDetails,
-                    'columns' => [
-                        ['class' => 'yii\grid\SerialColumn'],
-                        [
-                            'attribute' => 'id_product',
-                            'value' => function($model){
-                                return $model->getProduct();
-                            },
-                        ],
-                        [
-                            'attribute' => 'id_color',
-                            'value' => function($model){
-                                return !empty($model->id_color) ? $model->getColor() : "";
-                            },
-                        ],
-                        [
-                            'attribute' => "custom_color",
-                        ],
-                        [
-                            'attribute' => 'id_packaging',
-                            'value' => function($model){
-                                return $model->getPackaging();
-                            },
-                        ],
-                        'amount',
-                        [ 
-                            'class' => ActionColumn::className(),
-                            'template' => "{delete}",
-                            'buttons' => [
-                                'delete' => function ($url, $model) {
-                                    return Html::a(
-                                        '<span class="fas fa-trash"></span>',
-                                        Url::to(["quote-details/delete", "id" => $model->id, "flag" => "quote"]), 
-                                        [
-                                            'title' => 'Cancella',
-                                            'data-pjax' => '0',
-                                        ]
-                                    );
-                                },
-                            ],
-                        ]
-                    ]
-                ]); ?>
-                
-            </div>
+        <div class="card-header">
+            <div class="row"><div class="text-lg">Dettaglio prodotti</div></div>
         </div>
+        <div class="card-body table-responsive">
+            
+            <?= GridView::widget([
+                'dataProvider' => $quoteDetails,
+                'columns' => [
+                    ['class' => 'yii\grid\SerialColumn'],
+                    [
+                        'attribute' => 'id_product',
+                        'value' => function($model){
+                            return $model->getProduct();
+                        },
+                    ],
+                    [
+                        'attribute' => 'id_color',
+                        'value' => function($model){
+                            return !empty($model->id_color) ? $model->getColor() : "";
+                        },
+                    ],
+                    [
+                        'attribute' => "custom_color",
+                    ],
+                    [
+                        'attribute' => 'id_packaging',
+                        'value' => function($model){
+                            return $model->getPackaging();
+                        },
+                    ],
+                    'amount',
+                    [ 
+                        'class' => ActionColumn::className(),
+                        'template' => "{delete}",
+                        'buttons' => [
+                            'delete' => function ($url, $model) {
+                                return Html::a(
+                                    '<span class="fas fa-trash"></span>',
+                                    Url::to(["quote-details/delete", "id" => $model->id, "flag" => "quote"]), 
+                                    [
+                                        'title' => 'Cancella',
+                                        'data-pjax' => '0',
+                                    ]
+                                );
+                            },
+                        ],
+                    ]
+                ]
+            ]); ?>
+            
+        </div>
+    </div>
+    <?php } ?>
 
         <div class="card card-success">
             <div class="card-body table-responsive">
