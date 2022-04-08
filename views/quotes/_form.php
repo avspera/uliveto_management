@@ -171,7 +171,7 @@ $placeholders = \app\models\Segnaposto::find()->all();
                     <div class="col-md-2 col-sm-6 col-12">
                         <div class="form-group field-quote-id_packaging-0 required">
                             <label class="control-label" for="quote-id_packaging-0">Confezione</label>
-                            <select prevPrice=0 disabled id="quote-id_packaging-0" class="form-control" name="Quote[id_packaging][0]" onchange="addPackagingPrice(0)" aria-required="true">
+                            <select prevPrice=0 disabled id="quote-id_packaging-0" class="form-control" name="Quote[packaging][0]" onchange="addPackagingPrice(0)" aria-required="true">
                                 <option price="" value="">Scegli</option>
                                 <?php foreach($packagings as $packaging) { ?>
                                     <option price="<?= $packaging->price ?>" value="<?= $packaging->id ?>"><?= $packaging->label." - ".$packaging->formatNumber($packaging->price) ?> </option>
@@ -687,7 +687,7 @@ function addProductLine(){
             <div class="col-md-2 col-sm-6 col-12">
                 <div class="form-group field-quote-packaging required">
                     <label class="control-label" for="quote-packaging">Confezione</label>
-                    <select disabled="" id="quote-id_packaging-${index}" class="form-control" name="Quote[id_packaging][${index}]" onchange="addPackagingPrice(${index})" aria-required="true">
+                    <select disabled="" id="quote-id_packaging-${index}" class="form-control" name="Quote[packaging][${index}]" onchange="addPackagingPrice(${index})" aria-required="true">
                         <option price="" value="">Scegli</option>
                         <?php foreach($packagings as $package) { ?>
                             <option price="<?= $package->price ?>" value="<?= $package->id ?>"><?= $package->label." - ".$package->formatNumber($package->price) ?></option>
