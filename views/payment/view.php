@@ -25,6 +25,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
             ]) ?>
             <?= Html::a('<i class="fas fa-file-pdf"></i> Genera fattura pro forma', ['generate-fattura-pro-forma', 'id' => $model->id], ['class' => 'btn btn-success']) ?>
+            <?= Html::a('<i class="fas fa-file-pdf"></i> Segna come fatturato', ['set-as-invoiced', 'id' => $model->id], ['class' => 'btn btn-info']) ?>
         </div>
 
         <div class="card-body table-responsive">

@@ -33,7 +33,7 @@ class PaymentController extends Controller
                         'allow' => ['?'],
                     ],
                     [
-                        'actions' => ['view', 'index', 'craete', 'update', 'delete'],
+                        'actions' => ['view', 'index', 'create', 'update', 'delete', 'set-as-invoiced'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -86,6 +86,18 @@ class PaymentController extends Controller
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    public function actionSetAsInvoiced($id){
+        $payment = $this->findModel($id);
+        if(!empty($payment)){
+            $payment->fatturato = 1;
+            $payment->save();
+        }
+
+        return $this->render('view', [
+            "model" => $payment
         ]);
     }
 

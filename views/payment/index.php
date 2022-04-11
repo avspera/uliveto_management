@@ -68,13 +68,14 @@ $this->params['breadcrumbs'][] = $this->title;
                         'attribute' => 'created_at',
                         'value' => function($model){
                             return $model->formatDate($model->created_at);
-                        }
+                        },
+                        'label' => "Data pagamento"
                     ],
                     [
                         'attribute' => "saldo",
                         'value' => function($model){
                             $totale = $model->getTotal();
-                            if(!is_numeric($total)) return;
+                            if(!$totale) return;
                             return $totale - $model->amount < 0 ? 0 : $model->formatNumber($totale - $model->amount);
                         },
                         'format' => "raw",
@@ -99,15 +100,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'filter' => [0 => "NO", 1 => "SI"],
                         'format' => "raw"
                     ],
-                    [
-                        'class' => ActionColumn::className(),
-                        'template' => '{changeData} {view} {update} {delete}',
-                        'buttons' => [
-                            'changeData' => function ($url) {
-                                return '<span style="cursor:pointer; color:orange" onclick=openModal() class="fas fa-clock"></span>';
-                            },
-                        ],
-                    ],
+                    [ 'class' => ActionColumn::className() ],
                 ],
             ]); ?>
         </div>

@@ -1,12 +1,28 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 use kartik\file\FileInput;
 
 $this->title = $model->order_number." - ".$model->getClient().": Carica allegati";
 $this->params['breadcrumbs'][] = ['label' => 'Ordini', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
+$preview = [];
+$i = 0;
+if(!empty($model->attachments)){
+    foreach($model->attachments as $attachmet){
+        $preview[$i] = [
+            "caption" => "File",
+            'width' => "200px",
+            'url' => Url::to(["order/delete-attachment?id_quote=".$model->id]),
+            'key' => $attachmet,
+            "id_quote" => $model->id
+        ];
+        $i++;
+    }
+}
+
 \yii\web\YiiAsset::register($this);
 ?>
 
@@ -20,7 +36,16 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?= FileInput::widget([
                     'model' => $model,
                     'attribute' => 'attachments',
-                    'options' => ['multiple' => true, 'accept' => ["png", "jpg"]]
+                    'options' => ['multiple' => true, 'accept' => ["png", "jpg"]],
+                    'pluginOptions' => [
+                        'initialPreview'=>[
+                            !empty($model->attachments) ? Html::img($model->attachments, ["width " => "200px"]) : []
+                        ],
+                        'overwriteInitial' => false,
+                        'initialPreviewConfig' => $preview,
+                        'deleteUrl'=> Url::to(['/order/delete-attachment?id_quote='.$model->id]),
+                    ],
+                    
                 ]);?>
             </div>
 
@@ -34,3 +59,22 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php ActiveForm::end(); ?>
 
 </div>
+
+<script>
+    $(document).ready(function() {
+    $('#quote-attachments').fileinput({
+        overwriteInitial: false,
+        validateInitialCount: true,
+    }).on('filebeforedelete', function() {
+        var aborted = !window.confirm('Are you sure you want to delete this file?');
+        if (aborted) {
+            window.alert('File deletion was aborted!');
+        };
+        return aborted;
+    }).on('filedeleted', function() {
+        setTimeout(function() {
+            window.alert('File deletion was successful!');
+        }, 900);
+    });
+});
+</script>

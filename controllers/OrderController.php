@@ -46,6 +46,7 @@ class OrderController extends Controller
                             'delete', 
                             'create',
                             'upload-files',
+                            'delete-attachment'
                         ],
                         'allow' => true,
                         'roles' => ['@'],
@@ -223,31 +224,71 @@ class OrderController extends Controller
         $dirCreated = FileHelper::createDirectory($path);
         
         $attachments = UploadedFile::getInstances($model, 'attachments');
-        
         if (!empty($attachments)){
             $files = [];
             $i = 0;
         
             foreach($attachments as $attachment){
-                $filename = $uploader->generateAndSaveFile($attachment, $path);
-                $files[$i] = "uploads/documents/".$model->id_client."/".$filename;
+                $filename   = $uploader->generateAndSaveFile($attachment, $path);
+                $files[$i]  = "uploads/documents/".$model->id_client."/".$filename;
                 $i++;
             }
             
-            $model->attachments = json_encode($files); 
+            $model->attachments = $files;
         }
         
         return $model->attachments;
     }
 
+    public function actionDeleteAttachment($id_quote = ""){
+        if(Yii::$app->request->isAjax){
+           
+            $bodyParams = Yii::$app->request->bodyParams;
+            $params     = Yii::$app->request->queryParams;
+            
+            if(!empty($bodyParams)){
+                $quote = Quote::find()->where(["id" => $id_quote])->one();
+                
+                $attachments = json_decode($quote->attachments, true);
+                if(!empty($attachments)){
+                    $item = array_search($bodyParams["key"], $attachments);
+                    unset($attachments[$item]);
+                    $quote->attachments = empty($attachments) ? NULL : json_encode($attachments);
+                   
+                    if(!$quote->save()){
+                        Yii::$app->session->setFlash('error', "Ops...something went wrong [ORDER_DEL-100]");
+                    }
+
+                   try{
+                        unlink(Yii::getAlias("@webroot")."/".$bodyParams["key"]);
+                    }catch(yii\base\ErrorException $e){
+                        Yii::$app->session->setFlash('error', "Ops...something went wrong [ORDER_DEL-101]");
+                    }
+                }
+                
+            }
+            \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            return $this->redirect(Yii::$app->request->referrer);;
+        }
+    }
+
     public function actionUploadFiles($id)
     {
         $model = $this->findModel($id);
-
+        $model->attachments = json_decode($model->attachments, true);
+        $oldAttachments = $model->attachments;
         if ($this->request->isPost && $model->load($this->request->post())) {
             
             if (!empty($_FILES)) {
-                $model->attachments = $this->manageUploadFiles($model);
+                $newAttach = $this->manageUploadFiles($model);
+                
+                if(!empty($oldAttachments)){
+                    array_push($oldAttachments, $newAttach);
+                    $model->attachments = json_encode($oldAttachments);
+                }
+                else{
+                    $model->attachments = json_encode($newAttach);
+                }
             }
 
             if($model->save())
