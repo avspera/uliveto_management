@@ -18,6 +18,7 @@ class Payment extends \yii\db\ActiveRecord
 {
     public $total;
     public $saldo;
+    public $types = [0 => "Acconto", 1 => "Saldo"];
     /**
      * {@inheritdoc}
      */
@@ -32,8 +33,8 @@ class Payment extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id_client', 'id_quote', 'amount', 'created_at', 'fatturato'], 'required'],
-            [['id_client', 'id_quote', 'fatturato'], 'integer'],
+            [['id_client', 'id_quote', 'amount', 'created_at', 'fatturato', 'type'], 'required'],
+            [['id_client', 'id_quote', 'fatturato', 'type'], 'integer'],
             [['amount'], 'number'],
             [['created_at'], 'safe'],
         ];
@@ -50,10 +51,14 @@ class Payment extends \yii\db\ActiveRecord
             'id_quote' => 'Preventivo',
             'amount' => 'Acconto',
             'created_at' => 'Effettuato il',
-            'fatturato' => "Fatturato"
+            'fatturato' => "Fatturato",
+            'type' => "Tipo"
         ];
     }
 
+    public function getType(){
+        return $this->types[$this->type];
+    }
 
     public function getQuote(){
         $out = ["quote" => "", "confirmed" => 0];

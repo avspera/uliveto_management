@@ -86,14 +86,16 @@ class SiteController extends Controller
         if(Yii::$app->user->isGuest)
             return $this->redirect(["login"]);
             
-        $quotesCount    = Quote::find()->count();
+        $quotesCount    = Quote::find()->where(["confirmed" => 0])->count();
         $clientsCount   = Client::find()->count();
         $messagesCount  = Message::find()->where(["not", ["replied_at" => null]])->count();
-
+        $ordersCount    = Quote::find()->where(["confirmed" => 1])->count();
+        
         return $this->render('index', [
             "quotesCount"   => $quotesCount,
             'clientsCount'  => $clientsCount,
-            'messagesCount' => $messagesCount
+            'messagesCount' => $messagesCount,
+            'ordersCount'    => $ordersCount
         ]);
     }
 

@@ -47,11 +47,15 @@ use kartik\select2\Select2;
     </div>
     
     <div class="row">
-        <div class="col-md-6 col-sm-6 col-12">
+        <div class="col-md-4 col-sm-6 col-12">
             <?= $form->field($model, 'amount')->textInput(["type" => "number"]) ?>
         </div>
+
+        <div class="col-md-4 col-sm-6 col-12">
+            <?= $form->field($model, 'type')->dropdownList($model->types, ['prompt' => 'Scegli']) ?>
+        </div>
         
-        <div class="col-md-6 col-sm-6 col-12">
+        <div class="col-md-4 col-sm-6 col-12">
             <?php
                 echo '<label class="form-label">Data</label>';
                 echo DatePicker::widget([
@@ -66,6 +70,8 @@ use kartik\select2\Select2;
                 ]);
             ?>
         </div>
+
+        
     </div>
 
     <div class="form-group">

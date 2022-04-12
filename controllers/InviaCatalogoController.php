@@ -41,7 +41,8 @@ class InviaCatalogoController extends Controller
                             'create',
                             'upload-files',
                             'view-catalogs',
-                            'delete-catalog'
+                            'delete-catalog',
+                            'send-catalog'
                         ],
                         'allow' => true,
                         'roles' => ['@'],
@@ -95,6 +96,18 @@ class InviaCatalogoController extends Controller
         ]);
     }
 
+    public function actionSendCatalog($id, $flag){
+        
+        $model = $this->findModel($id);
+        
+        if($flag == "email"){
+            $this->sendEmail($model);
+            Yii::$app->session->setFlash('success', "Email inviata correttamente");
+        }   
+        
+        return $this->redirect(["view", "id" => $id]);
+    }
+
     /**
      * Creates a new InviaCatalogo model.
      * If creation is successful, the browser will be redirected to the 'view' page.
@@ -108,7 +121,7 @@ class InviaCatalogoController extends Controller
             
             if ($model->load($this->request->post())) {
                 $model->created_at = date("Y-m-d H:i:s");
-                if($model->save() && $this->sendEmail($model)){
+                if($model->save()){
                     Yii::$app->session->setFlash('success', "Catalogo inviato correttamente");
                     return $this->redirect(['view', 'id' => $model->id]);
                 }else{

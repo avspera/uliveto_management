@@ -15,7 +15,7 @@ use kartik\file\FileInput;
 
     <div class="row">
         <div class="col-md-4"><?= $form->field($model, 'label')->textInput(['maxlength' => true]) ?></div>
-        <div class="col-md-4"><?= $form->field($model, 'price')->textInput(['maxlength' => true, "type" => "number"]) ?></div>
+        <div class="col-md-4"><?= $form->field($model, 'price')->textInput(['maxlength' => true, "type" => "number", "step" => ".01"]) ?></div>
     </div>
     
     <div class="row">

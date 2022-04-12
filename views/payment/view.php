@@ -55,6 +55,12 @@ $this->params['breadcrumbs'][] = $this->title;
                         'format' => "raw"
                     ],
                     [
+                        'attribute' => "type",
+                        'value' => function($model){
+                            return $model->getType();
+                        }
+                    ],
+                    [
                         'attribute' => "fatturato",
                         'value' => function($model){
                             return $model->isFatturato();

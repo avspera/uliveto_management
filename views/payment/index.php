@@ -82,6 +82,12 @@ $this->params['breadcrumbs'][] = $this->title;
                         'label' => "Saldo"
                     ],
                     [
+                        'attribute' => "type",
+                        'value' => function($model){
+                            return $model->getType();
+                        }
+                    ],
+                    [
                         'attribute' => "data_saldo",
                         'value' => function($model){
                             // $date = new DateTime($model->created_at);
