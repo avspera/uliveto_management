@@ -26,6 +26,24 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
 ?>
 <div class="order-view">
 
+    <?php if(Yii::$app->session->hasFlash('error')): ?>
+      <div class="alert alert-warning alert-dismissible" style="color: white">
+        <?php echo Yii::$app->session->getFlash('error'); ?>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    <?php endif; ?> 
+
+    <?php if(Yii::$app->session->hasFlash('success')): ?>
+      <div class="alert alert-success alert-dismissible">
+        <?php echo Yii::$app->session->getFlash('success'); ?>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    <?php endif; ?> 
+
     <div class="card">
         <div class="card-header">
             <?= Html::a('<i class="fas fa-pencil-alt"></i> Modifica', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
@@ -38,8 +56,8 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
             ]) ?>
             <?= Html::a('<i class="fas fa-file-pdf"></i> Genera PDF', ['quote/generate-pdf', 'id' => $model->id, 'flag' => "generate"], ['class' => 'btn btn-success']) ?>
             <?= $phone ? Html::a('<i class="fas fa-comment"></i> Whatsapp', Url::to("https://wa.me/".$phone."/?text=".$text), ['class' => 'btn btn-primary', 'target' => "_blank"]) : "" ?>
-            <?= Html::a('<i class="fas fa-check"></i> Conferma', ['confirm', 'id' => $model->id, 'flag' => "send"], ['class' => 'btn btn-info']) ?>
             <?= Html::a('<span style="color:white"><i class="fas fa-upload"></i> Carica allegati</span>', ['upload-files', 'id' => $model->id], ['class' => 'btn btn-warning']) ?>
+            <?= Html::a('<span style="color:white"><i class="fas fa-envelope"></i> Invia email pagamento</span>', ['send-email-payment', 'id_client' => $model->id_client, "id_quote" => $model->id], ['class' => 'btn btn-info']) ?>
         </div>
 
         <div class="card-body">

@@ -28,7 +28,8 @@
         "kartik-v/yii2-mpdf": "dev-master",
         "mpdf/mpdf":"*",
         "setasign/fpdf": "^1.8",
-        "setasign/fpdi-fpdf": "^2.3"
+        "setasign/fpdi-fpdf": "^2.3",
+        "bitcko/yii2-bitcko-paypal-api": "dev-master"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

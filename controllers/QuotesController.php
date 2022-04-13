@@ -378,14 +378,17 @@ class QuotesController extends Controller
     protected function sendEmail($model, $filename, $view){
         
         if(empty($model)) return false;
+        $client = Client::find()->select(["email"])->where(["id" => $model->id_client])->one();
         
+        if(empty($client)) return false;
+
         $message = Yii::$app->mailer
                 ->compose(
                     ['html' => $view],
                     ['model' => $model]
                 )
                 ->setFrom([Yii::$app->params["infoEmail"]])
-                ->setTo("antoniovincenzospera@gmail.com")
+                ->setTo($client->email)
                 ->setSubject($model->getClient()." ecco il tuo preventivo");
 
         $fullFilename = "https://manager.orcidelcilento.it/web/pdf/".$filename;

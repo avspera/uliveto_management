@@ -36,7 +36,7 @@ class Payment extends \yii\db\ActiveRecord
             [['id_client', 'id_quote', 'amount', 'created_at', 'fatturato', 'type'], 'required'],
             [['id_client', 'id_quote', 'fatturato', 'type'], 'integer'],
             [['amount'], 'number'],
-            [['created_at'], 'safe'],
+            [['id_transaction'], 'safe'],
         ];
     }
 

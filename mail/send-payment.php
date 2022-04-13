@@ -1,7 +1,9 @@
 <?php 
   use yii\helpers\Html;
   use yii\helpers\Url;
-  
+
+  $paymentUrl = Yii::$app->urlManager->createAbsoluteUrl(['payment/external-payment', 'id_client' => $client->id, "id_quote" => $order->id]);
+
 ?> 
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
@@ -344,34 +346,49 @@
           </td>
 	      </tr><!-- end tr -->
 				<tr>
-          <td valign="middle" class="hero hero-2 bg_white" style="padding: 4em 0;">
-            <table>
-            	<tr>
-            		<td>
-            			<div class="text" style="padding: 0 3em; text-align: center;">
-            				<h2>Ciao <?= $model->getClient() ?>, in allegato trovi <span>il tuo preventivo</span></h2>
-            			</div>
-                  <div class="text" style="padding: 3em;">
-                    <p>
-                      Ho il piacere di presentarle la nostra collezione di orci realizzati e decorati a mano.<br>
-                      L'orcio in ceramica contiene e custodisce i profumi e i sapori dell'olio extravergine di oliva biologico, prodotto nei nostri uliveti a <b>Trentinara e Giungano</b>.<br>
-
-                      Scadenza offerta: <?= $model->formatDate($model->deadline) ?> <br>
-                      Rimango a sua completa disposizione<br>
-                      Cordiali Saluti<br>
-                      <br>
-                      Francesco Guariglia <br>
-                      <br>
-                      Mobile: + 39 3203828243<br>
-                      Maria Guariglia<br>
-                      mobile: +39 3807544300<br>
-                      mail: e-commerce@ulivetodimaria.it<br>
-                    </p>
-                  </div>
-            		</td>
-            	</tr>
-            </table>
-          </td>
+                <td valign="middle" class="hero hero-2 bg_white" style="padding: 4em 0;">
+                    <table  align="center" role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin: auto;">
+                        <tr>
+                            <td>
+                                <div class="text" style="padding: 0 3em; text-align: center;">
+                                    <h2>Ciao <?= $client->name." ".$client->surname ?></h2>
+                                </div>
+                                <div class="text" style="padding: 3em;">
+                                    <p>Grazie per aver scelto Orci Del Cilento</p>
+                                    <p><a href="<?= $paymentUrl ?>">Clicca qui</a> per procedere al pagamento</p>
+                                </div>
+                                <div class="text" style="padding-left: 3em;">
+                                    <table align="center" role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin: auto;">
+                                        <tr>
+                                            <td>Numero ordine</td>
+                                            <td><?= $order->order_number ?></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Data</td>
+                                            <td><?= $order->formatDate($order->created_at) ?></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Totale</td>
+                                            <td><?= $order->formatNumber($order->total) ?></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Sconto</td>
+                                            <td><?= $order->getSale($order->id_sconto); ?></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Spedizione</td>
+                                            <td><?= $order->shipping ? $order->address : "NO"; ?></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Consegna entro</td>
+                                            <td><?= $order->formatDate($order->deadline); ?></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
 	      </tr><!-- end tr -->
 	  </table>
       <table align="center" role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin: auto;">

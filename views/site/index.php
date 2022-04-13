@@ -62,7 +62,7 @@
                     <div class="icon">
                         <i class="fas fa-shopping-cart"></i>
                     </div>
-                    <a href="<?= Url::to(["quotes/index"]) ?>" class="small-box-footer">
+                    <a href="<?= Url::to(["order/index"]) ?>" class="small-box-footer">
                         Tutti <i class="fas fa-arrow-circle-right"></i>
                     </a>
                 </div>

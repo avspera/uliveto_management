@@ -16,10 +16,11 @@ $model = new LoginForm();
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <?php $this->registerCsrfMetaTags() ?>
-    <title>Accedi a Manager - OrciCilento</title>
+    <title>Riepilogo pagamento - OrciCilento</title>
     <?php $this->head() ?>
+    <script src="https://www.paypal.com/sdk/js?client-id=AVSh9Y5xzvW1h6cPNfUr1HEcm_GRKRaUOaPaUoauEQzqk_vIBU50kc3945T3IIvWwg7cZhDT-HS6LtlX&currency=EUR"></script>
 </head>
-<body id="page-top" class="bg-gradient-warning">
+<body id="page-top" class="bg-gradient-success">
 <?php $this->beginBody() ?>
 
     <div class="container" style="margin-top: 20px">
@@ -27,22 +28,8 @@ $model = new LoginForm();
             <img src="<?=Yii::getAlias("@web")?>/images/logo_white.png" alt="L'uliveto" class="brand-image">
         </div>
 
-        <div class="card" style="margin-top: 1rem; width: 500px; margin: 0 auto;float: none; margin-top: 20px">
-            <div class="card-body table-responsive login-card-body">
-            <div class="error-content" style="margin-left: auto;">
-        <h3><i class="fas fa-exclamation-triangle text-danger"></i> <?= Html::encode($name) ?></h3>
+        <?= $content ?>
 
-        <p>
-            Ops...c'è stato qualche problema nella tua richiesta.
-            In questo momento non so cosa fare, per cui, intanto, potresti 
-            <?= Html::a('effettuare di nuovo il login', Yii::$app->homeUrl."site/login"); ?>,
-            oppure chiamare lo sviluppatore e dirgli che è successo un casino.
-        </p>
-
-    </div>
-            </div>
-            <!-- /.login-card-body -->
-        </div>
     </div>
 
 <?php $this->endBody() ?>

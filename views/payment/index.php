@@ -106,6 +106,13 @@ $this->params['breadcrumbs'][] = $this->title;
                         'filter' => [0 => "NO", 1 => "SI"],
                         'format' => "raw"
                     ],
+                    // [
+                    //     'attribute' => "external_payment",
+                    //     'value' => function($model){
+                    //         return Html::a("Qui", Url::to(["external-payment", "id_client" => $model->id_client, "id_quote" => $model->id_quote]), []);
+                    //     },
+                    //     'format' => "raw"
+                    // ],
                     [ 'class' => ActionColumn::className() ],
                 ],
             ]); ?>

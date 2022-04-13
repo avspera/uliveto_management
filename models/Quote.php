@@ -129,6 +129,14 @@ class Quote extends \yii\db\ActiveRecord
         return !empty($sale) ? $sale->name." ".$sale->formatPercentage($sale->amount) : " - ";
     }
 
+    public function calculatePercentage($value, $total, $formatted = false){
+        $amount = 0;
+        $amount = ($value / 100) * $total;
+        $amount = is_numeric($amount) ? floatval($amount) : 0;
+
+        return $formatted ? $this->formatNumber($amount) : $amount;
+    }
+
     public function getTotalAmount(){
         $amount = QuoteDetails::find()->where(["id_quote" => $this->id])->sum("amount");
         return $amount;

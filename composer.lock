@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a796434e43c46d6c39e9af5bef568ec5",
+    "content-hash": "c0e007eeaf635a18de31ee4d390d21aa",
     "packages": [
         {
             "name": "almasaeed2010/adminlte",
@@ -48,6 +48,60 @@
                 "source": "https://github.com/ColorlibHQ/AdminLTE/tree/v3.2.0"
             },
             "time": "2022-02-07T20:33:09+00:00"
+        },
+        {
+            "name": "bitcko/yii2-bitcko-paypal-api",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/bitcko/yii2-bitcko-paypal-api.git",
+                "reference": "a6cb413ce9aace9843d72120cd2c92a9042b1ffe"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/bitcko/yii2-bitcko-paypal-api/zipball/a6cb413ce9aace9843d72120cd2c92a9042b1ffe",
+                "reference": "a6cb413ce9aace9843d72120cd2c92a9042b1ffe",
+                "shasum": ""
+            },
+            "require": {
+                "paypal/rest-api-sdk-php": "*",
+                "yiisoft/yii2": "~2.0.0"
+            },
+            "default-branch": true,
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "bitcko\\paypalrestapi\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Mhmd Backer Shehadi",
+                    "email": "m.backer.shehadi@gmail.com"
+                }
+            ],
+            "description": "Bitcko Yii2 Paypal Api Extension use to integrate Paypal payments in your project using Paylpal php SDK",
+            "keywords": [
+                "PayPal API",
+                "PayPal Php api",
+                "PayPal Rest Api",
+                "PayPal developer",
+                "api",
+                "extension",
+                "payment",
+                "paypal",
+                "simple online payment",
+                "yii2"
+            ],
+            "support": {
+                "issues": "https://github.com/bitcko/yii2-bitcko-paypal-api/issues",
+                "source": "https://github.com/bitcko/yii2-bitcko-paypal-api/tree/master"
+            },
+            "time": "2018-12-27T09:53:21+00:00"
         },
         {
             "name": "bower-asset/inputmask",
@@ -1716,6 +1770,60 @@
                 "source": "https://github.com/paragonie/random_compat"
             },
             "time": "2020-10-15T08:29:30+00:00"
+        },
+        {
+            "name": "paypal/rest-api-sdk-php",
+            "version": "1.14.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/paypal/PayPal-PHP-SDK.git",
+                "reference": "72e2f2466975bf128a31e02b15110180f059fc04"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/paypal/PayPal-PHP-SDK/zipball/72e2f2466975bf128a31e02b15110180f059fc04",
+                "reference": "72e2f2466975bf128a31e02b15110180f059fc04",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "php": ">=5.3.0",
+                "psr/log": "^1.0.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.8.35"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "PayPal": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "PayPal",
+                    "homepage": "https://github.com/paypal/rest-api-sdk-php/contributors"
+                }
+            ],
+            "description": "PayPal's PHP SDK for REST APIs",
+            "homepage": "http://paypal.github.io/PayPal-PHP-SDK/",
+            "keywords": [
+                "payments",
+                "paypal",
+                "rest",
+                "sdk"
+            ],
+            "support": {
+                "issues": "https://github.com/paypal/PayPal-PHP-SDK/issues",
+                "source": "https://github.com/paypal/PayPal-PHP-SDK/tree/master"
+            },
+            "abandoned": true,
+            "time": "2019-01-04T20:04:25+00:00"
         },
         {
             "name": "phpoffice/phpspreadsheet",
@@ -7257,7 +7365,8 @@
         "kartik-v/yii2-widget-datepicker": 20,
         "kartik-v/yii2-widget-fileinput": 20,
         "kartik-v/yii2-export": 20,
-        "kartik-v/yii2-mpdf": 20
+        "kartik-v/yii2-mpdf": 20,
+        "bitcko/yii2-bitcko-paypal-api": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

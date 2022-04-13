@@ -28,6 +28,7 @@ class PaymentController extends Controller
                     [
                         'actions' => [
                             'external-payment', 
+                            'register-transaction'
                         ],
                         'allow' => true,
                         'allow' => ['?'],
@@ -58,21 +59,74 @@ class PaymentController extends Controller
         return true;
     }
 
-    public function actionExternalPayment($idClient, $idQuote){
-        if(empty($idClient) || empty($idQuote)) return;
+    public function actionRegisterTransaction($transaction, $id_client, $id_quote){
+        if(empty($transaction) || empty($id_client) || empty($id_quote)) return;
+        
+        $transaction = json_decode($transaction, true);
+        
+        if(empty($transaction)) return;
 
+        $out = ["status" => "100", "msg" => "Ops...c'è qualcosa che non va"];
+        $payment = new Payment();
+        $payment->id_client = $id_client;
+        $payment->id_quote  = $id_quote;
+        $payment->amount    = isset($transaction["amount"]["value"]) ? $transaction["amount"]["value"] : 0;
+        $payment->created_at = date("Y-m-d H:i:s");
+        $payment->type      = 0;
+        $payment->fatturato = 0;
+        $payment->id_transaction = $transaction["id"];
+
+        if($payment->save()){
+            $out = ["status" => "200", "msg" => "Transazione ".$transaction["id"] ." completata con successo. Riceverai a breve un'email di conferma"];
+            $client = Client::find()->select(["name", "surname", "email"])->where(["id" => $id_client])->one();
+            $order = Quote::findOne(["id" => $id_quote]);
+            // return $this->render("@app/mail/transaction-completed", ["client" => $client, "transaction" => $transaction, "order" => $order]);
+            $this->sendEmail($client, $transaction, $order);
+        }
+
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        return $out;
+    }
+
+    protected function sendEmail($client, $transaction, $order){
+        
+        if(empty($client) || empty($transaction) || empty($order)) return false;
+        
+        $message = Yii::$app->mailer
+                ->compose(
+                    ['html' => "transaction-completed"],
+                    ['client' => $client, 'transaction' => $transaction, "order" => $order]
+                )
+                ->setFrom([Yii::$app->params["infoEmail"]])
+                ->setTo($client->email)
+                ->setSubject($client->name." ".$client->surname." grazie per aver effettuato il pagamento");
+
+        // $fullFilename = "https://manager.orcidelcilento.it/web/pdf/".$filename;
+        // $message->attachContent($fullFilename,['fileName' => $filename,'contentType' => 'application/pdf']); 
+
+        return $message->send();
+    }
+
+    public function actionExternalPayment($id_client, $id_quote){
+        if(empty($id_client) || empty($id_quote)) return;
+        
         $this->layout = "external-payment";
 
-        $user   = Client::findOne([$idClient]);
-        $quote  = Quote::findOne([$idQuote]);
+        $client = Client::findOne(["id" => $id_client]);
+        $quote  = Quote::findOne(["id" => $id_quote]);
+        
+        if(empty($client) || empty($quote)) return;
 
-        if(empty($user) || empty($quote)) return;
+        // // In case of payment success this will return the payment object that contains all information about the order
+        // // In case of failure it will return Null
+        // $payment = Yii::$app->PayPalRestApi->processPayment($params);
 
         return $this->render('external-payment', [
-            'user' => $user,
-            'quote' => $quote
+            'client'    => $client,
+            'quote'     => $quote
         ]);
     }
+
     /**
      * Lists all Payment models.
      *

@@ -60,6 +60,10 @@ $config = [
         'authManager' => [
             'class' => 'yii\rbac\PhpManager',
             'defaultRoles' => ['admin', 'preventivi', 'clienti']
+        ],
+        'PayPalRestApi'=>[
+            'class'=>'bitcko\paypalrestapi\PayPalRestApi',
+            'redirectUrl'=>'/payment/success', 
         ]
     ],
     'params' => $params,

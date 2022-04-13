@@ -9,11 +9,12 @@
                         ->where(["<=", "deadline", $today])
                         ->andWhere(["confirmed" => 1])
                         ->orderBy(["deadline" => SORT_DESC])
+                        ->limit(10)
                         ->all();
     $expiringCount  = app\models\Quote::find()->where(["<=", "deadline", $today])->andWhere(["confirmed" => 1])->count();
     $messageCount   = app\models\Message::find()->where(["not",  ["replied_at" => null]])->count();
     $paymentsCount  = app\models\Payment::find()->count();
-    $payments       = app\models\Payment::find()->orderBy(["created_at" => SORT_DESC])->all();
+    $payments       = app\models\Payment::find()->orderBy(["created_at" => SORT_DESC])->limit(10)->all();
 
 ?>
 <!-- Navbar -->
