@@ -3,9 +3,6 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use kartik\file\FileInput;
-use app\utils\FKUploadUtils; 
-use yii\helpers\FileHelper;
-use yii\web\UploadedFile;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Product */

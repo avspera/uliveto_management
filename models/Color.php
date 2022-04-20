@@ -3,11 +3,13 @@
 namespace app\models;
 
 use Yii;
+use app\models\Product;
 
 /**
  * This is the model class for table "color".
  *
  * @property int $id
+ * @property int $id_product
  * @property string $label
  * @property string $content
  * @property string|null $picture
@@ -28,9 +30,10 @@ class Color extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['label'], 'required'],
+            [['label', 'id_product'], 'required'],
             [['content', 'picture'], 'safe'],
             [['label', 'content'], 'string', 'max' => 255],
+            [['picture'], 'file', 'skipOnEmpty' => true, 'extensions' => 'jpg, png'],
         ];
     }
 
@@ -44,6 +47,12 @@ class Color extends \yii\db\ActiveRecord
             'label' => 'Nome',
             'content' => 'Codice hex',
             'picture' => 'Foto',
+            'id_product' => "Prodotto"
         ];
+    }
+
+    public function getProduct(){
+        $product = Product::find()->select(["name"])->where(["id" => $this->id_product])->one();
+        return !empty($product) ? $product->name : "-";
     }
 }

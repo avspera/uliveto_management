@@ -7,6 +7,7 @@ use app\models\ColorSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 use app\utils\FKUploadUtils; 
 use yii\helpers\FileHelper;
 use yii\web\UploadedFile;
@@ -21,17 +22,31 @@ class ColorsController extends Controller
      */
     public function behaviors()
     {
-        return array_merge(
-            parent::behaviors(),
-            [
-                'verbs' => [
-                    'class' => VerbFilter::className(),
-                    'actions' => [
-                        'delete' => ['POST'],
+        return [
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'delete' => ['POST'],
+                ],
+            ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index', 
+                            'view', 
+                            'update', 
+                            'delete', 
+                            'create', 
+                            'delete-attachment'
+                        ],
+                        'allow' => true,
+                        'roles' => ['@'],
                     ],
                 ],
-            ]
-        );
+            ],
+        ];
     }
 
     /**
@@ -48,6 +63,37 @@ class ColorsController extends Controller
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
+    }
+
+    public function actionDeleteAttachment($id = ""){
+        if(Yii::$app->request->isAjax){
+            
+            if(empty($id)) return;
+
+            $params     = Yii::$app->request->queryParams;
+            
+            if(!empty($params)){
+                $color = $this->findModel($params["id"]);
+                
+                if(!empty($color->picture)){
+                    $prevImage = $color->picture;
+                    $color->picture = NULL;
+                    if(!$color->save()){
+                        Yii::$app->session->setFlash('error', "Ops...something went wrong [ORDER_DEL-100]");
+                    }else{
+                        try{
+                            unlink(Yii::getAlias("@webroot")."/".$prevImage);
+                            Yii::$app->session->setFlash('success', "Immagine cancellata correttamente");
+                        }catch(yii\base\ErrorException $e){
+                            Yii::$app->session->setFlash('error', "Ops...something went wrong [ORDER_DEL-101]");
+                        }
+                    }
+                }
+            }
+
+            \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            return $this->redirect(Yii::$app->request->referrer);;
+        }
     }
 
     /**
@@ -76,17 +122,19 @@ class ColorsController extends Controller
     protected function manageUploadFiles($model) {
 
         $uploader   = new FKUploadUtils();
-        $path       = Yii::getAlias('web')."/images/colors/";
+        $path       = Yii::getAlias('@webroot')."/images/colors/";
+    
         $dirCreated = FileHelper::createDirectory($path);
-        $picture    = UploadedFile::getInstance($model, 'picture');
         
+        $picture = UploadedFile::getInstance($model, 'picture');
         if (!empty($picture)){
             $filename = $uploader->generateAndSaveFile($picture, $path);
             $model->picture = "images/colors/".$filename;
         }
-
-        return $model;
+        
+        return $model->picture;
     }
+
     
     /**
      * Creates a new Color model.
@@ -100,8 +148,8 @@ class ColorsController extends Controller
         if ($this->request->isPost) {
             if ($model->load($this->request->post())) {
                 
-                if (!empty($model->picture)) {
-                    $model = $this->manageUploadFiles($model);
+                if (!empty($_FILES)) {
+                    $model->picture = $this->manageUploadFiles($model);
                 }
 
                 if($model->save()){
@@ -129,12 +177,20 @@ class ColorsController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $prevImage = $model->picture;
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        }else{
-            Yii::$app->session->setFlash('error', "Ops...something went wrong [COL-102]");
-            return $this->redirect("index");
+        if ($this->request->isPost && $model->load($this->request->post())) {
+            
+            if (!empty($_FILES)) {
+                $model->picture = $this->manageUploadFiles($model);
+            }
+
+            if($model->save()){
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
+            else{
+                Yii::$app->session->setFlash('error', "Ops...something went wrong [COL-102]");
+            }
         }
 
         return $this->render('update', [
@@ -151,9 +207,20 @@ class ColorsController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-        Yii::$app->session->setFlash('success', "Colore cancellato con successo");
+        $color = $this->findModel($id);
 
+        try{
+            if(!empty($color->picture)){
+                unlink(Yii::getAlias("@webroot")."/".$color->picture);
+            }
+
+            if($color->delete())
+                Yii::$app->session->setFlash('success', "Colore cancellato con successo");
+
+        }catch(yii\base\ErrorException $e){
+            Yii::$app->session->setFlash('error', "Ops...something went wrong [ORDER_DEL-101]");
+        }
+        
         return $this->redirect(['index']);
     }
 

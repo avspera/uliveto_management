@@ -22,7 +22,9 @@ use yii\filters\AccessControl;
 use app\utils\FKUploadUtils; 
 use yii\helpers\FileHelper;
 use yii\web\UploadedFile;
-
+use kartik\mpdf\Pdf;
+use Mpdf\Mpdf;
+use \setasign\Fpdi\Fpdi;
 
 /**
  * OrderController implements the CRUD actions for Quote model.
@@ -47,7 +49,8 @@ class OrderController extends Controller
                             'create',
                             'upload-files',
                             'delete-attachment',
-                            'send-email-payment'
+                            'send-email-payment',
+                            'generate-pdf'
                         ],
                         'allow' => true,
                         'roles' => ['@'],
@@ -85,7 +88,7 @@ class OrderController extends Controller
         $searchModel = new QuoteSearch();
         $searchModel->confirmed = 1;
         $dataProvider = $searchModel->search($this->request->queryParams);
-        $dataProvider->sort->defaultOrder = ["created_at" => SORT_DESC];
+        $dataProvider->sort->defaultOrder = ["deadline" => SORT_DESC];
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -210,22 +213,24 @@ class OrderController extends Controller
             $model->updated_at = date("Y-m-d H:i:s");
             if($model->save()){
                 $i = 0;
-
-                foreach($model->product as $key => $value){
-                    $quoteDetails = new QuoteDetails();
-                    $quoteDetails->id_product   = $value;
-                    $quoteDetails->id_quote     = $model->id;
-                    $quoteDetails->amount       = !empty($model->amount[$i]) ? $model->amount[$i] : 0;
-                    $quoteDetails->id_packaging = $model->packaging[$i];
-                    $quoteDetails->id_color     = isset($model->color[$i]) ? $model->color[$i] : NULL;
-                    $quoteDetails->custom_color = isset($model->custom_color[$i]) ? $model->custom_color[$i] : NULL;
-                    $quoteDetails->created_at   = date("Y-m-d H:i:s");
-    
-                    if(!$quoteDetails->save()){
-                        Yii::$app->session->setFlash('error', json_encode($quoteDetails->getErrors()));
-                        return $this->redirect(['update', 'id' => $model->id]);
+                
+                if(isset($model->product[0]) && !empty($model->product[0])){
+                    foreach($model->product as $key => $value){
+                        $quoteDetails = new QuoteDetails();
+                        $quoteDetails->id_product   = $value;
+                        $quoteDetails->id_quote     = $model->id;
+                        $quoteDetails->amount       = !empty($model->amount[$i]) ? $model->amount[$i] : 0;
+                        $quoteDetails->id_packaging = $model->packaging[$i];
+                        $quoteDetails->id_color     = isset($model->color[$i]) ? $model->color[$i] : NULL;
+                        $quoteDetails->custom_color = isset($model->custom_color[$i]) ? $model->custom_color[$i] : NULL;
+                        $quoteDetails->created_at   = date("Y-m-d H:i:s");
+        
+                        if(!$quoteDetails->save()){
+                            Yii::$app->session->setFlash('error', json_encode($quoteDetails->getErrors()));
+                            return $this->redirect(['update', 'id' => $model->id]);
+                        }
+                        $i++;
                     }
-                    $i++;
                 }
             }
             
@@ -250,6 +255,71 @@ class OrderController extends Controller
             'packagings'    => $packagings,
             "currentBottleAmount" => $currentBottleAmount
         ]);
+    }
+
+    public function actionGeneratePdf($id, $flag){
+        $quote  = $this->findModel($id);
+        
+        if(empty($quote)) return;
+
+        $client = Client::findOne(["id" => $quote->id_client]);
+        
+        ob_start();
+        $pdf = new FPDI();
+        
+        // Reference the PDF you want to use (use relative path)
+        $pagecount = $pdf->setSourceFile(Yii::getAlias("@webroot").'/pdf/ordine.pdf');
+
+        // Import the first page from the PDF and add to dynamic PDF
+        $tpl = $pdf->importPage(1);
+        $pdf->AddPage();
+        $pdf->useTemplate($tpl);
+        $pdf->SetFont('Helvetica');
+
+        $pdf->setFontSize("10");
+        //order number
+        $pdf->SetXY(100, 18); // set the position of the box
+        $pdf->Cell(0, 10, $quote->order_number, 0, 0, 'C'); // add the text, align to Center of cell
+
+        $pdf->SetXY(113, 25); // set the position of the box
+        $pdf->Cell(0, 10, $quote->formatDate($quote->created_at), 0, 0, 'C'); // add the text, align to Center of cell
+
+        $pdf->SetXY(121, 31); // set the position of the box
+        $pdf->Cell(0, 10, $quote->getClient(), 0, 0, 'C'); // add the text, align to Center of cell
+
+        $pdf->SetXY(116, 38); // set the position of the box
+        $pdf->Cell(0, 10, $client->phone, 0, 0, 'C'); // add the text, align to Center of cell
+
+        $pdf->SetXY(-296, -58); // set the position of the box
+        $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", number_format($quote->total, 2, ",", ".")." €"), 0, 0, 'C');
+
+        $pdf->SetXY(-296, -51); // set the position of the box
+        $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", number_format($quote->deposit, 2, ",", ".")." €"), 0, 0, 'C'); // add the text, align to Center of cell
+
+        $pdf->SetXY(-294, -44); // set the position of the box
+        $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", number_format($quote->balance, 2, ",", ".")." €". " - "), 0, 0, 'C'); // add the text, align to Center of cell
+
+        $pdf->SetXY(-133, -51); // set the position of the box
+        $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quote->shipping == 0 ? "NO" : "SI"), 0, 0, 'C'); // add the text, align to Center of cell
+
+        $pdf->SetXY(-121, -44); // set the position of the box
+        $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quote->formatDate($quote->deadline)), 0, 0, 'C'); // add the text, align to Center of cell
+
+        $filename = "ordine_".$quote->order_number."_".$client->name."_".$client->surname.".pdf";
+        ob_clean();
+
+        $pdf->Output($filename, $flag == "send" ? 'F' : 'D');    
+
+        if($flag == "send"){
+            if($this->sendEmail($quote, $filename, "invio-preventivo")){
+                Yii::$app->session->setFlash('success', "Pdf inviato correttamente");
+            }else{
+                Yii::$app->session->setFlash('error', "Ops...something went wrong");
+            }
+
+            return $this->redirect("index");
+        }
+        
     }
 
     protected function manageUploadFiles($model) {

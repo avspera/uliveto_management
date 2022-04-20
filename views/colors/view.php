@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
@@ -30,8 +31,20 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attributes' => [
                     'id',
                     'label',
+                    [
+                        'attribute' => "id_product",
+                        'value' => function($model){
+                            return $model->getProduct();
+                        }
+                    ],
                     'content',
-                    'picture',
+                    [
+                        'attribute' => 'picture',
+                        'value' => function($model){
+                            return !empty($model->picture) ? Html::img(Url::to(Yii::getAlias("@web")."/".$model->picture), ['class' => 'img-fluid img-responsive', 'alt' => $model->label, 'title' => $model->label]) : "-";
+                        },
+                        'format' => "raw"
+                    ],
                 ],
             ]) ?>
         </div>

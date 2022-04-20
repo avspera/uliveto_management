@@ -80,11 +80,20 @@ $this->params['breadcrumbs'][] = $this->title;
                         ])
                     ],
                     [
-                        'attribute' => 'updated_at',
+                        'attribute' => 'deadline',
                         'value' => function($model){
-                            return $model->formatDate($model->updated_at);
+                            return $model->formatDate($model->deadline);
                         },
-                        'format' => "raw"
+                        'format' => "raw",
+                        'filter' => DatePicker::widget([
+                            'name' => 'deadline',
+                            'language' => 'it',
+                            'type' => DatePicker::TYPE_INPUT,
+                            'pluginOptions' => [
+                                'autoclose'=>true,
+                                'format' => 'yyyy-mm-dd',
+                            ]
+                        ])
                     ],
                     [
                         'attribute' => 'total',
@@ -93,10 +102,6 @@ $this->params['breadcrumbs'][] = $this->title;
                         },
                         'format' => "raw"
                     ],
-                    //'deposit',
-                    //'balance',
-                    //'shipping',
-                    //'deadline',
                     [
                         'class' => ActionColumn::className(),
                     ],

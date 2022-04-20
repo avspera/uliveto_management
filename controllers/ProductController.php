@@ -200,8 +200,20 @@ class ProductController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-        Yii::$app->session->setFlash('success', "Elemento cancellato con successo");
+        $product = $this->findModel($id);
+        try{
+            
+            if(!empty($product->picture)){
+                unlink(Yii::getAlias("@webroot")."/".$product->image);
+            }
+            
+            if($product->delete()){
+                Yii::$app->session->setFlash('success', "Elemento cancellato con successo");
+            }
+
+        }catch(yii\base\ErrorException $e){
+            Yii::$app->session->setFlash('error', "Ops...something went wrong [PROD_DEL-101]");
+        }
 
         return $this->redirect(['index']);
     }
