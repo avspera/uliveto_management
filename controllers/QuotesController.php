@@ -328,11 +328,11 @@ class QuotesController extends Controller
 
         $colors     = Color::find()->where(["IN", "id", $colors])->all();
         $client     = Client::findOne(["id" => $quote->id_client]);
-        $deposit    = Payment::findOne(["id_quote" => $quote->id, "type" => 0]);
+        
         $balance    = 0;
 
-        if($deposit){
-            $balance = $deposit < 0 ? 0 : $deposit->formatNumber($quote->total - $deposit->amount);
+        if($quote->deposit){
+            $balance = $quote->deposit ? $quote->formatNumber($quote->total - $quote->deposit) : $quote->total;
         }else{
             $balance = $quote->total;
         }
@@ -380,7 +380,8 @@ class QuotesController extends Controller
                 $pdf->setFontSize("14");
                 $pdf->Cell($x, 6, $item->name, 0, 0, 'C'); // add the text, align to Center of cell
                 $x += 70;
-                
+                $packaging = Packaging::findOne(["id" => $product->id_packaging]);
+
                 //summary
                 $pdf->setXY(45, $line);
                 $pdf->setFontSize("14");
@@ -403,8 +404,9 @@ class QuotesController extends Controller
             $pdf->Cell(30, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", number_format($quote->total, 2, ",", ".")." €"), 0, 0, 'C');
 
             //deposit
+            
             $pdf->setXY(35, 218);
-            $pdf->Cell(52, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $deposit  ? number_format($deposit->amount, 2, ",", ".") ." € - ".$quote->formatDate($quote->date_deposit) : ""), 0, 0, 'C');
+            $pdf->Cell(56, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quote->deposit  ? number_format($quote->deposit, 2, ",", ".") ." € - ".$quote->formatDate($quote->date_deposit) : ""), 0, 0, 'C');
 
             //saldo
             $pdf->setXY(35, 226);
@@ -415,7 +417,7 @@ class QuotesController extends Controller
             $pdf->Cell(30, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quote->shipping ? "SI" : "NO"), 0, 0, 'C');
 
             if($quote->address){
-                $pdf->setXY(20, 242);
+                $pdf->setXY(34, 248);
                 $pdf->Cell(30, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quote->address), 0, 0, 'C');
             }
 
@@ -437,10 +439,6 @@ class QuotesController extends Controller
         $pdf->Cell(0, 10, $quote->placeholder ? "SI" : "NO", 0, 0, 'C'); // add the text, align to Center of cell
 
         if($quotePlaceholder){
-            
-            // $packaging = Packaging::findOne(["id" => $product->id_packaging]);
-            // $pdf->Image(Yii::getAlias("@webroot")."/".$packaging->image, $img, 80, 35, 35);
-            
             $pdf->setXY(108, 178);
             $pdf->Cell(0, 10, $quotePlaceholder->getTotal(), 0, 0, 'C'); // add the text, align to Center of cell
 
@@ -449,10 +447,6 @@ class QuotesController extends Controller
 
             $pdf->setFontSize("10");
         
-            if($deposit){
-                $pdf->setXY(156, 195);
-                $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $deposit->formatDate($deposit->date_deposit)), 0, 0, 'C');
-            }
             
             $pdf->setXY(156, 220);
             $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quote->formatNumber($quote->balance)), 0, 0, 'C');
@@ -486,11 +480,11 @@ class QuotesController extends Controller
         $pdf->Cell(30, 0, iconv('UTF-8', "ISO-8859-1//TRANSLIT", "Trentinara, ".$quote->formatDate($quote->created_at)), 0, 0, 'C');
 
         $pdf->setXY(10, 215);
-        $pdf->Cell(30, 0, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quote->notes), 0, 0, 'C');
+        $pdf->Cell(60, 0, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quote->notes), 0, 0, 'C');
 
         $filename = "ordine_".$quote->order_number."_".$client->name."_".$client->surname.".pdf";
         ob_get_clean();
-        
+        // $pdf->Output();die;
         $pdf->Output($filename, $flag == "send" ? 'F' : 'D');    
 
         if($flag == "send"){

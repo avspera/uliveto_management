@@ -334,4 +334,57 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
             </div>
         </div>
     <?php } ?> 
+
+    <?php if(!empty($payments)) { ?>
+        <div class="card card-info">
+                <div class="card-header">
+                    <div class="text-md">Pagamenti  </div>
+                </div>
+                <div class="card-body">
+                    <?= GridView::widget([
+                        'dataProvider' => $payments,
+                        'columns' => [
+                            [
+                                'attribute' => 'amount',
+                                'value' => function($model){
+                                    return $model->formatNumber($model->amount);
+                                },
+                                'format' => "raw"
+                            ],
+                            [
+                                'attribute' => "fatturato",
+                                'value' => function($model){
+                                    return $model->isFatturato();
+                                },
+                                'filter' => [0 => "NO", 1 => "SI"]
+                            ],
+                            [
+                                'attribute' => 'created_at',
+                                'value' => function($model){
+                                    return $model->formatDate($model->created_at);
+                                },
+                                'label' => "Data pagamento"
+                            ],
+                            [
+                                'attribute' => "saldo",
+                                'value' => function($model){
+                                    $totale = $model->getTotal();
+                                    if(!$totale) return;
+                                    return $totale - $model->amount < 0 ? 0 : $model->formatNumber($totale - $model->amount);
+                                },
+                                'format' => "raw",
+                                'label' => "Resta da saldare"
+                            ],
+                            [
+                                'attribute' => "type",
+                                'value' => function($model){
+                                    return $model->getType();
+                                }
+                            ],
+                            [ 'class' => ActionColumn::className() ],
+                        ],
+                    ]); ?>
+                </div>
+        </div>
+    <?php } ?>
 </div>
