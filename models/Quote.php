@@ -16,6 +16,7 @@ use app\models\QuotePlaceholder;
  * @property string $created_at
  * @property string $updated_at
  * @property int $id_client
+ * @property int $delivered
  * @property int $product
  * @property int $amount
  * @property int $color
@@ -50,9 +51,9 @@ class Quote extends \yii\db\ActiveRecord
             [['order_number', 'id_client', 'confirmed', 'placeholder', 'shipping', 'id_sconto'], 'integer'],
             [['created_at', 'updated_at', 'deadline', 'product', 'amount', 'color', 'packaging', 'total_no_vat',
                 'date_deposit', 'date_balance','placeholder', 'address', 'custom_color', 'placeholder_amount',
-                    'confetti', 'custom', 'custom_amount', 'id_sconto', 'prezzo_confetti', 'confetti_omaggio'], 'safe'],
+                    'confetti', 'custom', 'custom_amount', 'id_sconto', 'prezzo_confetti', 'confetti_omaggio', 'delivered'], 'safe'],
             [['notes', 'address'], 'string'],
-            [['total', 'deposit', 'balance'], 'number'],
+            [['total', 'deposit', 'balance', 'delivered'], 'number'],
             [['attachments'], 'file', 'skipOnEmpty' => true, 'extensions' => 'jpg, png, pdf'],
 
         ];
@@ -89,13 +90,30 @@ class Quote extends \yii\db\ActiveRecord
             'confetti'      => "Confetti",
             'invoice'       => "Fattura",
             'attachments'  => "Allegati",
-            'id_sconto'     => "Sconto"
+            'id_sconto'     => "Sconto",
+            'delivered'     => "Consegnato"
         ];
     }
 
     public function getProduct(){
         $product = Product::findOne([$this->product]);
         return !empty($product) ? $product->name : "";
+    }
+
+    public function getProducts(){
+        $details = QuoteDetails::findAll(["id_quote" => $this->id]);
+
+        $html = "";
+        $i = 0;
+        foreach($details as $detail){
+            $html .= $detail->getProduct();
+            if($i < count($details) - 1 ){
+                $html .= " - ";
+            }
+            $i++;
+        }
+
+        return $html;
     }
 
     public function getColor(){

@@ -3,11 +3,12 @@
 namespace app\controllers;
 
 use Yii;
-use app\models\Quote;
+use app\models\Quote;;
 use app\models\QuoteSearch;
 use app\models\QuoteDetailsSearch;
 use app\models\QuoteDetails;
 use app\models\PaymentSearch;
+use app\models\QuotePlaceholder;
 use app\models\QuotePlaceholderSearch;
 use app\models\Product;
 use app\models\Color;
@@ -50,7 +51,8 @@ class OrderController extends Controller
                             'upload-files',
                             'delete-attachment',
                             'send-email-payment',
-                            'generate-pdf'
+                            'generate-pdf',
+                            'set-delivered'
                         ],
                         'allow' => true,
                         'roles' => ['@'],
@@ -87,6 +89,7 @@ class OrderController extends Controller
     {
         $searchModel = new QuoteSearch();
         $searchModel->confirmed = 1;
+        $searchModel->delivered = 0;
         $dataProvider = $searchModel->search($this->request->queryParams);
         $dataProvider->sort->defaultOrder = ["deadline" => SORT_DESC];
         return $this->render('index', [
@@ -198,6 +201,25 @@ class OrderController extends Controller
         ]);
     }
 
+    public function actionSetDelivered($id)
+    {
+        try{
+            $model = $this->findModel($id);
+            
+            $model->delivered = 1;
+            if($model->save()){
+                return $this->redirect(['/order/view', "id" => $id]);
+            }else{
+                print_r($model->getErrors());die;
+            }
+        }catch(Exception $e){
+            Yii::$app->session->setFlash('error', "Ops...something went wrong [OR-105]");
+            
+            return $this->render('view', [
+                'model' => $model,
+            ]);
+        }
+    }
     /**
      * Updates an existing Quote model.
      * If update is successful, the browser will be redirected to the 'view' page.
@@ -258,11 +280,21 @@ class OrderController extends Controller
     }
 
     public function actionGeneratePdf($id, $flag){
-        $quote  = $this->findModel($id);
+        $quote      = $this->findModel($id);
         
         if(empty($quote)) return;
+        
+        $quotePlaceholder = QuotePlaceholder::find()->where(["id_quote" => $quote->id])->one();
+        $products   = QuoteDetails::findAll(["id_quote" => $quote->id]);
+        $colors     = [];
+        $i = 0;
+        foreach($products as $product){
+            $colors[$i] = $product->id_color;
+            $i++;
+        }
 
-        $client = Client::findOne(["id" => $quote->id_client]);
+        $colors     = Color::find()->where(["IN", "id", $colors])->all();
+        $client     = Client::findOne(["id" => $quote->id_client]);
         
         ob_start();
         $pdf = new FPDI();
@@ -278,21 +310,55 @@ class OrderController extends Controller
 
         $pdf->setFontSize("10");
         //order number
-        $pdf->SetXY(100, 18); // set the position of the box
+        $pdf->SetXY(140, 13); // set the position of the box
         $pdf->Cell(0, 10, $quote->order_number, 0, 0, 'C'); // add the text, align to Center of cell
 
-        $pdf->SetXY(113, 25); // set the position of the box
+        $pdf->SetXY(139, 20); // set the position of the box
         $pdf->Cell(0, 10, $quote->formatDate($quote->created_at), 0, 0, 'C'); // add the text, align to Center of cell
 
-        $pdf->SetXY(121, 31); // set the position of the box
+        $pdf->SetXY(162, 27); // set the position of the box
         $pdf->Cell(0, 10, $quote->getClient(), 0, 0, 'C'); // add the text, align to Center of cell
 
-        $pdf->SetXY(116, 38); // set the position of the box
+        $pdf->SetXY(149, 41.5); // set the position of the box
         $pdf->Cell(0, 10, $client->phone, 0, 0, 'C'); // add the text, align to Center of cell
 
-        $pdf->SetXY(-296, -58); // set the position of the box
+        /**
+         * PRODUCTS PICS AND INFO
+         */
+            $x = 5;
+            foreach($colors as $color){
+                $pdf->Image(Yii::getAlias("@webroot")."/".$color->picture, $x, 80, 35, 35);
+                $x += 30;
+            }
+
+            $x = 15;
+            
+            foreach($products as $product){
+                $item = Product::find()->select(["name"])->where(["id" => $product->id_product])->one(); 
+                $pdf->SetXY(10, 120); // set the position of the box
+                $pdf->setFontSize("14");
+                $pdf->Cell($x, 6, $item->name, 0, 0, 'C'); // add the text, align to Center of cell
+                $x += 70;
+                $packaging = Packaging::findOne(["id" => $product->id_packaging]);
+            }
+        /**
+         * 
+         */
+
+        $pdf->setFontSize("12");
+        //PLACEHOLDER
+        $pdf->setXY(108, 169);
+        $pdf->Cell(0, 10, $quote->placeholder ? "SI" : "NO", 0, 0, 'C'); // add the text, align to Center of cell
+
+        $pdf->setXY(108, 178);
+        $pdf->Cell(0, 10, $quote->amount, 0, 0, 'C'); // add the text, align to Center of cell
+
+        $pdf->setXY(152, 186.4);
         $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", number_format($quote->total, 2, ",", ".")." €"), 0, 0, 'C');
 
+        $pdf->setXY(152, 196);
+        $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", number_format($quote->total, 2, ",", ".")." €"), 0, 0, 'C');
+        
         $pdf->SetXY(-296, -51); // set the position of the box
         $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", number_format($quote->deposit, 2, ",", ".")." €"), 0, 0, 'C'); // add the text, align to Center of cell
 
@@ -304,22 +370,26 @@ class OrderController extends Controller
 
         $pdf->SetXY(-121, -44); // set the position of the box
         $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quote->formatDate($quote->deadline)), 0, 0, 'C'); // add the text, align to Center of cell
+        
+        $tpl = $pdf->importPage(2);
+        $pdf->AddPage();
+        $pdf->useTemplate($tpl);
+
 
         $filename = "ordine_".$quote->order_number."_".$client->name."_".$client->surname.".pdf";
-        ob_clean();
-
+        ob_get_clean();
+        $pdf->Output();die;
         $pdf->Output($filename, $flag == "send" ? 'F' : 'D');    
 
-        if($flag == "send"){
-            if($this->sendEmail($quote, $filename, "invio-preventivo")){
-                Yii::$app->session->setFlash('success', "Pdf inviato correttamente");
-            }else{
-                Yii::$app->session->setFlash('error', "Ops...something went wrong");
-            }
+        // if($flag == "send"){
+        //     if($this->sendEmail($quote, $filename, "invio-preventivo")){
+        //         Yii::$app->session->setFlash('success', "Pdf inviato correttamente");
+        //     }else{
+        //         Yii::$app->session->setFlash('error', "Ops...something went wrong");
+        //     }
 
-            return $this->redirect("index");
-        }
-        
+        //     return $this->redirect("index");
+        // }
     }
 
     protected function manageUploadFiles($model) {

@@ -27,7 +27,7 @@ use yii\widgets\ActiveForm;
             <div class="row">
                 <div class="form-group">
                     <?= Html::submitButton('Cerca', ['class' => 'btn btn-primary']) ?>
-                    <?= Html::resetButton('Cancella filtri', ['class' => 'btn btn-outline-secondary']) ?>
+                    <?= Html::a('<span>Cancella Filtri</span>', ['index'], ['class' => 'btn btn-outline-secondary'])?>
                 </div>
             </div>
         </div>

@@ -79,7 +79,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             return $totale - $model->amount < 0 ? 0 : $model->formatNumber($totale - $model->amount);
                         },
                         'format' => "raw",
-                        'label' => "Saldo"
+                        'label' => "Resta da saldare"
                     ],
                     [
                         'attribute' => "type",
@@ -99,12 +99,13 @@ $this->params['breadcrumbs'][] = $this->title;
                         'label' => "Data Saldo"
                     ],
                     [
-                        'attribute' => "fatturato",
+                        'attribute' => "has_saldo",
                         'value' => function($model){
-                            return $model->fatturato ? "<i class='fas fa-check' style='color:green'></i>" : "<i class='fas fa-ban' style='color:red'></i>";
+                            return $model->hasSaldo() > 1 ? "<i class='fas fa-check' style='color:green'></i>" : "<i class='fas fa-ban' style='color:red'></i>";
                         },
                         'filter' => [0 => "NO", 1 => "SI"],
-                        'format' => "raw"
+                        'format' => "raw",
+                        'label' => "Saldato"
                     ],
                     // [
                     //     'attribute' => "external_payment",

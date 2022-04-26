@@ -117,13 +117,15 @@ class PaymentController extends Controller
         
         if(empty($client) || empty($quote)) return;
 
+        $hasAcconto = Payment::find()->where(["id_quote" => $id_quote])->sum("amount");
         // // In case of payment success this will return the payment object that contains all information about the order
         // // In case of failure it will return Null
         // $payment = Yii::$app->PayPalRestApi->processPayment($params);
 
         return $this->render('external-payment', [
             'client'    => $client,
-            'quote'     => $quote
+            'quote'     => $quote,
+            'hasAcconto' => $hasAcconto
         ]);
     }
 

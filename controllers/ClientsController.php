@@ -88,7 +88,7 @@ class ClientsController extends Controller
                 'quotes'    => $dataProvider
             ]);
 
-        }catch(Exception $e){
+        }catch(NotFoundHttpException $e){
             Yii::$app->session->setFlash('error', "Ops..cliente non trovato [CL-100]");
             $this->redirect("index");
         }

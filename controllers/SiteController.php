@@ -14,9 +14,9 @@ use app\models\Client;
 use app\models\Message;
 use app\models\PasswordResetRequestForm;
 use app\models\ResetPasswordForm;
-
 class SiteController extends Controller
 {
+    
     /**
      * {@inheritdoc}
      */
@@ -76,6 +76,16 @@ class SiteController extends Controller
         } 
     }
     
+    public function actionError()
+{
+    $exception = Yii::$app->errorHandler->exception;
+    if ($exception !== null) {
+        $this->layout = 'layout';
+        return $this->render('error', ['exception' => $exception]);
+    }
+}
+
+
     /**
      * Displays homepage.
      *

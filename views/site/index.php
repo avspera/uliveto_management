@@ -8,7 +8,7 @@
     <div class="row">
         <?php if(Yii::$app->user->identity->role == 0 || Yii::$app->user->identity->role == 1) { ?>
         <div class="col-md-6 col-sm-6 col-12">
-            <a href= "<?= Url::to(["quotes/create"]) ?>">
+            <a href= "<?= Url::to(["quotes/choose-quote"]) ?>">
                 <div class="info-box bg-success">
                     <span class="info-box-icon"><i class="fas fa-plus"></i></span>
                     <div class="info-box-content">

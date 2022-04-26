@@ -58,6 +58,7 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
             <?= $phone ? Html::a('<i class="fas fa-comment"></i> Whatsapp', Url::to("https://wa.me/".$phone."/?text=".$text), ['class' => 'btn btn-primary', 'target' => "_blank"]) : "" ?>
             <?= Html::a('<span style="color:white"><i class="fas fa-upload"></i> Carica allegati</span>', ['upload-files', 'id' => $model->id], ['class' => 'btn btn-warning']) ?>
             <?= Html::a('<span style="color:white"><i class="fas fa-envelope"></i> Invia email pagamento</span>', ['send-email-payment', 'id_client' => $model->id_client, "id_quote" => $model->id], ['class' => 'btn btn-info']) ?>
+            <?= !$model->delivered ? Html::a('<span style="color:white"><i class="fas fa-truck"></i> CONSEGNATO</span>', ['set-delivered', 'id' => $model->id], ['class' => 'btn btn-success']) : "" ?>
         </div>
 
         <div class="card-body">
@@ -172,6 +173,12 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
                         }
                     ],
                     [
+                        'attribute' => 'delivered',
+                        'value' => function($model){
+                            return $model->delivered ? "SI" : "NO";
+                        },
+                    ],
+                    [
                         'attribute' => "attachments",
                         'value' => function($model){
                             if(!empty($model->attachments)){
@@ -218,8 +225,7 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
                             },
                             'format' => "raw",
                             'label' => "Totale Confetti"
-                        ]
-                        
+                        ],
                     ]
             ]) ?>
         </div>

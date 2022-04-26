@@ -18,7 +18,8 @@ class QuoteSearch extends Quote
     {
         return [
             [['id', 'order_number', 'id_client', 'confirmed',
-                'product', 'amount', 'color', 'packaging', 'placeholder', 'shipping'], 'integer'],
+                'product', 'amount', 'color', 'packaging', 'delivered',
+                'placeholder', 'shipping'], 'integer'],
             [['created_at', 'updated_at', 'notes', 'deadline'], 'safe'],
             [['total', 'deposit', 'balance'], 'number'],
         ];
@@ -60,13 +61,12 @@ class QuoteSearch extends Quote
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'id' => $this->id,
             'order_number' => $this->order_number,
             // 'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             // $query->andFilterWhere(['>=', 'created', $start_date ])->andFilterWhere(['<=', 'created', $end_date]);
             'id_client' => $this->id_client,
-            'product' => $this->product,
+            'delivered' => $this->delivered,
             'amount' => $this->amount,
             'color' => $this->color,
             'packaging' => $this->packaging,
@@ -90,6 +90,30 @@ class QuoteSearch extends Quote
             else    
                 $query->andFilterWhere(['>=', 'created_at', $start_date ])->andFilterWhere(['<=', 'created_at', $end_date]);
         }
+
+        
+        if(!empty($params["QuoteSearch"]["product"])){
+            $quoteDetails = QuoteDetails::find()
+                            ->distinct()
+                            ->select(["id_quote"])
+                            ->where(["id_product" => $params["QuoteSearch"]["product"]])
+                            ->all();
+            
+            $out = [];
+
+            $i = 0;
+            foreach($quoteDetails as $detail){
+                $out[$i] = $detail->id_quote;
+                $i++;
+            }
+            
+            $query->andFilterWhere(["IN", "id", $out]);
+        }else{
+            $query->andFilterWhere([
+                "id" => $this->id
+            ]);
+        }
+        
 
         $query->andFilterWhere(['like', 'notes', $this->notes]);
         

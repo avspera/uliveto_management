@@ -35,7 +35,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="card-body">
             <?= GridView::widget([
                 'dataProvider' => $dataProvider,
-                'filterModel' => $searchModel,
+                // 'filterModel' => $searchModel,
                 'responsive'=>true,
                 'hover'=>true,
                 'columns' => [
@@ -45,7 +45,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'value' => function($model){
                             return Html::a($model->getClient(), Url::to(["clients/view", "id" => $model->id_client]));
                         },
-                        'format' => "raw"
+                        'format' => "raw",
                     ],
                     [
                         'attribute' => "has_segnaposto",
@@ -59,7 +59,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     [
                        'attribute' => 'product',
                        'value' => function($model){
-                           return $model->getProduct();
+                           return $model->getProducts();
                        },
                        'filter' => yii\helpers\ArrayHelper::map(app\models\Product::find()->orderBy('name')->all(), 'id', 'name')
                     ],

@@ -106,17 +106,25 @@
                             <div class="text-lg">Totale: <?= $quote->formatNumber($quote->total) ?></div>
                             <div class="text-md">Scegli la quota</div>
 
-                            <div class="btn-group blocks" style="margin-top:10px" data-toggle="buttons">
-                                <label class="btn btn-success active">
-                                    <input type="radio" amount="<?= $quote->calculatePercentage(20, $quote->total) ?>" name="options" id="percentage_20" autocomplete="off"> 20% = <?= $quote->calculatePercentage(20, $quote->total, true) ?>
-                                </label>
-                                <label class="btn btn-success">
-                                    <input type="radio" amount="<?= $quote->calculatePercentage(30, $quote->total) ?>" name="options" id="percentage_30" autocomplete="off"> 30% = <?= $quote->calculatePercentage(30, $quote->total, true) ?>
-                                </label>
-                                <label class="btn btn-success">
-                                    <input type="radio" amount="<?= $quote->calculatePercentage(40, $quote->total) ?>" name="options" id="percentage_40" autocomplete="off"> 40% = <?= $quote->calculatePercentage(40, $quote->total, true) ?>
-                                </label>
-                            </div>
+                            <?php if($hasAcconto) { ?>
+                                <div class="btn-group blocks" style="margin-top:10px" data-toggle="buttons">
+                                    <label class="btn btn-success btn-lg active">
+                                        <input type="radio" amount="<?= $quote->calculatePercentage(100, $quote->total) ?>" name="options" id="percentage_100" autocomplete="off"> <?= $quote->calculatePercentage(100, $quote->total, true) ?>
+                                    </label>
+                                </div>
+                            <?php } else { ?>
+                                <div class="btn-group blocks" style="margin-top:10px" data-toggle="buttons">
+                                    <label class="btn btn-success active">
+                                        <input type="radio" amount="<?= $quote->calculatePercentage(20, $quote->total) ?>" name="options" id="percentage_20" autocomplete="off"> 20% = <?= $quote->calculatePercentage(20, $quote->total, true) ?>
+                                    </label>
+                                    <label class="btn btn-success">
+                                        <input type="radio" amount="<?= $quote->calculatePercentage(30, $quote->total) ?>" name="options" id="percentage_30" autocomplete="off"> 30% = <?= $quote->calculatePercentage(30, $quote->total, true) ?>
+                                    </label>
+                                    <label class="btn btn-success">
+                                        <input type="radio" amount="<?= $quote->calculatePercentage(40, $quote->total) ?>" name="options" id="percentage_40" autocomplete="off"> 40% = <?= $quote->calculatePercentage(40, $quote->total, true) ?>
+                                    </label>
+                                </div>
+                            <?php } ?>
                             <div style="margin-top: 10px">
                                 <div id="paypal-button-container"></div>
                             </div>

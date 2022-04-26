@@ -20,32 +20,8 @@ use kartik\select2\Select2;
         <div class="card-header"> <i class="fas fa-search"></i> Cerca</div>
         <div class="card-body">
             <div class="row">
-                <div class="col-md-3 col-sm-6 col-12"><?= $form->field($model, 'order_number') ?></div>
-                <div class="col-md-3 col-sm-6 col-12">
-                    <label>Creato DA</label>
-                    <?= DatePicker::widget([
-                            'name' => 'QuoteSearch[start_date]',
-                            'type' => DatePicker::TYPE_INPUT,
-                            'pluginOptions' => [
-                                'autoclose' => true,
-                                'format' => 'yyyy-mm-dd'
-                            ]
-                        ]);
-                    ?>
-                </div>
-                <div class="col-md-3 col-sm-6 col-12">
-                    <label>Creato A</label>
-                    <?= DatePicker::widget([
-                            'name' => 'QuoteSearch[end_date]',
-                            'type' => DatePicker::TYPE_INPUT,
-                            'pluginOptions' => [
-                                'autoclose' => true,
-                                'format' => 'yyyy-mm-dd'
-                            ]
-                        ]);
-                    ?>
-                </div>
-                <div class="col-md-3 col-sm-6 col-12">
+                <div class="col-md-4 col-sm-4 col-12"><?= $form->field($model, 'order_number')->label("Numero ordine") ?></div>
+                <div class="col-md-4 col-sm-4 col-12">
                     <?= $form->field($model, 'id_client')->widget(Select2::classname(), [
                             'options' => [
                                 'multiple'=>false, 
@@ -72,38 +48,45 @@ use kartik\select2\Select2;
                         ]);
                     ?>
                 </div>
+                <div class="col-md-4 col-sm-4 col-12"><?= $form->field($model, 'product')->dropdownlist(yii\helpers\ArrayHelper::map(app\models\Product::find()->orderBy('name')->all(), 'id', 'name'), ["prompt" => "Scegli"]) ?></div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-3 col-sm-6 col-12">
+                    <label>Creato DA</label>
+                    <?= DatePicker::widget([
+                            'name' => 'OrderSearch[start_date]',
+                            'type' => DatePicker::TYPE_INPUT,
+                            'pluginOptions' => [
+                                'autoclose' => true,
+                                'format' => 'yyyy-mm-dd'
+                            ]
+                        ]);
+                    ?>
+                </div>
+                <div class="col-md-3 col-sm-6 col-12">
+                    <label>Creato A</label>
+                    <?= DatePicker::widget([
+                            'name' => 'OrderSearch[end_date]',
+                            'type' => DatePicker::TYPE_INPUT,
+                            'pluginOptions' => [
+                                'autoclose' => true,
+                                'format' => 'yyyy-mm-dd'
+                            ]
+                        ]);
+                    ?>
+                </div>
             </div>
             
             <div class="row">
                 <div class="form-group">
                     <?= Html::submitButton('Cerca', ['class' => 'btn btn-primary']) ?>
-                    <?= Html::resetButton('Cancella filtri', ['class' => 'btn btn-outline-secondary']) ?>
+                    <?= Html::a('<span>Cancella Filtri</span>', ['index'], ['class' => 'btn btn-outline-secondary'])?>
                 </div>
             </div>
+
         </div>
     </div>
-
-    <?php // echo $form->field($model, 'product') ?>
-
-    <?php // echo $form->field($model, 'amount') ?>
-
-    <?php // echo $form->field($model, 'color') ?>
-
-    <?php // echo $form->field($model, 'packaging') ?>
-
-    <?php // echo $form->field($model, 'placeholder') ?>
-
-    <?php // echo $form->field($model, 'notes') ?>
-
-    <?php // echo $form->field($model, 'total') ?>
-
-    <?php // echo $form->field($model, 'deposit') ?>
-
-    <?php // echo $form->field($model, 'balance') ?>
-
-    <?php // echo $form->field($model, 'shipping') ?>
-
-    <?php // echo $form->field($model, 'deadline') ?>
 
     <?php ActiveForm::end(); ?>
 

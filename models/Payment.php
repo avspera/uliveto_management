@@ -92,6 +92,9 @@ class Payment extends \yii\db\ActiveRecord
         return !empty($value) ? date($format, strtotime($value)) : "";
     }
 
+    public function hasSaldo(){
+        return Payment::find()->where(["id_client" => $this->id_client])->count();
+    }
     public function formatNumber($value){
         if(empty($value)) return;
         return number_format($value, 2, ",", ".")." &euro;";

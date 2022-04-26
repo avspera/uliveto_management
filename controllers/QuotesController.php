@@ -53,7 +53,8 @@ class QuotesController extends Controller
                             'get-by-client-id',
                             'confirm',
                             'generate-pdf',
-                            'choose-quote'
+                            'choose-quote',
+                            'set-confirmed'
                         ],
                         'allow' => true,
                         'roles' => ['@'],
@@ -361,17 +362,18 @@ class QuotesController extends Controller
         $filename = "preventivo_".$quote->order_number."_".$client->name."_".$client->surname.".pdf";
         ob_clean();
 
-        $pdf->Output($filename, $flag == "send" ? 'F' : 'D');    
+        return $this->redirect($filename);
+        // $pdf->Output($filename, $flag == "send" ? 'F' : 'D');    
 
-        if($flag == "send"){
-            if($this->sendEmail($quote, $filename, "invio-preventivo")){
-                Yii::$app->session->setFlash('success', "Pdf inviato correttamente");
-            }else{
-                Yii::$app->session->setFlash('error', "Ops...something went wrong");
-            }
+        // if($flag == "send"){
+        //     if($this->sendEmail($quote, $filename, "invio-preventivo")){
+        //         Yii::$app->session->setFlash('success', "Pdf inviato correttamente");
+        //     }else{
+        //         Yii::$app->session->setFlash('error', "Ops...something went wrong");
+        //     }
 
-            return $this->redirect("index");
-        }
+        //     return $this->redirect("index");
+        // }
         
     }
 
