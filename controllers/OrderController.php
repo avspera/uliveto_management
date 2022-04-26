@@ -298,14 +298,8 @@ class OrderController extends Controller
         $colors     = Color::find()->where(["IN", "id", $colors])->all();
         $client     = Client::findOne(["id" => $quote->id_client]);
         
-        $balance    = 0;
-
-        if($quote->deposit){
-            $balance = $quote->deposit ? $quote->formatNumber($quote->total - $quote->deposit) : $quote->total;
-        }else{
-            $balance = $quote->total;
-        }
-
+        $balance = $quote->deposit ? $quote->total - $quote->deposit : $quote->total;
+        
         ob_start();
         $pdf = new FPDI();
         
@@ -341,7 +335,8 @@ class OrderController extends Controller
             $line = 160;
             foreach($products as $product){
                 $color = Color::findOne(["id" => $product->id_color]);
-                $pdf->Image(Yii::getAlias("@webroot")."/".$color->picture, $img, 80, 35, 35);
+                if(!empty($color->picture))
+                    $pdf->Image(Yii::getAlias("@webroot")."/".$color->picture, $img, 80, 35, 35);
                 $img += 30;
 
                 $item = Product::find()->select(["name", "price"])->where(["id" => $product->id_product])->one(); 
@@ -393,8 +388,8 @@ class OrderController extends Controller
             $pdf->setXY(44, 257);
             $pdf->Cell(30, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quote->formatDate($quote->deadline)), 0, 0, 'C');
 
-            $pdf->setXY(52, 245);
-            $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quote->custom), 0, 0, 'C');
+            $pdf->setXY(80, 242);
+            $pdf->Cell(0, 20, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quote->custom), 0, 0, 'C');
             
         /**
          * 
@@ -453,7 +448,7 @@ class OrderController extends Controller
 
         $filename = "ordine_".$quote->order_number."_".$client->name."_".$client->surname.".pdf";
         ob_get_clean();
-        // $pdf->Output();die;
+        $pdf->Output();die;
         $pdf->Output($filename, $flag == "send" ? 'F' : 'D');    
 
         if($flag == "send"){
