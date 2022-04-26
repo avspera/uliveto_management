@@ -11,6 +11,7 @@ use app\models\PaymentSearch;
 use app\models\QuotePlaceholder;
 use app\models\QuotePlaceholderSearch;
 use app\models\Product;
+use app\models\Payment;
 use app\models\Color;
 use app\models\Segnaposto;
 use app\models\Packaging;
@@ -288,6 +289,7 @@ class OrderController extends Controller
         $products   = QuoteDetails::findAll(["id_quote" => $quote->id]);
         $colors     = [];
         $i = 0;
+
         foreach($products as $product){
             $colors[$i] = $product->id_color;
             $i++;
@@ -295,12 +297,20 @@ class OrderController extends Controller
 
         $colors     = Color::find()->where(["IN", "id", $colors])->all();
         $client     = Client::findOne(["id" => $quote->id_client]);
-        
+        $deposit    = Payment::findOne(["id_quote" => $quote->id, "type" => 0]);
+        $balance    = 0;
+
+        if($deposit){
+            $balance = $deposit < 0 ? 0 : $deposit->formatNumber($quote->total - $deposit->amount);
+        }else{
+            $balance = $quote->total;
+        }
+
         ob_start();
         $pdf = new FPDI();
         
         // Reference the PDF you want to use (use relative path)
-        $pagecount = $pdf->setSourceFile(Yii::getAlias("@webroot").'/pdf/ordine.pdf');
+        $pagecount = $pdf->setSourceFile(Yii::getAlias("@webroot").'/pdf/preventivo.pdf');
 
         // Import the first page from the PDF and add to dynamic PDF
         $tpl = $pdf->importPage(1);
@@ -316,7 +326,7 @@ class OrderController extends Controller
         $pdf->SetXY(139, 20); // set the position of the box
         $pdf->Cell(0, 10, $quote->formatDate($quote->created_at), 0, 0, 'C'); // add the text, align to Center of cell
 
-        $pdf->SetXY(162, 27); // set the position of the box
+        $pdf->SetXY(132, 34); // set the position of the box
         $pdf->Cell(0, 10, $quote->getClient(), 0, 0, 'C'); // add the text, align to Center of cell
 
         $pdf->SetXY(149, 41.5); // set the position of the box
@@ -325,73 +335,140 @@ class OrderController extends Controller
         /**
          * PRODUCTS PICS AND INFO
          */
-            $x = 5;
-            foreach($colors as $color){
-                $pdf->Image(Yii::getAlias("@webroot")."/".$color->picture, $x, 80, 35, 35);
-                $x += 30;
-            }
-
             $x = 15;
             
+            $img = 5;
+            $line = 160;
             foreach($products as $product){
-                $item = Product::find()->select(["name"])->where(["id" => $product->id_product])->one(); 
+                $color = Color::findOne(["id" => $product->id_color]);
+                $pdf->Image(Yii::getAlias("@webroot")."/".$color->picture, $img, 80, 35, 35);
+                $img += 30;
+
+                $item = Product::find()->select(["name", "price"])->where(["id" => $product->id_product])->one(); 
                 $pdf->SetXY(10, 120); // set the position of the box
                 $pdf->setFontSize("14");
                 $pdf->Cell($x, 6, $item->name, 0, 0, 'C'); // add the text, align to Center of cell
                 $x += 70;
                 $packaging = Packaging::findOne(["id" => $product->id_packaging]);
+
+                //summary
+                $pdf->setXY(45, $line);
+                $pdf->setFontSize("14");
+                $pdf->Cell(10, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $item->name." - ".number_format($item->price, 2, ",", ".") ." €")." n. ".$product->amount, 0, 0, 'C'); // add the text, align to Center of cell
+                $line += 10;
+
             }
         /**
          * 
          */
 
+
+        /**
+         * RIEPILOGO ORDINE
+         */
+            $pdf->setFontSize("12");
+
+            //total
+            $pdf->setXY(32, 210);
+            $pdf->Cell(30, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", number_format($quote->total, 2, ",", ".")." €"), 0, 0, 'C');
+
+            //deposit
+            $pdf->setXY(35, 218);
+            $pdf->Cell(52, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $deposit  ? number_format($deposit->amount, 2, ",", ".") ." € - ".$quote->formatDate($quote->date_deposit) : ""), 0, 0, 'C');
+
+            //saldo
+            $pdf->setXY(35, 226);
+            $pdf->Cell(52, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT",  number_format($balance, 2, ",", ".") ." € - ".$quote->formatDate($quote->date_balance)), 0, 0, 'C');
+
+            //shipping
+            $pdf->setXY(21, 234);
+            $pdf->Cell(30, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quote->shipping ? "SI" : "NO"), 0, 0, 'C');
+
+            if($quote->address){
+                $pdf->setXY(20, 242);
+                $pdf->Cell(30, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quote->address), 0, 0, 'C');
+            }
+
+            $pdf->setXY(44, 257);
+            $pdf->Cell(30, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quote->formatDate($quote->deadline)), 0, 0, 'C');
+
+            $pdf->setXY(52, 245);
+            $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quote->custom), 0, 0, 'C');
+            
+        /**
+         * 
+         */
+         
+        /**
+         * PLACEHOLDER INFO
+         */
         $pdf->setFontSize("12");
-        //PLACEHOLDER
         $pdf->setXY(108, 169);
         $pdf->Cell(0, 10, $quote->placeholder ? "SI" : "NO", 0, 0, 'C'); // add the text, align to Center of cell
 
-        $pdf->setXY(108, 178);
-        $pdf->Cell(0, 10, $quote->amount, 0, 0, 'C'); // add the text, align to Center of cell
+        if($quotePlaceholder){
+            $pdf->setXY(108, 178);
+            $pdf->Cell(0, 10, $quotePlaceholder->getTotal(), 0, 0, 'C'); // add the text, align to Center of cell
 
-        $pdf->setXY(152, 186.4);
-        $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", number_format($quote->total, 2, ",", ".")." €"), 0, 0, 'C');
+            $pdf->setXY(152, 186.4);
+            $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", number_format($quotePlaceholder->total, 2, ",", ".")." €"), 0, 0, 'C');
 
-        $pdf->setXY(152, 196);
-        $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", number_format($quote->total, 2, ",", ".")." €"), 0, 0, 'C');
+            $pdf->setFontSize("10");
         
-        $pdf->SetXY(-296, -51); // set the position of the box
-        $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", number_format($quote->deposit, 2, ",", ".")." €"), 0, 0, 'C'); // add the text, align to Center of cell
-
-        $pdf->SetXY(-294, -44); // set the position of the box
-        $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", number_format($quote->balance, 2, ",", ".")." €". " - "), 0, 0, 'C'); // add the text, align to Center of cell
-
-        $pdf->SetXY(-133, -51); // set the position of the box
-        $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quote->shipping == 0 ? "NO" : "SI"), 0, 0, 'C'); // add the text, align to Center of cell
-
-        $pdf->SetXY(-121, -44); // set the position of the box
-        $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quote->formatDate($quote->deadline)), 0, 0, 'C'); // add the text, align to Center of cell
+            if($deposit){
+                $pdf->setXY(156, 195);
+                $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $deposit->formatDate($deposit->date_deposit)), 0, 0, 'C');
+            }
+            
+            $pdf->setXY(156, 220);
+            $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quote->formatNumber($quote->balance)), 0, 0, 'C');
+        }
         
+        
+
         $tpl = $pdf->importPage(2);
         $pdf->AddPage();
         $pdf->useTemplate($tpl);
+        $pdf->setFont("Helvetica");
+        $pdf->setFontSize("14");
 
+        $pdf->setFontSize("10");
+        //order number
+        $pdf->SetXY(140, 13); // set the position of the box
+        $pdf->Cell(0, 10, $quote->order_number, 0, 0, 'C'); // add the text, align to Center of cell
+
+        $pdf->SetXY(139, 20); // set the position of the box
+        $pdf->Cell(0, 10, $quote->formatDate($quote->created_at), 0, 0, 'C'); // add the text, align to Center of cell
+
+        $pdf->SetXY(132, 34); // set the position of the box
+        $pdf->Cell(0, 10, $quote->getClient(), 0, 0, 'C'); // add the text, align to Center of cell
+
+        $pdf->SetXY(149, 41.5); // set the position of the box
+        $pdf->Cell(0, 10, $client->phone, 0, 0, 'C'); // add the text, align to Center of cell
+
+        //LUOGO E DATA
+        $pdf->setFontSize("12");
+        $pdf->setXY(23, 190);
+        $pdf->Cell(30, 0, iconv('UTF-8', "ISO-8859-1//TRANSLIT", "Trentinara, ".$quote->formatDate($quote->created_at)), 0, 0, 'C');
+
+        $pdf->setXY(10, 215);
+        $pdf->Cell(30, 0, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quote->notes), 0, 0, 'C');
 
         $filename = "ordine_".$quote->order_number."_".$client->name."_".$client->surname.".pdf";
         ob_get_clean();
-        $pdf->Output();die;
+        
         $pdf->Output($filename, $flag == "send" ? 'F' : 'D');    
 
-        // if($flag == "send"){
-        //     if($this->sendEmail($quote, $filename, "invio-preventivo")){
-        //         Yii::$app->session->setFlash('success', "Pdf inviato correttamente");
-        //     }else{
-        //         Yii::$app->session->setFlash('error', "Ops...something went wrong");
-        //     }
+        if($flag == "send"){
+            if($this->sendEmail($quote, $filename, "invio-preventivo")){
+                Yii::$app->session->setFlash('success', "Pdf inviato correttamente");
+            }else{
+                Yii::$app->session->setFlash('error', "Ops...something went wrong");
+            }
 
-        //     return $this->redirect("index");
-        // }
+            return $this->redirect("index");
+        }
     }
-
     protected function manageUploadFiles($model) {
 
         $uploader   = new FKUploadUtils();
