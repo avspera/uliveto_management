@@ -103,6 +103,13 @@ $this->params['breadcrumbs'][] = $this->title;
                         'format' => "raw"
                     ],
                     [
+                        'attribute' => 'id_sconto',
+                        'value' => function($model){
+                            return $model->getSale();
+                        },
+                        'format' => "raw"
+                    ],
+                    [
                         'class' => ActionColumn::className(),
                     ],
                 ],

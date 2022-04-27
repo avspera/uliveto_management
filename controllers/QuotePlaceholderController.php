@@ -80,9 +80,12 @@ class QuotePlaceholderController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return string|\yii\web\Response
      */
-    public function actionCreate()
+    public function actionCreate($id_quote = "")
     {
         $model = new QuotePlaceholder();
+        if(!empty($id_quote)){
+            $model->id_quote = $id_quote;
+        }
         
         if ($this->request->isPost) {
             

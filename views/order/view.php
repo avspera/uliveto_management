@@ -160,12 +160,20 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
                         }
                     ],
                     [
+                        'attribute' => 'data_evento',
+                        'value' => function($model){
+                            return $model->formatDate($model->data_evento);
+                        },
+                        'format' => "raw"
+                    ],
+                    [
                         'attribute' => 'deadline',
                         'value' => function($model){
                             return $model->formatDate($model->deadline);
                         },
                         'format' => "raw"
                     ],
+                    
                     [
                         'attribute' => "confirmed",
                         "value" => function($model){
@@ -273,7 +281,9 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
     <?php if(!empty($segnaposto)) { ?>
         <div class="card card-info">
                 <div class="card-header">
-                    <div class="text-md">Segnaposto</div>
+                    <div class="text-md">Segnaposto 
+                        <?= Html::a('<i class="fas fa-plus-circle" style="margin-left: 5px;"></i>', ['quote-placeholder/create', 'id_quote' => $model->id]) ?>
+                    </div>
                 </div>
                 <div class="card-body">
                     <?= GridView::widget([

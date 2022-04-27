@@ -140,6 +140,13 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
                         }
                     ],
                     [
+                        'attribute' => 'data_evento',
+                        'value' => function($model){
+                            return $model->formatDate($model->data_evento);
+                        },
+                        'format' => "raw"
+                    ],
+                    [
                         'attribute' => 'deadline',
                         'value' => function($model){
                             return $model->formatDate($model->deadline);
