@@ -1,6 +1,6 @@
 <?php
     use yii\helpers\Url;
-    $this->title = 'Home';
+    $this->title = 'Home::OrciDelCilento - Manager';
     $this->params['breadcrumbs'] = [['label' => $this->title]];
 ?>
 <div class="container-fluid">

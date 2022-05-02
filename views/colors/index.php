@@ -49,7 +49,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         'attribute' => "id_product",
                         'value' => function($model){
                             return $model->getProduct();
-                        }
+                        },
+                        'filter' => yii\helpers\ArrayHelper::map(app\models\Product::find()->orderBy('name')->all(), 'id', 'name')
                     ],
                     [
                         'attribute' => 'picture',

@@ -3,6 +3,7 @@
 namespace app\controllers;
 use Yii;
 use app\models\Product;
+use app\models\Color;
 use app\models\ProductSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -40,7 +41,8 @@ class ProductController extends Controller
                             'delete', 
                             'create', 
                             'get-info',
-                            'error'
+                            'error',
+                            'get-colors'
                         ],
                         'allow' => true,
                         'roles' => ['@'],
@@ -137,6 +139,24 @@ class ProductController extends Controller
         return $this->render('create', [
             'model' => $model,
         ]);
+    }
+
+    public function actionGetColors($id){
+        $out = ["status" => "100", "msg" => "", "results" => []];
+        
+        $colors = Color::findAll(["id_product" => $id]);
+        
+        $i = 0;
+        foreach($colors as $item){
+            $out["results"][$i]["id"]   = $item->id;
+            $out["results"][$i]["text"] = $item->label;
+            $i++;
+        }
+        
+        if(!empty($colors)) $out["status"] = "200";
+
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        return $out;
     }
 
      /**

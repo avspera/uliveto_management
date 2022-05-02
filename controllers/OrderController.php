@@ -124,7 +124,11 @@ class OrderController extends Controller
         $order  = Quote::findOne(["id" => $id_quote]);
 
         if(empty($client) || empty($order)) return;
-        // return $this->render("@app/mail/send-payment", ["client" => $client, "order" => $order]);
+
+        return $this->render('mail', [
+            'order'         => $order,
+        ]);
+
         if($this->sendEmail($client, $order)){
             Yii::$app->session->setFlash('success', "Email inviata correttamente");
         }else{

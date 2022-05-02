@@ -24,6 +24,12 @@ $text   = urlencode($decodedText);
 $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
 
 ?>
+<style>
+    .btn{
+        margin: 3px;
+    }
+</style>
+
 <div class="order-view">
 
     <?php if(Yii::$app->session->hasFlash('error')): ?>
@@ -256,6 +262,7 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
                             return $model->getProduct();
                         },
                     ],
+                    'amount',
                     [
                         'attribute' => 'id_color',
                         'value' => function($model){
@@ -271,7 +278,6 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
                             return $model->getPackaging();
                         },
                     ],
-                    'amount',
                 ]
             ]); ?>
         </div>

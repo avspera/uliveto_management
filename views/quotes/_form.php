@@ -138,7 +138,7 @@ $placeholders = \app\models\Segnaposto::find()->all();
                         <div class="form-group field-quote-product-0 required">
                             <input type="hidden" id="productSubtotal-0" name="productSubtotal-0" value=0>
                             <label class="control-label" for="quote-product-0">Prodotto</label>
-                            <select id="quote-product-0" class="form-control" name="Quote[product][0]" onchange="enableFields(0)" aria-required="true">
+                            <select id="quote-product-0" class="form-control" name="Quote[product][0]" onchange="enableFields(0); getColors(0)" aria-required="true">
                                 <option value="">Scegli</option>
                                 <?php foreach($products as $product) { ?>
                                     <option price="<?= $product->price ?>" value="<?= $product->id ?>"><?= $product->name." - ".$product->formatNumber($product->price) ?> </option>
@@ -160,9 +160,6 @@ $placeholders = \app\models\Segnaposto::find()->all();
                             <label class="control-label" for="quote-color-0">Colore</label>
                             <select disabled id="quote-color-0" class="form-control" name="Quote[color][0]" aria-required="true">
                                 <option value="">Scegli</option>
-                                <?php foreach($colors as $color){ ?>
-                                    <option value="<?= $color->id ?>"><?= $color->label ?></option>
-                                <?php } ?>
                             </select>
                             <div class="help-block"></div>
                         </div>
@@ -336,13 +333,45 @@ $placeholders = \app\models\Segnaposto::find()->all();
             return out;
         }   
 
+    function getColors(index){
+
+        let id_product = $('#quote-product-'+index+" option:selected").val();
+        
+        $.ajax({
+            url: '<?= $prefixUrl ?>/web/product/get-colors',
+            type: 'get',
+            dataType: 'json',
+            'data': {
+                'id': id_product,
+            },
+            success: function (data) {
+                if(data.status == "200")
+                {
+                    let colorDropdown = $("#quote-color-"+index);
+                    let html = "";
+                    
+                    if(!!data.results){
+                        let results = data.results;
+                        results.map(item => {
+                            html += "<option value="+item.id+">"+item.text+"</option>";
+                        })
+                        colorDropdown.append(html);
+                    }
+                    
+                }
+            }
+        });
+    }
+
     function enableFields(index){
+
         $("#quote-amount-"+index).removeAttr("readonly");
         $("#quote-color-"+index).removeAttr("disabled");
         $("#quote-custom_color-"+index).removeAttr("readonly");
         $("#quote-id_packaging-"+index).removeAttr("disabled");
         $("#quote-id_sconto-"+index).removeAttr("disabled");
         $("#quote-id_sconto").removeAttr("disabled");
+
     }
 
 function editTotal(){
@@ -660,7 +689,7 @@ function addProductLine(){
                 <div class="form-group field-quote-product-${index} required">
                     <input type="hidden" id="productSubtotal-${index}" name="productSubtotal-${index}" value=0>
                     <label class="control-label" for="quote-product-${index}">Prodotto</label>
-                    <select id="quote-product-${index}" class="form-control" name="Quote[product][${index}]" onchange="enableFields(${index})" aria-required="true">
+                    <select id="quote-product-${index}" class="form-control" name="Quote[product][${index}]" onchange="enableFields(${index}); getColors(${index})" aria-required="true">
                         <option value="">Scegli</option>
                         <?php foreach($products as $product) { ?>
                             <option price="<?= $product->price ?>" value="<?= $product->id ?>"><?= $product->name." - ".$product->formatNumber($product->price) ?></option>
@@ -682,9 +711,6 @@ function addProductLine(){
                     <label class="control-label" for="quote-color-${index}">Colore</label>
                     <select disabled id="quote-color-${index}" class="form-control" name="Quote[color][${index}]" aria-required="true">
                         <option value="">Scegli</option>
-                        <?php foreach($colors as $color) { ?>
-                            <option value="<?= $color->id ?>"><?= $color->label ?></option>
-                        <?php } ?>
                     </select>
                     <div class="help-block"></div>
                 </div>

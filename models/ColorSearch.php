@@ -17,7 +17,7 @@ class ColorSearch extends Color
     public function rules()
     {
         return [
-            [['id'], 'integer'],
+            [['id', 'id_product'], 'integer'],
             [['label', 'content', 'picture'], 'safe'],
         ];
     }
@@ -59,6 +59,7 @@ class ColorSearch extends Color
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
+            'id_product' => $this->id_product,
         ]);
 
         $query->andFilterWhere(['like', 'label', $this->label])
