@@ -283,7 +283,7 @@ class QuotesController extends Controller
         $payments       = Payment::deleteAll(["id_quote" => $id]);
         $quotePlaceholder = QuotePlaceholder::deleteAll(["id_quote" => $id]);
         Yii::$app->session->setFlash('success', "Preventivo cancellato con successo");
-        return $this->redirect(['index']);
+        return $this->redirect(Yii::$app->request->referrer);
     }
 
     public function actionGetByClientId($id_client){

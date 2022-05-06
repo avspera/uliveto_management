@@ -235,7 +235,7 @@ class ProductController extends Controller
             Yii::$app->session->setFlash('error', "Ops...something went wrong [PROD_DEL-101]");
         }
 
-        return $this->redirect(['index']);
+        return $this->redirect(Yii::$app->request->referrer);
     }
 
     /**

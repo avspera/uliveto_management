@@ -660,8 +660,11 @@ function removePrezzoAggiuntivo (target)
 {   
     let price           = target == "confetti" ? $('#quote-prezzo_confetti').val() : $('#quote-custom_amount').val();
     price               = Number.isNaN(price) ? 0 : parseFloat(price)
+
     if(price == 0 && target == "custom_amount"){
         price = $('#quote-custom_amount').attr("prevVal")
+    }else{
+        price = $('#quote-confeti').attr("prevVal")
     }
 
     let currentTotal    = $('#quote-total_no_vat').val();

@@ -140,7 +140,7 @@ class InviaCatalogoController extends Controller
 
     public function actionDeleteCatalog($name){
         if(unlink($name)){
-            return $this->redirect("index");
+            return $this->redirect(Yii::$app->request->referrer);
         }else{
             return $this->redirect("view-catalogs");
         }
@@ -237,7 +237,7 @@ class InviaCatalogoController extends Controller
     {
         $this->findModel($id)->delete();
         Yii::$app->session->setFlash('success', "Catalogo cancellato con successo");
-        return $this->redirect(['index']);
+        return $this->redirect(Yii::$app->request->referrer);
     }
 
     protected function sendEmail($model){

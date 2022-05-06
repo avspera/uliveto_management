@@ -17,7 +17,7 @@ class PaymentSearch extends Payment
     public function rules()
     {
         return [
-            [['id', 'id_client', 'id_quote'], 'integer'],
+            [['id', 'id_client', 'id_quote', 'payed'], 'integer'],
             [['amount'], 'number'],
             [['created_at'], 'safe'],
         ];
@@ -62,6 +62,7 @@ class PaymentSearch extends Payment
             'id' => $this->id,
             'id_client' => $this->id_client,
             'id_quote' => $this->id_quote,
+            'payed' => $this->payed,
             'amount' => $this->amount,
         ]);
 

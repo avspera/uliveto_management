@@ -27,6 +27,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="card-body table-responsive">
             <?= GridView::widget([
                 'dataProvider' => $dataProvider,
+                'filterModel' => $searchModel,
                 'columns' => [
                     [
                         'attribute' => 'id_client',
@@ -56,6 +57,13 @@ $this->params['breadcrumbs'][] = $this->title;
                             return $model->formatNumber($model->amount);
                         },
                         'format' => "raw"
+                    ],
+                    [
+                        'attribute' => "payed",
+                        'value' => function($model){
+                            return $model->payed ? "SI" : "NO";
+                        },
+                        'filter' => [0 => "NO", 1 => "SI"]
                     ],
                     [
                         'attribute' => "fatturato",

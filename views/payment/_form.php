@@ -14,7 +14,7 @@ use kartik\select2\Select2;
     <?php $form = ActiveForm::begin(); ?>
 
     <div class="row">
-        <div class="col-md-6 col-sm-6 col-12">
+        <div class="col-md-4 col-sm-12 col-12">
             <?= $form->field($model, 'id_client')->widget(Select2::classname(), [
                     'options' => [
                         'multiple'=>false, 
@@ -41,18 +41,17 @@ use kartik\select2\Select2;
                 ]);
             ?>
         </div>
-        <div class="col-md-6 col-sm-6 col-12">
+        <div class="col-md-4 col-sm-12 col-12">
             <?= $form->field($model, 'id_quote')->dropdownList([], ['prompt' => 'Scegli']) ?>
+        </div>
+        <div class="col-md-4 col-sm-6 col-12">
+            <?= $form->field($model, 'type')->dropdownList($model->types, ['prompt' => 'Scegli']) ?>
         </div>
     </div>
     
     <div class="row">
         <div class="col-md-4 col-sm-6 col-12">
             <?= $form->field($model, 'amount')->textInput(["type" => "number"]) ?>
-        </div>
-
-        <div class="col-md-4 col-sm-6 col-12">
-            <?= $form->field($model, 'type')->dropdownList($model->types, ['prompt' => 'Scegli']) ?>
         </div>
         
         <div class="col-md-4 col-sm-6 col-12">
@@ -71,6 +70,9 @@ use kartik\select2\Select2;
             ?>
         </div>
 
+        <div class="col-md-4 col-sm-6 col-12">
+            <?= $form->field($model, 'payed')->dropdownList([0 => "NO", 1 => "SI"], ['prompt' => 'Scegli']) ?>
+        </div>
         
     </div>
 

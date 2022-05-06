@@ -1,5 +1,6 @@
 <?php
 use yii\helpers\Html;
+use yii\helpers\Url;
 
 /** @var \yii\web\View $this view component instance */
 /** @var \yii\mail\MessageInterface $message the message being composed */
@@ -77,7 +78,7 @@ use yii\helpers\Html;
         <div style="width: fit-content; block-size: fit-content; color: black">
             <div class="text center color: #4c552b">Seguici anche su</div>
             <div class="text center">
-                <a href="https://www.facebook.com/ulivetotrentinara"><?= Html::img(Url::to("https://manager.orcidelcilento.it/web/images/ok_fb_icon_gray.png"), ["style" => "width: 30px; margin. 5px"]) ?></a>
+                <a href="https://www.facebook.com/ulivetotrentinara"><?= Html::img(Url::to("https://manager.orcidelcilento.it/web/images/ok_fb_icon_gray.png"), ["style" => "width: 30px; margin: 5px"]) ?></a>
                 <a href="https://www.instagram.com/aziendaluliveto"><?= Html::img(Url::to("https://manager.orcidelcilento.it/web/images/ok_insta_icon_gray.png"), ["style" => "width: 30px; margin: 5px"]) ?></a>
             </div>
         </div>

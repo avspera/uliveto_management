@@ -99,6 +99,7 @@ class OrderController extends Controller
         ]);
     }
 
+    
     protected function sendEmail($client, $order){
         
         if(empty($client) || empty($order)) return false;
@@ -125,9 +126,10 @@ class OrderController extends Controller
 
         if(empty($client) || empty($order)) return;
 
-        return $this->render('mail', [
-            'order'         => $order,
-        ]);
+        // return $this->render('mail', [
+        //     'order'         => $order,
+        //     'client'        => $client
+        // ]);
 
         if($this->sendEmail($client, $order)){
             Yii::$app->session->setFlash('success', "Email inviata correttamente");
@@ -287,11 +289,9 @@ class OrderController extends Controller
     public function actionGeneratePdf($id, $flag){
         $quote      = $this->findModel($id);
         
-        if(empty($quote)) return;
-        
         $pdf = new GeneratePdf();
         $filename = $pdf->quotePdf($quote, $flag, "ordine");
-
+        
         if($flag == "send"){
             if($this->sendEmail($quote, $filename, "invio-preventivo")){
                 Yii::$app->session->setFlash('success', "Pdf inviato correttamente");
@@ -401,7 +401,7 @@ class OrderController extends Controller
     {
         $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
+        return $this->redirect("index");
     }
 
     public function actionGetByClientId($id_client){

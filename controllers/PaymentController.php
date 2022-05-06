@@ -74,6 +74,7 @@ class PaymentController extends Controller
         $payment->created_at = date("Y-m-d H:i:s");
         $payment->type      = 0;
         $payment->fatturato = 0;
+        $payment->payed     = 1;
         $payment->id_transaction = $transaction["id"];
 
         if($payment->save()){
@@ -112,12 +113,15 @@ class PaymentController extends Controller
         
         $this->layout = "external-payment";
 
+        $id_client  = base64_decode($id_client);
+        $id_quote   = base64_decode($id_quote);
         $client = Client::findOne(["id" => $id_client]);
         $quote  = Quote::findOne(["id" => $id_quote]);
         
         if(empty($client) || empty($quote)) return;
 
         $hasAcconto = Payment::find()->where(["id_quote" => $id_quote])->sum("amount");
+        
         // // In case of payment success this will return the payment object that contains all information about the order
         // // In case of failure it will return Null
         // $payment = Yii::$app->PayPalRestApi->processPayment($params);
@@ -189,6 +193,7 @@ class PaymentController extends Controller
             if ($model->load($this->request->post())) {
                 $model->created_at  = date("Y-m-d H:i:s");
                 $model->fatturato   = 0;
+                $model->payed       = 0;
                 if($model->save())
                     return $this->redirect(['view', 'id' => $model->id]);
                 else{
@@ -238,7 +243,7 @@ class PaymentController extends Controller
         $this->findModel($id)->delete();
         Yii::$app->session->setFlash('success', "Elemento cancellato con successo");
 
-        return $this->redirect(['index']);
+        return $this->redirect(Yii::$app->request->referrer);
     }
 
     /**

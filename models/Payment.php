@@ -33,8 +33,8 @@ class Payment extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id_client', 'id_quote', 'amount', 'created_at', 'fatturato', 'type'], 'required'],
-            [['id_client', 'id_quote', 'fatturato', 'type'], 'integer'],
+            [['id_client', 'id_quote', 'amount', 'created_at', 'fatturato', 'type', 'payed'], 'required'],
+            [['id_client', 'id_quote', 'fatturato', 'type', 'payed'], 'integer'],
             [['amount'], 'number'],
             [['id_transaction'], 'safe'],
         ];
@@ -46,13 +46,14 @@ class Payment extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
-            'id_client' => 'Cliente',
-            'id_quote' => 'Preventivo',
-            'amount' => 'Acconto',
-            'created_at' => 'Effettuato il',
-            'fatturato' => "Fatturato",
-            'type' => "Tipo"
+            'id'            => 'ID',
+            'id_client'     => 'Cliente',
+            'id_quote'      => 'Preventivo',
+            'amount'        => 'Quantità',
+            'created_at'    => 'Effettuato il',
+            'fatturato'     => "Fatturato",
+            'type'          => "Tipo",
+            'payed'         => "Pagato"
         ];
     }
 
@@ -95,6 +96,18 @@ class Payment extends \yii\db\ActiveRecord
     public function hasSaldo(){
         return Payment::find()->where(["id_client" => $this->id_client])->count();
     }
+
+    public function isSaldato($key){
+
+        $payment = Payment::find()
+                    ->where(["id_client" => $this->id_client])
+                    ->andWhere([$key => $this->$key])
+                    ->andWhere(['not', ['id_transaction' => null]])
+                    ->one();
+        
+        return empty($payment) ? "SI" : "NO";
+    }
+
     public function formatNumber($value){
         if(empty($value)) return;
         return number_format($value, 2, ",", ".")." &euro;";
