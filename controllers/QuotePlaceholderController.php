@@ -5,6 +5,7 @@ namespace app\controllers;
 use Yii;
 use app\models\QuotePlaceholder;
 use app\models\QuotePlaceholderSearch;
+use app\models\Segnaposto;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -37,6 +38,7 @@ class QuotePlaceholderController extends Controller
                             'update', 
                             'delete', 
                             'create', 
+                            'get-total'
                         ],
                         'allow' => true,
                         'roles' => ['@'],
@@ -90,6 +92,7 @@ class QuotePlaceholderController extends Controller
         if ($this->request->isPost) {
             
             if ($model->load($this->request->post())) {
+                
                 $model->created_at = date("Y-m-d H:i:s");
                 if($model->save())
                     return $this->redirect(['view', 'id' => $model->id]);
@@ -127,6 +130,16 @@ class QuotePlaceholderController extends Controller
         return $this->render('update', [
             'model' => $model,
         ]);
+    }
+
+    public function actionGetTotal($id_quote){
+        $out = ["status" => "100", "total" => 0];
+        $quote = $this->findModel($id_quote);
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $segnaposto = Segnaposto::findOne(["id" => $quote->id_placeholder]);
+        $total = $quote->amount * floatval($segnaposto->price);
+        
+        return !empty($quote) ? $out = ["status" => "200", "total" => $total] : 0;
     }
 
     /**

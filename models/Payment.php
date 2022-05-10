@@ -5,6 +5,7 @@ namespace app\models;
 use Yii;
 use app\models\Client;
 use app\models\Quote;
+use app\models\QuotePlaceholder;
 /**
  * This is the model class for table "payments".
  *
@@ -19,6 +20,8 @@ class Payment extends \yii\db\ActiveRecord
     public $total;
     public $saldo;
     public $types = [0 => "Acconto", 1 => "Saldo"];
+    public $types_reverse = ["Acconto" => 0, "Saldo" => 1];
+    
     /**
      * {@inheritdoc}
      */
@@ -33,10 +36,10 @@ class Payment extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id_client', 'id_quote', 'amount', 'created_at', 'fatturato', 'type', 'payed'], 'required'],
-            [['id_client', 'id_quote', 'fatturato', 'type', 'payed'], 'integer'],
+            [['id_client', 'amount', 'created_at', 'fatturato', 'type', 'payed'], 'required'],
+            [['id_client', 'id_quote', 'id_quote_placeholder', 'fatturato', 'type', 'payed'], 'integer'],
             [['amount'], 'number'],
-            [['id_transaction'], 'safe'],
+            [['id_transaction', 'id_quote', 'id_quote_placeholder'], 'safe'],
         ];
     }
 
@@ -48,12 +51,13 @@ class Payment extends \yii\db\ActiveRecord
         return [
             'id'            => 'ID',
             'id_client'     => 'Cliente',
-            'id_quote'      => 'Preventivo',
+            'id_quote'      => 'Preventivo Bomboniere',
+            'id_quote_placeholder' => 'Preventivo Segnaposto',
             'amount'        => 'Quantità',
             'created_at'    => 'Effettuato il',
             'fatturato'     => "Fatturato",
             'type'          => "Tipo",
-            'payed'         => "Pagato"
+            'payed'         => "Versato"
         ];
     }
 
@@ -61,13 +65,26 @@ class Payment extends \yii\db\ActiveRecord
         return $this->types[$this->type];
     }
 
+    public function getQuotePlaceholder(){
+        $out = ["quote" => "", "confirmed" => 0];
+        $quote = QuotePlaceholder::find()->select(["id", "created_at"])->where(["id" => $this->id_quote_placeholder])->one();
+
+        if(!empty($quote)){
+            $out["quote"]       = $quote->id." - ".$this->formatDate($quote->created_at);
+        }
+        
+        return $out;
+    }
+
     public function getQuote(){
         $out = ["quote" => "", "confirmed" => 0];
         $quote = Quote::find()->select(["id", "created_at", "confirmed"])->where(["id" => $this->id_quote])->one();
+
         if(!empty($quote)){
             $out["quote"]       = $quote->id." - ".$this->formatDate($quote->created_at);
             $out["confirmed"]   = $quote->confirmed;
         }
+
         return $out;
     }
 
@@ -76,8 +93,19 @@ class Payment extends \yii\db\ActiveRecord
     }
     
     public function getTotal(){
+        $total = 0;
         $quote = Quote::find()->select(["total"])->where(["id" => $this->id_quote])->one();
-        return !empty($quote) ? $quote->total : "";
+        
+        if(empty($quote)){
+            $quote = QuotePlaceholder::find()->where(["id" => $this->id_quote])->one();
+            if(!empty($quote))
+                $total = $quote->getTotal();
+        }
+        else{
+            $total = $quote->formatNumber($quote->total);
+        }
+
+        return $total;
     }
 
     public function getClient(){
@@ -91,10 +119,6 @@ class Payment extends \yii\db\ActiveRecord
             $format = "d/m/Y H:i:s";
 
         return !empty($value) ? date($format, strtotime($value)) : "";
-    }
-
-    public function hasSaldo(){
-        return Payment::find()->where(["id_client" => $this->id_client])->count();
     }
 
     public function isSaldato($key){

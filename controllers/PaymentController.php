@@ -34,7 +34,7 @@ class PaymentController extends Controller
                         'allow' => ['?'],
                     ],
                     [
-                        'actions' => ['view', 'index', 'create', 'update', 'delete', 'set-as-invoiced'],
+                        'actions' => ['view', 'index', 'create', 'update', 'delete', 'set-as-invoiced', 'has-acconto'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -58,6 +58,16 @@ class PaymentController extends Controller
 
         return true;
     }
+
+    public function actionHasAcconto($id_quote){
+        $out = ["status" => "100", "hasAcconto" => false, "amount" => 0];
+
+        $acconto = Payment::findOne(["id_quote" => $id_quote, "type" => 0]);
+        
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        return !empty($acconto) ? $out = ["status" => "200", "hasAcconto" => true, "amount" => floatval($acconto->amount)] : $out;
+    }
+
 
     public function actionRegisterTransaction($transaction, $id_client, $id_quote){
         if(empty($transaction) || empty($id_client) || empty($id_quote)) return;
@@ -194,9 +204,11 @@ class PaymentController extends Controller
                 $model->created_at  = date("Y-m-d H:i:s");
                 $model->fatturato   = 0;
                 $model->payed       = 0;
+                
                 if($model->save())
                     return $this->redirect(['view', 'id' => $model->id]);
                 else{
+                    print_r($model->getErrors());die;
                     Yii::$app->session->setFlash('error', "Ops...something went wrong [PACK-101]");
                 }
             }

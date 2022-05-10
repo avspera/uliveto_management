@@ -27,7 +27,6 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="card-body table-responsive">
             <?= GridView::widget([
                 'dataProvider' => $dataProvider,
-                'filterModel' => $searchModel,
                 'columns' => [
                     [
                         'attribute' => 'id_client',
@@ -40,6 +39,13 @@ $this->params['breadcrumbs'][] = $this->title;
                         'value' => function($model){
                             $quote = $model->getQuote();
                             return Html::a($quote["quote"], Url::to([$quote["confirmed"] ? "order/view" : "quotes/view", "id" => $model->id_quote]));
+                        },
+                        'format' => "raw"
+                    ],
+                    [
+                        'attribute' => 'id_quote_placeholder',
+                        'value' => function($model){
+                            return !empty($model->id_quote_placeholder) ? Html::a($model->id_quote_placeholder, Url::to(["quote-placeholder/view", "id" => $model->id_quote_placeholder])) : "-";
                         },
                         'format' => "raw"
                     ],
@@ -59,6 +65,13 @@ $this->params['breadcrumbs'][] = $this->title;
                         'format' => "raw"
                     ],
                     [
+                        'attribute' => 'created_at',
+                        'value' => function($model){
+                            return $model->formatDate($model->created_at);
+                        },
+                        'label' => "Data pagamento"
+                    ],
+                    [
                         'attribute' => "payed",
                         'value' => function($model){
                             return $model->payed ? "SI" : "NO";
@@ -72,13 +85,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         },
                         'filter' => [0 => "NO", 1 => "SI"]
                     ],
-                    [
-                        'attribute' => 'created_at',
-                        'value' => function($model){
-                            return $model->formatDate($model->created_at);
-                        },
-                        'label' => "Data pagamento"
-                    ],
+                    
                     [
                         'attribute' => "saldo",
                         'value' => function($model){
@@ -106,15 +113,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'format' => "raw",
                         'label' => "Data Saldo"
                     ],
-                    [
-                        'attribute' => "has_saldo",
-                        'value' => function($model){
-                            return $model->hasSaldo() > 1 ? "<i class='fas fa-check' style='color:green'></i>" : "<i class='fas fa-ban' style='color:red'></i>";
-                        },
-                        'filter' => [0 => "NO", 1 => "SI"],
-                        'format' => "raw",
-                        'label' => "Saldato"
-                    ],
+                    
                     // [
                     //     'attribute' => "external_payment",
                     //     'value' => function($model){

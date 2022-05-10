@@ -186,7 +186,7 @@ $clientData     = !empty($client) ? $client->name." ".$client->surname : ""
                     <div class="col-md-4 col-sm-4 col-12"><?php
                         echo '<label class="form-label">Data </label>';
                         echo DatePicker::widget([
-                            'value' => date("Y-m-d"),
+                            'language' => "it",
                             'name' => 'Quote[date_deposit]',
                             'type' => DatePicker::TYPE_INPUT,
                             'pluginOptions' => [
@@ -202,7 +202,6 @@ $clientData     = !empty($client) ? $client->name." ".$client->surname : ""
                         <?php
                             echo '<label class="form-label">Data saldo</label>';
                             echo DatePicker::widget([
-                                'value' => date("Y-m-d"),
                                 'name' => 'Quote[date_balance]',
                                 'type' => DatePicker::TYPE_INPUT,
                                 'pluginOptions' => [
@@ -232,7 +231,6 @@ $clientData     = !empty($client) ? $client->name." ".$client->surname : ""
                     <div class="col-md-4 col-sm-4 col-12"><?php
                         echo '<label class="form-label">Consegna (entro il) </label>';
                         echo DatePicker::widget([
-                            'value' => date("Y-m-d"),
                             'name' => 'Quote[deadline]',
                             'type' => DatePicker::TYPE_INPUT,
                             'pluginOptions' => [

@@ -7,6 +7,7 @@ use app\models\Quote;
 use app\models\Product;
 use app\models\Sales;
 use app\models\Packaging;
+use app\models\Segnaposto;
 use app\models\QuotePlaceholder;
 use app\models\QuoteDetails;
 use app\models\Color;
@@ -240,6 +241,14 @@ class GeneratePdf {
         * PLACEHOLDER INFO
         */
         if($quotePlaceholder){
+
+            $placeholder = Segnaposto::find()->select(["image"])->where(["id" => $quotePlaceholder->id_placeholder])->one();
+
+            if(!empty($placeholder->image)){
+                $pdf->Cell($pdf->Image($placeholder->image,0, 0, 40, 40));
+            }
+            
+
             $pdf->setFontSize("11");
             $pdf->setXY(90, 131);
             $pdf->Cell(0, 10, $quotePlaceholder ? "SI n.".$quotePlaceholder->amount : "NO", 0, 0, 'C'); // add the text, align to Center of cell

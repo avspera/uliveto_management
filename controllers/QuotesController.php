@@ -54,7 +54,8 @@ class QuotesController extends Controller
                             'confirm',
                             'generate-pdf',
                             'choose-quote',
-                            'set-confirmed'
+                            'set-confirmed',
+                            'get-total'
                         ],
                         'allow' => true,
                         'roles' => ['@'],
@@ -97,6 +98,14 @@ class QuotesController extends Controller
         ]);
     }
 
+    public function actionGetTotal($id_quote){
+        $out = ["status" => "100", "total" => 0];
+        $quote = $this->findModel($id_quote);
+
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        return !empty($quote) ? $out = ["status" => "200", "total" => $quote->total] : 0;
+    }
+    
     /**
      * Displays a single Quote model.
      * @param int $id ID
@@ -291,7 +300,7 @@ class QuotesController extends Controller
         if(is_null($id_client)) return;
 
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-        $out = ['results' => [], "status" => "100"];
+        $out = ['results' => [], "status" => "100", "quotesPlaceholder" => []];
         
         $data = Quote::find()
                     ->select(["id", "created_at"])
@@ -300,12 +309,27 @@ class QuotesController extends Controller
                     ->all();
         
         $i = 0;
+        $ids = [];
         foreach($data as $item){
             $out["results"][$i]["id"]   = $item->id;
             $out["results"][$i]["text"] = $item->id. " - ".$item->formatDate($item->created_at);
-            $i++;
+            $ids[$i] = $item->id;
+            $i++;     
         }
     
+        $quotesPlaceholder = QuotePlaceholder::find()
+                                    ->select(["id", "created_at"])
+                                    ->where(["IN", "id_quote", array_values($ids)])
+                                    ->all();
+        
+        $i = 0;
+        foreach($quotesPlaceholder as $item){
+            $out["quotesPlaceholder"][$i]["id"]   = $item->id;
+            $out["quotesPlaceholder"][$i]["text"] = $item->id. " - ".$item->formatDate($item->created_at);
+            $ids[$i] = $item->id;
+            $i++;     
+        }
+        
         $out["status"] = "200";
         
         return $out;

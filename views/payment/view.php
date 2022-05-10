@@ -48,6 +48,14 @@ $this->params['breadcrumbs'][] = $this->title;
                         'format' => "raw"
                     ],
                     [
+                        'attribute' => 'id_quote_placeholder',
+                        'value' => function($model){
+                            $quote = $model->getQuotePlaceholder();
+                            return $model->id_quote_placeholder !== NULL ? Html::a($quote["quote"], Url::to(["quote-placeholder/view", "id" => $model->id_quote_placeholder])) : "-";
+                        },
+                        'format' => "raw"
+                    ],
+                    [
                         'attribute' => 'amount',
                         'value' => function($model){
                             return $model->formatNumber($model->amount);

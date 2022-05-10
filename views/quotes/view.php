@@ -71,7 +71,6 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
                         },
                         'format' => "raw"
                     ],
-                    'packaging',
                     [
                         'attribute' => "confetti",
                         'value' => function($model){

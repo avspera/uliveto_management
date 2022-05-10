@@ -17,7 +17,7 @@ class PaymentSearch extends Payment
     public function rules()
     {
         return [
-            [['id', 'id_client', 'id_quote', 'payed'], 'integer'],
+            [['id', 'id_client', 'id_quote', 'payed', 'id_quote_placeholder'], 'integer'],
             [['amount'], 'number'],
             [['created_at'], 'safe'],
         ];
