@@ -108,6 +108,12 @@ class GeneratePdf {
                         $start_x = 0;
                     }
                 }
+
+                $packaging = Packaging::find()->select(["image"])->where(["id_product" => $item->id])->one();
+                if(!empty($packaging)){
+                    $ordinate = 220;
+                    $pdf->Cell($pdf->Image($packaging->image, $start_x, $ordinate, 40, 40));
+                }
             }
 
             /**
@@ -119,12 +125,19 @@ class GeneratePdf {
             }else{
                 $pdf->setXY(180, 240.5);
             }
-            
+
             $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $confetti), 0, 0, 'C'); // add the text, align to Center of cell
             /**
              * end of CONFETTI.
              */
         
+              /**
+             * con fiocco SEMPRE SI
+             */
+            $pdf->setXY(165, 232.5);
+            $pdf->setTextColor(0, 0, 0);
+            $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", "SI"), 0, 0, 'C'); // add the text, align to Center of cell
+            
         
         
         /**
@@ -179,6 +192,8 @@ class GeneratePdf {
                 $pdf->setXY(45, $line-2);
                 $pdf->Cell(10, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", "Sconto: ".$sale->name." del ".$sale->amount."% - ".number_format($prezzoScontato, 2, ",", ".") ." €")." n. ".$product->amount, 0, 0, 'C'); // add the text, align to Center of cell
                 $line += 10;
+            }else{
+                $line += 6;
             }
 
             //add prezzo packaging + prezzo confetti
@@ -231,7 +246,7 @@ class GeneratePdf {
             $pdf->Cell(30, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quote->formatDate($quote->deadline)), 0, 0, 'C');
 
             $pdf->setXY(90, 210);
-            $pdf->Cell(0, 20, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quote->custom." ".number_format($quote->custom_amount, 2, ",", ".") ." €"), 0, 0, 'C');
+            $pdf->Cell(0, 20, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quote->custom." ".empty($quote->custom_amount) ? "" : number_format($quote->custom_amount, 2, ",", ".") ." €"), 0, 0, 'C');
             
         /**
          * 
