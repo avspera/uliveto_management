@@ -138,7 +138,7 @@ $placeholders = \app\models\Segnaposto::find()->all();
                         <div class="form-group field-quote-product-0 required">
                             <input type="hidden" id="productSubtotal-0" name="productSubtotal-0" value=0>
                             <label class="control-label" for="quote-product-0">Prodotto</label>
-                            <select id="quote-product-0" class="form-control" name="Quote[product][0]" onchange="enableFields(0); getColors(0); getPackaging(0)" aria-required="true">
+                            <select id="quote-product-0" class="form-control" name="Quote[product][0]" onchange="enableFields(0)" aria-required="true">
                                 <option value="">Scegli</option>
                                 <?php foreach($products as $product) { ?>
                                     <option price="<?= $product->price ?>" value="<?= $product->id ?>"><?= $product->name." - ".$product->formatNumber($product->price) ?> </option>
@@ -170,9 +170,6 @@ $placeholders = \app\models\Segnaposto::find()->all();
                             <label class="control-label" for="quote-id_packaging-0">Confezione</label>
                             <select prevPrice=0 disabled id="quote-id_packaging-0" class="form-control" name="Quote[packaging][0]" onchange="addPackagingPrice(0)" aria-required="true">
                                 <option price="" value="">Scegli</option>
-                                <!-- <?php foreach($packagings as $packaging) { ?>
-                                    <option price="<?= $packaging->price ?>" value="<?= $packaging->id ?>"><?= $packaging->label." - ".$packaging->formatNumber($packaging->price) ?> </option>
-                                <?php } ?> -->
                             </select>
                             <div class="help-block"></div>
                         </div>
@@ -340,7 +337,7 @@ $placeholders = \app\models\Segnaposto::find()->all();
             let id_product = $('#quote-product-'+index+" option:selected").val();
 
             $.ajax({
-                url: '<?= $prefixUrl ?>/web/product/get-packaging',
+                url: '<?= $prefixUrl ?>/web/product/get-colors',
                 type: 'get',
                 dataType: 'json',
                 'data': {
@@ -349,7 +346,7 @@ $placeholders = \app\models\Segnaposto::find()->all();
                 success: function (data) {
                     if(data.status == "200")
                     {
-                        let packagingDropdown = $("#quote-id_packaging-"+index);
+                        let packagingDropdown = $("#quote-color-"+index);
                         let html = "";
                         
                         if(!!data.results){
@@ -379,15 +376,15 @@ $placeholders = \app\models\Segnaposto::find()->all();
             success: function (data) {
                 if(data.status == "200")
                 {
-                    let colorDropdown = $("#quote-color-"+index);
+                    let packagingDropdown = $("#quote-id_packaging-"+index);
                     let html = "";
                     
                     if(!!data.results){
                         let results = data.results;
                         results.map(item => {
-                            html += "<option value="+item.id+">"+item.text+"</option>";
+                            html += "<option price="+item.price+" value="+item.id+">"+item.text+" - "+item.price+"€ </option>";
                         })
-                        colorDropdown.append(html);
+                        packagingDropdown.append(html);
                     }
                     
                 }
@@ -404,6 +401,8 @@ $placeholders = \app\models\Segnaposto::find()->all();
         $("#quote-id_sconto-"+index).removeAttr("disabled");
         $("#quote-id_sconto").removeAttr("disabled");
 
+        getColors(index); 
+        getPackaging(index)
     }
 
 function editTotal(){
@@ -502,9 +501,9 @@ function addPackagingPrice(index){
     
     let price       = $(`#quote-id_packaging-${index} option:selected`).attr("price");
     let prevValue   = $(`#quote-id_packaging-${index}`).attr("prevPrice");
-    prevValue       = isNaN(prevValue) ? 0 : parseFloat(prevValue)
     $(`#quote-id_packaging-${index}`).attr("prevPrice", price) //update prev value
     let amount              = $("#quote-amount-"+index).val();
+    console.log("price", price);console.log("amount", amount);
     calculateNewTotal(prevValue, price, amount);
 
 }
@@ -689,21 +688,22 @@ function calculateSumProducts() {
 }
 
 function removePrezzoAggiuntivo (target) 
-{   
+{   console.log("target", target);
     let price           = target == "confetti" ? $('#quote-prezzo_confetti').val() : $('#quote-custom_amount').val();
     price               = Number.isNaN(price) ? 0 : parseFloat(price)
 
     if(price == 0 && target == "custom_amount"){
         price = $('#quote-custom_amount').attr("prevVal")
-    }else{
-        price = $('#quote-confeti').attr("prevVal")
     }
 
     let currentTotal    = $('#quote-total_no_vat').val();
     console.log("currentTotal", currentTotal)
+console.log("Price", price);
     currentTotal        = Number.isNaN(currentTotal) ? 0 : parseFloat(currentTotal)
+    
     let sumProducts     = calculateSumProducts();
     let subtotal        = sumProducts * price;
+    
     console.log("subtotal", subtotal)
     let newTotalNoVat   = parseFloat(Math.abs(currentTotal-subtotal).toFixed(2));
     $('#quote-total_no_vat').val(newTotalNoVat);
@@ -724,10 +724,10 @@ function addProductLine(){
                 <div class="form-group field-quote-product-${index} required">
                     <input type="hidden" id="productSubtotal-${index}" name="productSubtotal-${index}" value=0>
                     <label class="control-label" for="quote-product-${index}">Prodotto</label>
-                    <select id="quote-product-${index}" class="form-control" name="Quote[product][${index}]" onchange="enableFields(${index}); getColors(${index})" aria-required="true">
+                    <select id="quote-product-${index}" class="form-control" name="Quote[product][${index}]" onchange="enableFields(${index})" aria-required="true">
                         <option value="">Scegli</option>
                         <?php foreach($products as $product) { ?>
-                            <option price="<?= $product->price ?>" value="<?= $product->id ?>"><?= $product->name." - ".$product->formatNumber($product->price) ?></option>
+                            <option price="<?= $product->price ?>" value="<?= $product->id ?>"><?= $product->name." - ".$product->formatNumber($product->price) ?> </option>
                         <?php } ?>
                     </select>
                     <div class="help-block"></div>
@@ -761,7 +761,7 @@ function addProductLine(){
             <div class="col-md-2 col-sm-6 col-12">
                 <div class="form-group field-quote-packaging required">
                     <label class="control-label" for="quote-packaging">Confezione</label>
-                    <select disabled="" id="quote-id_packaging-${index}" class="form-control" name="Quote[packaging][${index}]" onchange="addPackagingPrice(${index})" aria-required="true">
+                    <select prevprice=0 id="quote-id_packaging-${index}" class="form-control" name="Quote[packaging][${index}]" onchange="addPackagingPrice(${index})" aria-required="true">
                         <option price="" value="">Scegli</option>
                     </select>
                     <div class="help-block"></div>

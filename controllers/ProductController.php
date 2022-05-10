@@ -170,6 +170,7 @@ class ProductController extends Controller
         foreach($packaging as $item){
             $out["results"][$i]["id"]   = $item->id;
             $out["results"][$i]["text"] = $item->label;
+            $out["results"][$i]["price"] = $item->price;
             $i++;
         }
         
