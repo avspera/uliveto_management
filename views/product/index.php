@@ -46,7 +46,15 @@ $this->params['breadcrumbs'][] = $this->title;
                 'columns' => [
                     ['class' => 'yii\grid\SerialColumn'],
                     'name',
-                    'image',
+                    [
+                        'attribute' => 'image',
+                        'value' => function($model){
+                            return !empty($model->image) ? 
+                                 Html::img(Url::to(Yii::getAlias("@web")."/".$model->image), ['class' => 'img-fluid img-responsive', 'alt' => $model->name, 'title' => $model->name]) 
+                             : "-";
+                         },
+                         'format' => "raw"
+                     ],
                     'weight',
                     [
                         'attribute' => 'id_packaging',

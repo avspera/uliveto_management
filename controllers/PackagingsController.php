@@ -8,6 +8,9 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
+use app\utils\FKUploadUtils; 
+use yii\helpers\FileHelper;
+use yii\web\UploadedFile;
 
 /**
  * PackagingsController implements the CRUD actions for Packaging model.
@@ -96,6 +99,9 @@ class PackagingsController extends Controller
         if ($this->request->isPost) {
             if ($model->load($this->request->post())) {
                 $model->created_at = date("Y-m-d H:i:s");
+                if (!empty($_FILES)) {
+                    $model->image = $this->manageUploadFiles($model);
+                }
                 if($model->save())
                     return $this->redirect(['view', 'id' => $model->id]);
             }else{
@@ -108,6 +114,28 @@ class PackagingsController extends Controller
         return $this->render('create', [
             'model' => $model,
         ]);
+    }
+
+     /**
+     * check each uploaded media in form.
+     * if !empty, upload to server
+     * path is: /images/blog/category/article_id
+     */
+    protected function manageUploadFiles($model) {
+
+        $uploader   = new FKUploadUtils();
+        $path       = Yii::getAlias('@webroot')."/images/packaging/";
+    
+        $dirCreated = FileHelper::createDirectory($path);
+        $image = UploadedFile::getInstance($model, 'image');
+        
+        if (!empty($image)){
+            $filename = $uploader->generateAndSaveFile($image, $path);
+            $model->image = "images/packaging/".$filename;
+        }
+        
+        return $model->image;
+
     }
 
     /**
@@ -123,6 +151,11 @@ class PackagingsController extends Controller
 
         if ($this->request->isPost && $model->load($this->request->post())) {
             $model->created_at = date("Y-m-d");
+            
+            if (!empty($_FILES)) {
+            
+                $model->image = $this->manageUploadFiles($model);
+            }
             if($model->save())
                 return $this->redirect(['view', 'id' => $model->id]);
             else{

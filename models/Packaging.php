@@ -33,6 +33,7 @@ class Packaging extends \yii\db\ActiveRecord
             [['name', 'label', 'created_at', 'id_product'], 'required'],
             [['price'], 'safe'],
             [['name', 'label', 'image'], 'string', 'max' => 255],
+            [['image'], 'file', 'skipOnEmpty' => true, 'extensions' => 'jpg, png'],
         ];
     }
 
