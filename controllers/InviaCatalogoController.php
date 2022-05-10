@@ -103,7 +103,7 @@ class InviaCatalogoController extends Controller
         if($flag == "email"){
             $this->sendEmail($model);
             Yii::$app->session->setFlash('success', "Email inviata correttamente");
-        }   
+        }
         
         return $this->redirect(["view", "id" => $id]);
     }
@@ -122,6 +122,7 @@ class InviaCatalogoController extends Controller
             if ($model->load($this->request->post())) {
                 $model->created_at = date("Y-m-d H:i:s");
                 if($model->save()){
+                    $this->sendEmail($model);
                     Yii::$app->session->setFlash('success', "Catalogo inviato correttamente");
                     return $this->redirect(['view', 'id' => $model->id]);
                 }else{
@@ -243,7 +244,7 @@ class InviaCatalogoController extends Controller
     protected function sendEmail($model){
         if(empty($model)) return false;
         
-        $existingFiles=\yii\helpers\FileHelper::findFiles(Yii::getAlias("@webroot").'/pdf/', ['recursive' => false] );
+        $existingFiles=\yii\helpers\FileHelper::findFiles(Yii::getAlias("@webroot").'/pdf/catalogo/', ['recursive' => false] );
         
         $files = [];
         $i = 0;
@@ -257,12 +258,13 @@ class InviaCatalogoController extends Controller
                 ->setTo($model->email)
                 ->setSubject($model->name." ecco i nostri cataloghi");
 
+        
         foreach($existingFiles as $file) {
             $file = substr($file, strpos($file, "/home/")+strlen("/home/"));
             $filename = "https://manager.orcidelcilento.it/".$file;
             $message->attach($filename);
         }
-        
+    
         return $message->send();
     }
 

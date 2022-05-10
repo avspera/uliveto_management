@@ -99,23 +99,6 @@ class OrderController extends Controller
         ]);
     }
 
-    
-    protected function sendEmail($client, $order){
-        
-        if(empty($client) || empty($order)) return false;
-        
-        $message = Yii::$app->mailer
-                ->compose(
-                    ['html' => "send-payment"],
-                    ['client' => $client, "order" => $order]
-                )
-                ->setFrom("pagamenti@orcidelcilento.it")
-                ->setTo($client->email)
-                ->setSubject($client->name." ".$client->surname." grazie per il tuo pagamento");
-
-        return $message->send();
-    }
-
     public function actionSendEmailPayment($id_client, $id_quote){
         if(empty($id_client) || empty($id_quote)) return;
         

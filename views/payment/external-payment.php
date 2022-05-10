@@ -98,187 +98,23 @@
 
             <p>Ciao, <?= $client->name." ".$client->surname ?></p>
 
-            <p>Qui di seguito puoi effettuare il pagamento per il tuo ordine <strong>#<?= $quote->order_number ?> del <?= $quote->formatDate($quote->created_at) ?></strong></p>
+            <p>Qui di seguito puoi effettuare il pagamento per il tuo ordine <strong>#<?= isset($quote->order_number) ? $quote->order_number : $quote->id ?> del <?= $quote->formatDate($quote->created_at) ?></strong></p>
 
                 <div class="card">
                     <div id="collapseTwo" class="show" aria-labelledby="headingTwo" data-parent="#accordion">
                         <div class="card-body">
-                            <div class="text-lg">Totale: <?= $quote->formatNumber($quote->total) ?></div>
-                            <div class="text-md">Scegli la quota</div>
-
-                            <?php if($hasAcconto) { ?>
-                                <div class="btn-group blocks" style="margin-top:10px" data-toggle="buttons">
-                                    <label class="btn btn-success btn-lg active">
-                                        <input type="radio" amount="<?= $quote->calculatePercentage(100, $quote->total) ?>" name="options" id="percentage_100" autocomplete="off"> <?= $quote->calculatePercentage(100, $quote->total, true) ?>
-                                    </label>
-                                </div>
-                            <?php } else { ?>
-                                <div class="btn-group blocks" style="margin-top:10px" data-toggle="buttons">
-                                    <label class="btn btn-success active">
-                                        <input type="radio" amount="<?= $quote->calculatePercentage(20, $quote->total) ?>" name="options" id="percentage_20" autocomplete="off"> 20% = <?= $quote->calculatePercentage(20, $quote->total, true) ?>
-                                    </label>
-                                    <label class="btn btn-success">
-                                        <input type="radio" amount="<?= $quote->calculatePercentage(30, $quote->total) ?>" name="options" id="percentage_30" autocomplete="off"> 30% = <?= $quote->calculatePercentage(30, $quote->total, true) ?>
-                                    </label>
-                                    <label class="btn btn-success">
-                                        <input type="radio" amount="<?= $quote->calculatePercentage(40, $quote->total) ?>" name="options" id="percentage_40" autocomplete="off"> 40% = <?= $quote->calculatePercentage(40, $quote->total, true) ?>
-                                    </label>
-                                </div>
-                            <?php } ?>
+                            <div class="text-lg">Totale: <?= $quote->formatNumber($payment->amount) ?></div>
+                            <div class="btn-group blocks" style="margin-top:10px" data-toggle="buttons">
+                                <label class="btn btn-success btn-lg active">
+                                    <input type="radio" amount="<?= $payment->amount ?>" name="options" id="percentage_100" autocomplete="off"> <?= $payment->amount ?>
+                                </label>
+                            </div>
                             <div style="margin-top: 10px">
                                 <div id="paypal-button-container"></div>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <div class="card">
-                    <div class="card-header" id="headingOne">
-                    <h5 class="mb-0">
-                        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                            Dettaglio Ordine
-                        </button>
-                    </h5>
-                    </div>
-
-                    <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#headingOne">
-                        <div class="card-body">
-                            <?= DetailView::widget([
-                                'model' => $quote,
-                                'attributes' => [
-                                    'order_number',
-                                    [
-                                        'attribute' => 'created_at',
-                                        'value' => function($model){
-                                            return $model->formatDate($model->created_at, true);
-                                        }
-                                    ],
-                                    [
-                                        'attribute' => 'updated_at',
-                                        'value' => function($model){
-                                            return $model->formatDate($model->updated_at, true);
-                                        }
-                                    ],
-                                    [
-                                        'attribute' => 'id_client',
-                                        'value' => function($model){
-                                            return Html::a($model->getClient(), Url::to(["clients/view", "id" => $model->id_client]));
-                                        },
-                                        'format' => "raw"
-                                    ],
-                                    [
-                                        'attribute' => 'placeholder',
-                                        'value' => function($model){
-                                            return $model->getPlaceholder();
-                                        },
-                                        'format' => "raw"
-                                    ],
-                                    [
-                                        'attribute' => "confetti",
-                                        'value' => function($model){
-                                            $html = "";
-                                            if($model->confetti){
-                                                if($model->confetti_omaggio){
-                                                    $html .= "<span style='text-decoration: line-through;'>".$model->formatNumber($model->prezzo_confetti)."</span> <span style='color: green'> - in omaggio</span>";
-                                                }
-                                                else{
-                                                    $html .= "<span>".$model->formatNumber($model->prezzo_confetti)."</span>";
-                                                }
-                                            }else{
-                                                $html .= "-";
-                                            }
-                                            return $html;
-                                        },
-                                        'format' => "raw"
-                                    ],
-                                    [
-                                        'attribute' => "custom_amount",
-                                        'value' => function($model){
-                                            return !empty($model->custom_amount) ? $model->formatNumber($model->custom_amount) : "-";
-                                        }
-                                    ],
-                                    'custom:ntext',
-                                    'notes:ntext',
-                                    [
-                                        'attribute' => 'total_no_vat',
-                                        'value' => function($model){
-                                            return $model->formatNumber($model->total_no_vat);
-                                        },
-                                        'format' => "raw"
-                                    ],
-                                    [
-                                        'attribute' => 'total',
-                                        'value' => function($model){
-                                            return $model->formatNumber($model->total);
-                                        },
-                                        'format' => "raw"
-                                    ],
-                                    [
-                                        'attribute' => 'id_sconto',
-                                        'value' => function($model){
-                                            return $model->getSale($model->id_sconto);
-                                        },
-                                        'format' => "raw"
-                                    ],
-                                    [
-                                        'attribute' => 'deposit',
-                                        'value' => function($model){
-                                            return $model->formatNumber($model->deposit);
-                                        },
-                                        'format' => "raw"
-                                    ],
-                                    [
-                                        'attribute' => 'balance',
-                                        'value' => function($model){
-                                            return $model->formatNumber($model->balance);
-                                        },
-                                        'format' => "raw"
-                                    ],
-                                    [
-                                        'attribute' => 'shipping',
-                                        'value' => function($model){
-                                            return $model->shipping ? $model->address : "NO";
-                                        }
-                                    ],
-                                    [
-                                        'attribute' => 'deadline',
-                                        'value' => function($model){
-                                            return $model->formatDate($model->deadline);
-                                        },
-                                        'format' => "raw"
-                                    ],
-                                    [
-                                        'attribute' => "confirmed",
-                                        "value" => function($model){
-                                            return $model->confirmed ? "SI" : "NO";
-                                        }
-                                    ],
-                                    [
-                                        'attribute' => "attachments",
-                                        'value' => function($model){
-                                            if(!empty($model->attachments)){
-                                                $html = "<div class='row'>";
-                                                $attachments = json_decode($model->attachments, true);
-                                                foreach($attachments as $file){
-                                                    $html .= "<div style='margin: 5px'>";
-                                                    $html .= Html::a("<i class='fas fa-file'></i> Allegato", Url::to([$file]));
-                                                    $html .= "</div>";
-                                                }
-                                                $html .= "</div>";
-
-                                                return $html;
-                                            }else{
-                                                return "-";
-                                            }
-                                        },
-                                        'format' => "raw"
-                                    ]
-                                ],
-                            ]) ?>
-                        </div>
-                    </div>
-                </div>
-    
             </div>
         </div>
         <!-- /.login-card-body -->

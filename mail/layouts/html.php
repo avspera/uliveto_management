@@ -44,12 +44,7 @@ use yii\helpers\Url;
                             <table  align="center" role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin: auto;">
                                 <tr>
                                     <td>
-                                        <div class="text" style="padding: 0 3em; color: #4d4d4d">
-                                            Gentile <?= $client->name." ".$client->surname ?>
-                                        </div>
-
                                         <?= $content ?>
-
                                     </td>
                                 </tr>
                             </table>

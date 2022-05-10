@@ -304,7 +304,7 @@ class GeneratePdf {
         $filename = $file."_".$quote->order_number."_".$client->name."_".$client->surname.".pdf";
         ob_get_clean();
 
-        $pdf->Output();die; //If test
+        // $pdf->Output();die; //If test
         
         $pdf->Output($filename, $flag == "send" ? 'F' : 'D');    
 

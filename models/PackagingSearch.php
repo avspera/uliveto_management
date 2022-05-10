@@ -17,7 +17,7 @@ class PackagingSearch extends Packaging
     public function rules()
     {
         return [
-            [['id'], 'integer'],
+            [['id', 'id_product'], 'integer'],
             [['name', 'label', 'image', 'price', 'created_at'], 'safe'],
         ];
     }
@@ -59,6 +59,7 @@ class PackagingSearch extends Packaging
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
+            'id_product' => $this->id_product,
             'price' => $this->price,
         ]);
 

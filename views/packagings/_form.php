@@ -12,8 +12,9 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
     <div class="row">
-        <div class="col-md-6 col-sm-6 col-12"><?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?></div>
-        <div class="col-md-6 col-sm-6 col-12"><?= $form->field($model, 'label')->textInput(['maxlength' => true]) ?></div>
+        <div class="col-md-4 col-sm-6 col-12"><?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?></div>
+        <div class="col-md-4 col-sm-6 col-12"><?= $form->field($model, 'label')->textInput(['maxlength' => true]) ?></div>
+        <div class="col-md-4 col-sm-6 col-12"><?= $form->field($model, 'id_product')->dropdownlist(yii\helpers\ArrayHelper::map(app\models\Product::find()->orderBy('name')->all(), 'id', 'name'),['maxlength' => true]) ?></div>
     </div>
 
     <div class="row">

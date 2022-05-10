@@ -44,6 +44,13 @@ $this->params['breadcrumbs'][] = $this->title;
                     'name',
                     'label',
                     [
+                        'attribute' => 'id_product',
+                        'value' => function($model){
+                            return $model->getProduct();
+                        },
+                        'filter' => yii\helpers\ArrayHelper::map(app\models\Product::find()->orderBy('name')->all(), 'id', 'name')
+                    ],
+                    [
                        'attribute' => 'price',
                        'value' => function($model){
                            return $model->formatNumber($model->price);

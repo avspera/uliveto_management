@@ -6,10 +6,12 @@ use app\models\Payment;
 use app\models\PaymentSearch;
 use app\models\Client;
 use app\models\Quote;
+use app\models\QuotePlaceholder;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
+use app\utils\GeneratePdf;
 
 /**
  * PaymentController implements the CRUD actions for Payment model.
@@ -34,7 +36,7 @@ class PaymentController extends Controller
                         'allow' => ['?'],
                     ],
                     [
-                        'actions' => ['view', 'index', 'create', 'update', 'delete', 'set-as-invoiced', 'has-acconto'],
+                        'actions' => ['view', 'index', 'create', 'update', 'delete', 'set-as-invoiced', 'has-acconto', 'send-email-payment'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -99,38 +101,71 @@ class PaymentController extends Controller
         return $out;
     }
 
-    protected function sendEmail($client, $transaction, $order){
+    public function actionSendEmailPayment($id_client, $id_quote, $id_payment = []){
+        if(empty($id_client) || empty($id_quote)) return;
         
-        if(empty($client) || empty($transaction) || empty($order)) return false;
+        $this->layout = "external-payment";
+
+        $client     = Client::findOne(["id" => $id_client]);
+        $orderQuote  = Quote::findOne(["id" => $id_quote]);
+        $orderPlaceholder = QuotePlaceholder::findOne(["id" => $id_quote]);
         
+        if(empty($client)) return;
+
+        $order = !empty($orderQuote) ? $orderQuote : $orderPlaceholder;
+        
+        if($this->sendEmail($client, [], $order, $id_payment)){
+            Yii::$app->session->setFlash('success', "Email inviata correttamente");
+        }else{
+            Yii::$app->session->setFlash('error', "Ops...something went wrong [ORDER_SEND_EMAIL-100]");
+        }
+
+        return $this->redirect(Yii::$app->request->referrer);
+    }
+
+    protected function sendEmail($client, $transaction = [], $order, $id_payment){
+        
+        if(empty($client) || empty($order)) return false;
+        
+        $subject = !empty($transaction) ? $client->name." ".$client->surname." grazie per aver effettuato il pagamento" : $client->name." ".$client->surname." procedi per effettuare il tuo pagamento";
         $message = Yii::$app->mailer
                 ->compose(
-                    ['html' => "transaction-completed"],
-                    ['client' => $client, 'transaction' => $transaction, "order" => $order]
+                    ['html' => !empty($transaction) ? "transaction-completed" : "send-payment"],
+                    ['client' => $client, 'transaction' => $transaction, "order" => $order, "id_payment" => $id_payment]
                 )
                 ->setFrom([Yii::$app->params["infoEmail"]])
                 ->setTo($client->email)
-                ->setSubject($client->name." ".$client->surname." grazie per aver effettuato il pagamento");
+                ->setSubject($subject);
 
-        // $fullFilename = "https://manager.orcidelcilento.it/web/pdf/".$filename;
-        // $message->attachContent($fullFilename,['fileName' => $filename,'contentType' => 'application/pdf']); 
+        $pdf = new GeneratePdf();
+        $id_quote = !empty($payment->id_quote) ? $payment->id_quote : $order->id;
+        $quote = Quote::findOne(["id" => $id_quote]);
+        $filename = $pdf->quotePdf($quote,"F", "ordine");
+        
+        $fullFilename = "https://manager.orcidelcilento.it/web/pdf/".$filename;
+        $message->attachContent($fullFilename,['fileName' => $filename,'contentType' => 'application/pdf']); 
 
         return $message->send();
     }
 
-    public function actionExternalPayment($id_client, $id_quote){
-        if(empty($id_client) || empty($id_quote)) return;
+    public function actionExternalPayment($id_client, $id_quote, $id_payment){
+        if(empty($id_client) || empty($id_quote) || empty($id_payment)) return;
         
         $this->layout = "external-payment";
 
         $id_client  = base64_decode($id_client);
         $id_quote   = base64_decode($id_quote);
-        $client = Client::findOne(["id" => $id_client]);
-        $quote  = Quote::findOne(["id" => $id_quote]);
-        
-        if(empty($client) || empty($quote)) return;
+        $id_payment   = base64_decode($id_payment);
 
-        $hasAcconto = Payment::find()->where(["id_quote" => $id_quote])->sum("amount");
+        $client = Client::findOne(["id" => $id_client]);
+        $payment  = $this->findModel($id_payment);
+
+        $quote  = Quote::findOne(["id" => $id_quote]);
+        if(empty($quote)){
+            $quote = QuotePlaceholder::findOne(["id" => $id_quote]);
+        }
+
+        if(empty($client) || empty($quote)) return;
         
         // // In case of payment success this will return the payment object that contains all information about the order
         // // In case of failure it will return Null
@@ -139,7 +174,7 @@ class PaymentController extends Controller
         return $this->render('external-payment', [
             'client'    => $client,
             'quote'     => $quote,
-            'hasAcconto' => $hasAcconto
+            'payment'   => $payment
         ]);
     }
 
@@ -180,8 +215,18 @@ class PaymentController extends Controller
     public function actionView($id)
     {
         if($model = $this->findModel($id)){
+            if(!empty($model->id_quote)){
+                $quote = Quote::findOne(["id" => $model->id_quote]);
+                $client = $quote->getClient();
+            }else{
+                $quotePlaceholder = QuotePlaceholder::findOne(["id" => $model->id_quote_placeholder]);
+                $quote = Quote::findOne(["id" => $quotePlaceholder->id_quote]);
+                $client = $quote->getClient();
+            }
+            
             return $this->render('view', [
                 'model' => $model,
+                'id_client' => $client
             ]);
         }else{
             Yii::$app->session->setFlash('error', "Ops...something went wrong [PACK-100]");

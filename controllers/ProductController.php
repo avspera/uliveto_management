@@ -3,6 +3,7 @@
 namespace app\controllers;
 use Yii;
 use app\models\Product;
+use app\models\Packaging;
 use app\models\Color;
 use app\models\ProductSearch;
 use yii\web\Controller;
@@ -42,7 +43,8 @@ class ProductController extends Controller
                             'create', 
                             'get-info',
                             'error',
-                            'get-colors'
+                            'get-colors',
+                            'get-packaging'
                         ],
                         'allow' => true,
                         'roles' => ['@'],
@@ -154,6 +156,24 @@ class ProductController extends Controller
         }
         
         if(!empty($colors)) $out["status"] = "200";
+
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        return $out;
+    }
+
+    public function actionGetPackaging($id){
+        $out = ["status" => "100", "msg" => "", "results" => []];
+        
+        $packaging = Packaging::findAll(["id_product" => $id]);
+        
+        $i = 0;
+        foreach($packaging as $item){
+            $out["results"][$i]["id"]   = $item->id;
+            $out["results"][$i]["text"] = $item->label;
+            $i++;
+        }
+        
+        if(!empty($packaging)) $out["status"] = "200";
 
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         return $out;
