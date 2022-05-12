@@ -256,7 +256,7 @@ class InviaCatalogoController extends Controller
                 )
                 ->setFrom([Yii::$app->params["infoEmail"]])
                 ->setTo($model->email)
-                ->setSubject($model->name." ecco i nostri cataloghi");
+                ->setSubject($model->name." ecco il nostro catalogo bomboniere L'Uliveto ");
 
         
         foreach($existingFiles as $file) {

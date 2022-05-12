@@ -60,10 +60,12 @@ $this->params['breadcrumbs'][] = $this->title;
                     [
                         'attribute' => 'image',
                         'value' => function($model){
-                            return !empty($model->image) ? Html::img(Url::to($model->image), ['class' => "img-responsive"]) : "-";
-                        },
-                        'format' => "raw"
-                    ],
+                            return !empty($model->image) ? 
+                                 Html::img(Url::to(Yii::getAlias("@web")."/".$model->image), ['class' => 'img-fluid img-responsive', 'alt' => $model->name, 'title' => $model->name, "width" => "300px"]) 
+                             : "-";
+                         },
+                         'format' => "raw"
+                     ],
                     [
                         'class' => ActionColumn::className()
                     ],

@@ -12,6 +12,9 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use app\utils\GeneratePdf;
+use app\utils\FKUploadUtils; 
+use yii\helpers\FileHelper;
+use yii\web\UploadedFile;
 
 /**
  * PaymentController implements the CRUD actions for Payment model.
@@ -30,7 +33,8 @@ class PaymentController extends Controller
                     [
                         'actions' => [
                             'external-payment', 
-                            'register-transaction'
+                            'register-transaction',
+                            'upload-allegato'
                         ],
                         'allow' => true,
                         'allow' => ['?'],
@@ -68,6 +72,28 @@ class PaymentController extends Controller
         
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         return !empty($acconto) ? $out = ["status" => "200", "hasAcconto" => true, "amount" => floatval($acconto->amount)] : $out;
+    }
+
+    public function actionUploadAllegato(){
+        
+        if ($this->request->isPost) {
+            $postData =  $this->request->post();
+            if(isset($postData["Payment"]["id"])){
+                $id = $postData["Payment"]["id"];
+                $model = Payment::findOne(["id" => $id]);
+                $model->allegato = $this->manageUploadFiles($model);
+                
+                if($model->save()){
+                    Yii::$app->session->setFlash('success', "Operazione completata con successo. Grazie");
+                }else{
+                    
+                    Yii::$app->session->setFlash('error', "Ops...something went wrong [UPLOAD_FILE-103]");
+                }    
+            }
+            
+            return $this->redirect(Yii::$app->request->referrer);
+            
+        }
     }
 
 
@@ -148,6 +174,23 @@ class PaymentController extends Controller
         return $message->send();
     }
 
+    protected function manageUploadFiles($model) {
+
+        $uploader   = new FKUploadUtils();
+        $path       = Yii::getAlias('@webroot')."/uploads/payments/";
+    
+        $dirCreated = FileHelper::createDirectory($path);
+        
+        $allegato = UploadedFile::getInstance($model, 'allegato');
+        if (!empty($allegato)){
+            $filename = $uploader->generateAndSaveFile($allegato, $path);
+            $model->allegato = "uploads/payments/".$filename;
+        }
+        
+        return $model->allegato;
+
+    }
+
     public function actionExternalPayment($id_client, $id_quote, $id_payment){
         if(empty($id_client) || empty($id_quote) || empty($id_payment)) return;
         
@@ -217,11 +260,14 @@ class PaymentController extends Controller
         if($model = $this->findModel($id)){
             if(!empty($model->id_quote)){
                 $quote = Quote::findOne(["id" => $model->id_quote]);
-                $client = $quote->getClient();
+                if(!empty($quote))
+                    $client = $quote->getClient();
             }else{
                 $quotePlaceholder = QuotePlaceholder::findOne(["id" => $model->id_quote_placeholder]);
                 $quote = Quote::findOne(["id" => $quotePlaceholder->id_quote]);
-                $client = $quote->getClient();
+                if(!empty($quote)){
+                    $client = $quote->getClient();
+                }
             }
             
             return $this->render('view', [
@@ -243,6 +289,7 @@ class PaymentController extends Controller
     public function actionCreate()
     {
         $model = new Payment();
+        
         $error = false;
         if ($this->request->isPost) {
             if ($model->load($this->request->post())) {
@@ -300,7 +347,7 @@ class PaymentController extends Controller
         $this->findModel($id)->delete();
         Yii::$app->session->setFlash('success', "Elemento cancellato con successo");
 
-        return $this->redirect(Yii::$app->request->referrer);
+        return $this->redirect(["index"]);
     }
 
     /**

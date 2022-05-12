@@ -39,7 +39,8 @@ class Payment extends \yii\db\ActiveRecord
             [['id_client', 'amount', 'created_at', 'fatturato', 'type', 'payed'], 'required'],
             [['id_client', 'id_quote', 'id_quote_placeholder', 'fatturato', 'type', 'payed'], 'integer'],
             [['amount'], 'number'],
-            [['id_transaction', 'id_quote', 'id_quote_placeholder'], 'safe'],
+            [['id_transaction', 'id_quote', 'id_quote_placeholder', 'allegato'], 'safe'],
+            [['allegato'], 'file', 'skipOnEmpty' => true, 'extensions' => 'jpg, pdf, png'],
         ];
     }
 
@@ -102,10 +103,15 @@ class Payment extends \yii\db\ActiveRecord
                 $total = $quote->getTotal();
         }
         else{
-            $total = $quote->formatNumber($quote->total);
+            $total = $quote->total;
         }
 
         return $total;
+    }
+
+    public function checkPayments(){
+        $pagamenti = Payment::findAll(["id_quote" => $this->id_quote]);
+        return count($pagamenti);
     }
 
     public function getClient(){

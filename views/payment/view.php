@@ -102,6 +102,17 @@ $id_quote = !empty($model->id_quote) ? $model->id_quote : $model->id_quote_place
                             return $model->formatDate($model->created_at);
                         }
                     ],
+                    [
+                        'attribute' => "allegato",
+                        'value' => function($model){
+                            if(!empty($model->allegato)){
+                                return "<a target='_blank' href='".Url::to([$model->allegato])."'>Ricevuta di pagamento</a>";
+                            }else{
+                                return "-";
+                            }
+                        },
+                        'format' => "raw"
+                    ]
                 ],
             ]) ?>
         </div>

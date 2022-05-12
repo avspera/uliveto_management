@@ -153,9 +153,9 @@ class PackagingsController extends Controller
             $model->created_at = date("Y-m-d");
             
             if (!empty($_FILES)) {
-            
                 $model->image = $this->manageUploadFiles($model);
             }
+            
             if($model->save())
                 return $this->redirect(['view', 'id' => $model->id]);
             else{

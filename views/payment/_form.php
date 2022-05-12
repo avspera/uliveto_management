@@ -61,7 +61,7 @@ use kartik\select2\Select2;
             <?= $form->field($model, 'type')->dropdownList($model->types, ['prompt' => 'Scegli', "onchange" => "getAmount()"]) ?>
         </div>
         <div class="col-md-4 col-sm-6 col-12">
-            <?= $form->field($model, 'amount')->textInput(["type" => "number"]) ?>
+            <?= $form->field($model, 'amount')->textInput(["type" => "number", "step" => ".01"]) ?>
         </div>
         
     </div>

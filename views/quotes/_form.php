@@ -186,7 +186,7 @@ $placeholders = \app\models\Segnaposto::find()->all();
 
                 <div class="row">
                     <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'confetti')->dropdownlist([0 => "NO", 1 => "SI"], ['onchange' => "enableConfettiFields(value)"]) ?></div>
-                    <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'prezzo_confetti')->textInput(['maxlength' => true, "onchange" => "addPrezzoAggiuntivo(value)", "readonly" => true, "type" => "number", "prevValue" => 0]); ?></div>
+                    <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'prezzo_confetti')->textInput(['maxlength' => true, "onchange" => "addPrezzoAggiuntivo(value, 'confetti')", "readonly" => true, "type" => "number", "step" => ".01", "prevValue" => 0]); ?></div>
                     <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'confetti_omaggio')->radio(["onChange" => "removePrezzoAggiuntivo('confetti')", "disabled" => true]); ?></div>
                 </div>
 
@@ -195,11 +195,13 @@ $placeholders = \app\models\Segnaposto::find()->all();
                         <div class="form-group field-quote-custom_amount">
                             <label class="control-label" for="quote-custom_amount">Costo personalizzazione</label>
                             <input prevValue=0 onchange="value == 0 ? removePrezzoAggiuntivo('custom_amount') : addPrezzoAggiuntivo(value, 'custom_amount')" type="number" id="quote-custom_amount" class="form-control" name="Quote[custom_amount]">
-
                             <div class="help-block"></div>
                         </div>
                     </div>
-                    <div class="col-md-9 col-sm-12 col-12"><?= $form->field($model, 'custom')->textarea(['rows' => 6]) ?></div>    
+
+                    <div class="col-md-3 col-sm-4 col-12"><?= $form->field($model, 'custom_amount_omaggio')->radio(["onChange" => "removePrezzoAggiuntivo('custom')"]); ?></div>
+
+                    <div class="col-md-6 col-sm-12 col-12"><?= $form->field($model, 'custom')->textarea(['rows' => 6]) ?></div>    
                 </div>
             </div>
         </div>
@@ -335,7 +337,7 @@ $placeholders = \app\models\Segnaposto::find()->all();
         function getColors(index){
 
             let id_product = $('#quote-product-'+index+" option:selected").val();
-
+            
             $.ajax({
                 url: '<?= $prefixUrl ?>/web/product/get-colors',
                 type: 'get',
@@ -346,15 +348,23 @@ $placeholders = \app\models\Segnaposto::find()->all();
                 success: function (data) {
                     if(data.status == "200")
                     {
-                        let packagingDropdown = $("#quote-color-"+index);
+                        let colorDropdown = $("#quote-color-"+index);
+
+                        colorDropdown.find('option');
+    
+                        if(colorDropdown.length > 0) {
+                            colorDropdown.find('option').remove()
+                        }
+
                         let html = "";
                         
                         if(!!data.results){
                             let results = data.results;
+                            html += "<option value=''>Scegli</option>";
                             results.map(item => {
                                 html += "<option value="+item.id+">"+item.text+"</option>";
                             })
-                            packagingDropdown.append(html);
+                            colorDropdown.append(html);
                         }
                         
                     }
@@ -377,10 +387,16 @@ $placeholders = \app\models\Segnaposto::find()->all();
                 if(data.status == "200")
                 {
                     let packagingDropdown = $("#quote-id_packaging-"+index);
+                    packagingDropdown.find('option');
+                    if(packagingDropdown.length > 0) {
+                        packagingDropdown.find('option').remove()
+                    }
+
                     let html = "";
                     
                     if(!!data.results){
                         let results = data.results;
+                        html += "<option value=''>Scegli</option>";
                         results.map(item => {
                             html += "<option price="+item.price+" value="+item.id+">"+item.text+" - "+item.price+"€ </option>";
                         })
@@ -419,10 +435,8 @@ function editTotal(){
 function enableConfettiFields(value){
     if(value){
         $("#quote-prezzo_confetti").removeAttr("readonly");
-        $("#quote-confetti_omaggio").removeAttr("disabled");
     }else{
         $("#quote-prezzo_confetti").attr("readonly", true);
-        $("#quote-confetti_omaggio").attr("disabled", true);
     }
 }
 
@@ -612,6 +626,9 @@ function calculatePrezzoAggiuntivo(price){
 
 function addPrezzoAggiuntivo (price, target= "") {
     
+    if(target == "confetti")
+        $("#quote-confetti_omaggio").removeAttr("disabled");
+    
     let currentTotal    = $('#quote-total_no_vat').val();
     currentTotal        = Number.isNaN(currentTotal) ? 0 : parseFloat(currentTotal)
     
@@ -688,7 +705,7 @@ function calculateSumProducts() {
 }
 
 function removePrezzoAggiuntivo (target) 
-{   console.log("target", target);
+{   
     let price           = target == "confetti" ? $('#quote-prezzo_confetti').val() : $('#quote-custom_amount').val();
     price               = Number.isNaN(price) ? 0 : parseFloat(price)
 
@@ -697,14 +714,12 @@ function removePrezzoAggiuntivo (target)
     }
 
     let currentTotal    = $('#quote-total_no_vat').val();
-    console.log("currentTotal", currentTotal)
-console.log("Price", price);
+    
     currentTotal        = Number.isNaN(currentTotal) ? 0 : parseFloat(currentTotal)
     
     let sumProducts     = calculateSumProducts();
     let subtotal        = sumProducts * price;
     
-    console.log("subtotal", subtotal)
     let newTotalNoVat   = parseFloat(Math.abs(currentTotal-subtotal).toFixed(2));
     $('#quote-total_no_vat').val(newTotalNoVat);
     applyIvaToTotal(newTotalNoVat);

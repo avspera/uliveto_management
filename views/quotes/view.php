@@ -30,6 +30,24 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
 
 <div class="quote-view">
 
+    <?php if(Yii::$app->session->hasFlash('error')): ?>
+      <div class="alert alert-warning alert-dismissible" style="color: white">
+        <?php echo Yii::$app->session->getFlash('error'); ?>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    <?php endif; ?> 
+
+    <?php if(Yii::$app->session->hasFlash('success')): ?>
+      <div class="alert alert-success alert-dismissible">
+        <?php echo Yii::$app->session->getFlash('success'); ?>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    <?php endif; ?> 
+
     <div class="card">
         <div class="card-header">
             <?= Html::a('<i class="fas fa-pencil-alt"></i> Modifica', ['update', 'id' => $quoteModel->id], ['class' => 'btn btn-primary']) ?>
@@ -40,9 +58,10 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
                     'method' => 'post',
                 ],
             ]) ?>
+            <?= Html::a('<i class="fas fa-check"></i> Conferma', ['confirm', 'id' => $quoteModel->id, 'flag' => "send"], ['class' => 'btn btn-info']) ?>
             <?= Html::a('<i class="fas fa-file-pdf"></i> Genera PDF', ['generate-pdf', 'id' => $quoteModel->id, 'flag' => "generate"], ['class' => 'btn btn-success']) ?>
             <?= $phone ? Html::a('<i class="fas fa-comment"></i> Whatsapp', Url::to("https://wa.me/".$phone."/?text=".$text), ['class' => 'btn btn-primary', 'target' => "_blank"]) : "" ?>
-            <?= Html::a('<i class="fas fa-check"></i> Conferma', ['confirm', 'id' => $quoteModel->id, 'flag' => "send"], ['class' => 'btn btn-info']) ?>
+            <?= Html::a('<i class="fas fa-envelope"></i> Invia email', ['generate-pdf', 'id' => $quoteModel->id, 'flag' => "send"], ['class' => 'btn btn-success']) ?>
             
 
         </div>
@@ -98,8 +117,21 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
                     [
                         'attribute' => "custom_amount",
                         'value' => function($model){
-                            return !empty($model->custom_amount) ? $model->formatNumber($model->custom_amount) : "-";
-                        }
+                            $html = "";
+                            if($model->custom_amount){
+                                if($model->custom_amount_omaggio){
+                                    $html .= "<span style='text-decoration: line-through;'>".$model->formatNumber($model->custom_amount)."</span> <span style='color: green'> - in omaggio</span>";
+                                }
+                                else{
+                                    $html .= "<span>".$model->formatNumber($model->custom_amount)."</span>";
+                                }
+                            }else{
+                                $html .= "-";
+                            }
+                            return $html;
+                        },
+                        'format' => "raw"
+                        
                     ],
                     'custom:ntext',
                     'notes:ntext',
@@ -241,7 +273,9 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
     <?php if(!empty($segnaposto)) { ?>
         <div class="card card-info">
                 <div class="card-header">
-                    <div class="text-md">Segnaposto</div>
+                    <div class="text-md">Segnaposto 
+                        <?= Html::a('<i class="fas fa-plus-circle" style="margin-left: 5px;"></i>', ['quote-placeholder/create', 'id_quote' => $quoteModel->id]) ?>
+                    </div>
                 </div>
                 <div class="card-body">
                     <?= GridView::widget([
@@ -299,7 +333,6 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
                         ],
                     ]); ?>
                 </div>
-            </div>
         </div>
     <?php } ?> 
     

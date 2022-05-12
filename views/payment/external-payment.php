@@ -2,6 +2,9 @@
     use yii\helpers\Html;
     use yii\helpers\Url;
     use yii\widgets\DetailView;
+    use yii\widgets\ActiveForm;
+    use kartik\file\FileInput;
+    
     $this->title = "";
 
     /**
@@ -90,11 +93,25 @@
             margin: 5px 0;
         }
     </style>
-    <div class="card" style="width: 500px; margin: 0 auto;float: none; margin-top: 20px">
+    <div class="card" style="width: 550px; margin: 0 auto;float: none; margin-top: 20px">
         <div class="card-body table-responsive login-card-body">
-            <div class="error-content" style="margin-left: auto;">
-                
+          <?php if(Yii::$app->session->hasFlash('error')): ?>
+            <div class="alert alert-warning alert-dismissible" style="color: white">
+              <?php echo Yii::$app->session->getFlash('error'); ?>
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
             </div>
+          <?php endif; ?> 
+
+          <?php if(Yii::$app->session->hasFlash('success')): ?>
+            <div class="alert alert-success alert-dismissible">
+              <?php echo Yii::$app->session->getFlash('success'); ?>
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          <?php endif; ?> 
 
             <p>Ciao, <?= $client->name." ".$client->surname ?></p>
 
@@ -103,7 +120,7 @@
                 <div class="card">
                     <div id="collapseTwo" class="show" aria-labelledby="headingTwo" data-parent="#accordion">
                         <div class="card-body">
-                            <div class="text-lg">Totale: <?= $quote->formatNumber($payment->amount) ?></div>
+                            <div class="text-lg">Tipo: <?= $payment->getType(); ?>. Totale: <?= $quote->formatNumber($payment->amount) ?></div>
                             <div class="btn-group blocks" style="margin-top:10px" data-toggle="buttons">
                                 <label class="btn btn-success btn-lg active">
                                     <input type="radio" amount="<?= $payment->amount ?>" name="options" id="percentage_100" autocomplete="off"> <?= $payment->amount ?>
@@ -114,6 +131,28 @@
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <div style="margin-top: 10px">
+                  <p>Oppure carica la ricevuta se hai già provveduto al pagamento</p>
+                  <?php 
+                    $form = ActiveForm::begin([
+                        'action' => ['upload-allegato'],
+                        'method' => 'post',
+                        'options' => ['enctype' => 'multipart/form-data'],
+                    ]);
+                  ?>
+                    <?php echo $form->field($payment, 'id')->hiddenInput(['value'=> $payment->id])->label(false); ?>
+                    <?= FileInput::widget([
+                        'model' => $payment,
+                        'attribute' => 'allegato',
+                        'options' => ['multiple' => false, 'accept' => ["png", "jpg", "pdf"]]
+                    ]);?>
+                    <div class="form-group">
+                        <?= Html::submitButton('Carica', ['class' => 'btn btn-success', 'style' => "margin-top: 5px"]) ?>
+                    </div>
+
+                    <?php ActiveForm::end(); ?>
                 </div>
             </div>
         </div>

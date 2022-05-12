@@ -345,13 +345,15 @@ class QuotesController extends Controller
 
         if($flag == "send"){
             if($this->sendEmail($quote, $filename, "invio-preventivo")){
-                Yii::$app->session->setFlash('success', "Pdf inviato correttamente");
+                Yii::$app->session->setFlash('success', "Email con PDF allegato inviato correttamente");
             }else{
                 Yii::$app->session->setFlash('error', "Ops...something went wrong");
             }
-
-            return $this->redirect("index");
+        }else{
+            Yii::$app->session->setFlash('success', "Pdf generato correttamente.<a href='/web/".$filename."'> Scarica</a>");
         }
+
+        return $this->redirect(Yii::$app->request->referrer);
     }
 
     protected function sendEmail($model, $filename, $view){
@@ -368,9 +370,9 @@ class QuotesController extends Controller
                 )
                 ->setFrom([Yii::$app->params["infoEmail"]])
                 ->setTo($client->email)
-                ->setSubject($model->getClient()." ecco il tuo preventivo");
+                ->setSubject($model->getClient()." ecco il tuo preventivo bomboniere L'Uliveto");
 
-        $fullFilename = "https://manager.orcidelcilento.it/web/pdf/".$filename;
+        $fullFilename = "https://manager.orcidelcilento.it/web/".$filename;
         $message->attachContent($fullFilename,['fileName' => $filename,'contentType' => 'application/pdf']); 
 
         return $message->send();

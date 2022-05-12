@@ -65,6 +65,12 @@ $this->params['breadcrumbs'][] = $this->title;
                         'format' => "raw"
                     ],
                     [
+                        'attribute' => "type",
+                        'value' => function($model){
+                            return $model->getType();
+                        }
+                    ],
+                    [
                         'attribute' => 'created_at',
                         'value' => function($model){
                             return $model->formatDate($model->created_at);
@@ -89,18 +95,17 @@ $this->params['breadcrumbs'][] = $this->title;
                     [
                         'attribute' => "saldo",
                         'value' => function($model){
-                            $totale = $model->getTotal();
-                            if(!$totale) return;
-                            return $totale - $model->amount < 0 ? 0 : $model->formatNumber($totale - $model->amount);
+                            $pagamenti = $model->checkPayments();
+                            if($pagamenti == 2){
+                                return "0";
+                            }else{
+                                $totale = $model->getTotal();
+                                if(!$totale) return;
+                                return $totale - $model->amount < 0 ? 0 : $model->formatNumber($totale - $model->amount);
+                            }
                         },
                         'format' => "raw",
                         'label' => "Resta da saldare"
-                    ],
-                    [
-                        'attribute' => "type",
-                        'value' => function($model){
-                            return $model->getType();
-                        }
                     ],
                     [
                         'attribute' => "data_saldo",
@@ -113,7 +118,17 @@ $this->params['breadcrumbs'][] = $this->title;
                         'format' => "raw",
                         'label' => "Data Saldo"
                     ],
-                    
+                    [
+                        'attribute' => "allegato",
+                        'value' => function($model){
+                            if(!empty($model->allegato)){
+                                return Html::a("Ricevuta pagamento", Url::to(Yii::getAlias("@webroot")."uploads/payments/".$model->allegato));
+                            }else{
+                                return "-";
+                            }
+                        },
+                        'format' => "raw"
+                    ],
                     // [
                     //     'attribute' => "external_payment",
                     //     'value' => function($model){

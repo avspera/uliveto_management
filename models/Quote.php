@@ -52,7 +52,8 @@ class Quote extends \yii\db\ActiveRecord
             [['order_number', 'id_client', 'confirmed', 'placeholder', 'shipping', 'id_sconto'], 'integer'],
             [['created_at', 'updated_at', 'data_evento', 'deadline', 'product', 'amount', 'color', 'packaging', 'total_no_vat',
                 'date_deposit', 'date_balance','placeholder', 'address', 'custom_color', 'placeholder_amount',
-                    'confetti', 'custom', 'custom_amount', 'id_sconto', 'prezzo_confetti', 'confetti_omaggio', 'delivered'], 'safe'],
+                    'confetti', 'custom', 'custom_amount', 'id_sconto', 'custom_amount_omaggio',
+                    'prezzo_confetti', 'confetti_omaggio', 'delivered'], 'safe'],
             [['notes', 'address'], 'string'],
             [['total', 'deposit', 'balance', 'delivered'], 'number'],
             [['attachments'], 'file', 'skipOnEmpty' => true, 'extensions' => 'jpg, png, pdf'],
@@ -93,7 +94,8 @@ class Quote extends \yii\db\ActiveRecord
             'invoice'       => "Fattura",
             'attachments'  => "Allegati",
             'id_sconto'     => "Sconto",
-            'delivered'     => "Consegnato"
+            'delivered'     => "Consegnato",
+            'custom_amount_omaggio' => "Personalizzazione omaggio"
         ];
     }
 

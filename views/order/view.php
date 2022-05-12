@@ -353,7 +353,9 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
     <?php if(!empty($payments)) { ?>
         <div class="card card-info">
                 <div class="card-header">
-                    <div class="text-md">Pagamenti  </div>
+                    <div class="text-md">Pagamenti 
+                        <?= Html::a('<i class="fas fa-plus-circle" style="margin-left: 5px;"></i>', ['payment/create']) ?>
+                    </div>
                 </div>
                 <div class="card-body">
                     <?= GridView::widget([

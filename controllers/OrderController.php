@@ -114,13 +114,35 @@ class OrderController extends Controller
         //     'client'        => $client
         // ]);
 
-        if($this->sendEmail($client, $order)){
+        if($this->sendEmail($client, $order, $msg = "")){
             Yii::$app->session->setFlash('success', "Email inviata correttamente");
         }else{
             Yii::$app->session->setFlash('error', "Ops...something went wrong [ORDER_SEND_EMAIL-100]");
         }
 
         return $this->redirect(["view", "id" => $id_quote]);
+    }
+
+    protected function sendEmail($model, $filename, $view){
+        
+        if(empty($model)) return false;
+        $client = Client::find()->select(["email"])->where(["id" => $model->id_client])->one();
+        
+        if(empty($client)) return false;
+
+        $message = Yii::$app->mailer
+                ->compose(
+                    ['html' => $view],
+                    ['model' => $model]
+                )
+                ->setFrom([Yii::$app->params["infoEmail"]])
+                ->setTo($client->email)
+                ->setSubject($model->getClient()." il tuo ordine bomboniere L’Uliveto è confermato");
+
+        $fullFilename = "https://manager.orcidelcilento.it/web/".$filename;
+        $message->attachContent($fullFilename,['fileName' => $filename,'contentType' => 'application/pdf']); 
+
+        return $message->send();
     }
 
     /**
