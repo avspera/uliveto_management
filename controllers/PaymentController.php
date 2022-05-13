@@ -34,13 +34,14 @@ class PaymentController extends Controller
                         'actions' => [
                             'external-payment', 
                             'register-transaction',
-                            'upload-allegato'
+                            'upload-allegato',
                         ],
                         'allow' => true,
                         'allow' => ['?'],
                     ],
                     [
-                        'actions' => ['view', 'index', 'create', 'update', 'delete', 'set-as-invoiced', 'has-acconto', 'send-email-payment'],
+                        'actions' => ['view', 'index', 'create', 'update', 'check-saldo-payment',
+                                    'delete', 'set-as-invoiced', 'has-acconto', 'send-email-payment'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -64,6 +65,19 @@ class PaymentController extends Controller
 
         return true;
     }
+
+    // public function actionCheckSaldoPayment(){
+    //     $quotes = Quote::find()->where([">", "deadline", date("Y-m-d H:i:s")]);
+    //     foreach($quotes as $quote){
+    //         $payment = Payment::find()
+    //                     ->where(["id_quote" => $quote->id])
+                        
+    //                     ->all();
+    //         if(count($payment == 1)){
+                
+    //         }
+    //     }
+    // }
 
     public function actionHasAcconto($id_quote){
         $out = ["status" => "100", "hasAcconto" => false, "amount" => 0];

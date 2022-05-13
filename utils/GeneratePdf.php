@@ -84,18 +84,21 @@ class GeneratePdf {
          */
             $ordinate           = 80;
             $start_x            = 0;
-            
+            $start_pack_x       = 0;
+            $packName = [];
             for($i= 0; $i <= count($products); $i++){
                 $color  = Color::findOne(["id" => $products[$i]->id_color]);
                 $item   = Product::find()->select(["id", "name", "price"])->where(["id" => $products[$i]->id_product])->one(); 
                 
-                if(strpos($item->name, "[U]live"))
+                if($item->name == "[U]live")
                     $ordinate = 170;
-                else if(strpos($item->name, "[U]gliarulo"))
-                    $ordinate = 125;
-                else
+                
+                if($item->name == "[U]gliarulo")
                     $ordinate = 80;
                     
+                if($item->name == "[U]classic")
+                    $ordinate = 125;
+                
                 if(!empty($color->picture)){
                     $pdf->Cell($pdf->Image($color->picture,$start_x, $ordinate, 40, 40));
                     $start_x += 40;
@@ -109,18 +112,23 @@ class GeneratePdf {
                     }
                 }
 
-                $packaging = Packaging::find()->select(["image"])->where(["id_product" => $item->id])->one();
-                $packids = [];
+                $packaging = Packaging::find()
+                                ->select(["label", "image"])
+                                ->where(["id_product" => $item->id])
+                                ->one();
+                
                 if(!empty($packaging)){
                     //do not repeat pack image if already print
-                    if(!array_search($packaging->id, $packids)){
-                        $packids[$i] = $packaging->id;
-                        $ordinate = 230;
-                        $pdf->Cell($pdf->Image($packaging->image, $start_x, $ordinate, 40, 40));
+                    if(!in_array($packaging->label, $packName)){
+                        $packName[$i] = $packaging->label;
+                        $ordinate = 225;
+                        $pdf->Cell($pdf->Image($packaging->image, $start_pack_x, $ordinate, 40, 40));
+                        $start_pack_x += 40;
                     }
                 }
+            
             }
-
+            
             /**
              * CONFETTI.
              */
@@ -260,10 +268,6 @@ class GeneratePdf {
 
             $pdf->setXY(44, 239);
             $pdf->Cell(30, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quote->formatDate($quote->deadline)), 0, 0, 'C');
-
-            $pdf->setXY(90, 210);
-            $pdf->Cell(0, 20, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quote->custom." ".empty($quote->custom_amount) ? "" : number_format($quote->custom_amount, 2, ",", ".") ." €"), 0, 0, 'C');
-            
         /**
          * 
          */
@@ -303,8 +307,26 @@ class GeneratePdf {
             $pdf->Cell(30, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quote->formatDate($quote->deadline)), 0, 0, 'C');
         }
         
-       
+        $custom = "";
+        if (!empty($quote->custom)){
+            $custom .= $quote->custom;
+        }
 
+        if(!empty($quote->custom_amount)){
+            $custom .= " | "; 
+            if($quote->custom_amount_omaggio){
+                $pdf->setTextColor(0, 177, 106);
+                $custom .= "IN OMAGGIO";
+            }else{
+                $pdf->setTextColor(0, 0, 0);
+                $custom .= number_format($quote->custom_amount, 2, ",", ".") ." €";
+            }
+            $pdf->setTextColor(0, 0, 0);
+        }
+
+        $pdf->setXY(125, 210);
+        $pdf->Cell(strlen($custom), 20, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $custom), 0, 0, 'C');
+        
         $tpl = $pdf->importPage(3);
         $pdf->AddPage();
         $pdf->SetAutoPageBreak(true, 10);

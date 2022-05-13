@@ -183,7 +183,7 @@ class QuotesController extends Controller
                 }
                     
                 else{
-                    Yii::$app->session->setFlash('error', "Ops...something went wrong [QU-101]");
+                    Yii::$app->session->setFlash('error', "Ops...something went wrong [QU-101] ".json_encode($model->getErrors()));
                 }
             }
         } else {
