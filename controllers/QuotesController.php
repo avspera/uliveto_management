@@ -212,6 +212,9 @@ class QuotesController extends Controller
             $model = $this->findModel($id);
             $model->confirmed = 1;
             if($model->save()){
+                $pdf = new GeneratePdf();
+                $filename = $pdf->quotePdf($quote, $flag, "preventivo");
+                $this->sendEmail($model, $filename, "invio-ordine");
                 return $this->redirect(['/order/view', "id" => $id]);
             }
         }catch(Exception $e){
@@ -341,11 +344,11 @@ class QuotesController extends Controller
         if(empty($quote)) return;
         
         $pdf = new GeneratePdf();
-        $filename = $pdf->quotePdf($quote, $flag, "preventivo");
+        $filename = $pdf->quotePdf($quote, $flag, "preventivo", "preventivi");
 
         if($flag == "send"){
             if($this->sendEmail($quote, $filename, "invio-preventivo")){
-                Yii::$app->session->setFlash('success', "Email con PDF allegato inviato correttamente");
+                Yii::$app->session->setFlash('success', "Email con PDF allegato inviato correttamente: ".$filename);
             }else{
                 Yii::$app->session->setFlash('error', "Ops...something went wrong");
             }
@@ -372,8 +375,9 @@ class QuotesController extends Controller
                 ->setTo($client->email)
                 ->setSubject($model->getClient()." ecco il tuo preventivo bomboniere L'Uliveto");
 
-        $fullFilename = "https://manager.orcidelcilento.it/web/".$filename;
-        $message->attachContent($fullFilename,['fileName' => $filename,'contentType' => 'application/pdf']); 
+        $fullFilename = "https://manager.orcidelcilento.it/web/pdf/preventivi/".$filename;
+        // $message->attachContent("Preventivo", ['fileName' => $filename,'contentType' => 'application/pdf']); 
+        $message->attach($fullFilename);
 
         return $message->send();
     }

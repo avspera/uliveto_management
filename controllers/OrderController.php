@@ -298,7 +298,7 @@ class OrderController extends Controller
         $filename = $pdf->quotePdf($quote, $flag, "ordine");
         
         if($flag == "send"){
-            if($this->sendEmail($quote, $filename, "invio-preventivo")){
+            if($this->sendEmail($quote, $filename, "invio-ordine")){
                 Yii::$app->session->setFlash('success', "Pdf inviato correttamente");
             }else{
                 Yii::$app->session->setFlash('error', "Ops...something went wrong");

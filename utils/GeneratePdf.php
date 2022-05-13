@@ -5,7 +5,6 @@ namespace app\utils;
 use Yii;
 use app\models\Quote;
 use app\models\Product;
-use app\models\Payment;
 use app\models\Sales;
 use app\models\Packaging;
 use app\models\Segnaposto;
@@ -20,7 +19,7 @@ use PHP_HTML;
 
 class GeneratePdf {
 
-    public static function quotePdf($quote, $flag, $file){
+    public static function quotePdf($quote, $flag, $file, $target = "ordini"){
         
         if(empty($quote)) return;
         
@@ -42,7 +41,7 @@ class GeneratePdf {
     
         $balance = $quote->deposit ? $quote->total - $quote->deposit : $quote->total;
 
-        ob_start();
+        
 
         $pdf = new FPDI();
         
@@ -90,16 +89,16 @@ class GeneratePdf {
                 $color  = Color::findOne(["id" => $products[$i]->id_color]);
                 $item   = Product::find()->select(["id", "name", "price"])->where(["id" => $products[$i]->id_product])->one(); 
                 
-                if($item->name == "[U]live")
+                if(strpos($item->name, "[U]live"))
                     $ordinate = 170;
-                else if($item->name == "[U]gliarulo")
+                else if(strpos($item->name, "[U]gliarulo"))
                     $ordinate = 125;
                 else
                     $ordinate = 80;
                     
                 if(!empty($color->picture)){
                     $pdf->Cell($pdf->Image($color->picture,$start_x, $ordinate, 40, 40));
-                    $start_x += 45;
+                    $start_x += 40;
                 }
                 
                 if($i > 0){
@@ -111,10 +110,14 @@ class GeneratePdf {
                 }
 
                 $packaging = Packaging::find()->select(["image"])->where(["id_product" => $item->id])->one();
-                
-                if(!empty($packaging->image)){
-                    $ordinate = 230;
-                    $pdf->Cell($pdf->Image($packaging->image, $start_x, $ordinate, 40, 40));
+                $packids = [];
+                if(!empty($packaging)){
+                    //do not repeat pack image if already print
+                    if(!array_search($packaging->id, $packids)){
+                        $packids[$i] = $packaging->id;
+                        $ordinate = 230;
+                        $pdf->Cell($pdf->Image($packaging->image, $start_x, $ordinate, 40, 40));
+                    }
                 }
             }
 
@@ -175,16 +178,26 @@ class GeneratePdf {
          
         //RIEPILOGO ORDINE BOX
         $line = 82;
+        
         foreach($products as $product){
             $item = Product::findOne(["id" => $product->id_product]);
             //summary
             $pdf->setXY(30, $line);
             $pdf->setFontSize("11");
             $pdf->setTextColor(0, 0, 0);
-
-            $pdf->Cell(strlen($item->name)-4, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $item->name." - ".number_format($item->price, 2, ",", ".") ." €")." | n. ".$product->amount, 0, 0, 'C'); // add the text, align to Center of cell
+            $pdf->Cell(10, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $item->name." - ".number_format($item->price, 2, ",", ".") ." €")." | n. ".$product->amount, 0, 0, 'C'); // add the text, align to Center of cell
             $line += 7;
 
+            $packaging = Packaging::findOne(["id_product" => $product->id_product]);
+            
+            if(!empty($packaging)){
+                $pdf->setXY(25, $line);
+                $pdf->setFontSize("11");
+                $pdf->setTextColor(0, 0, 0);
+                $pdf->Cell(50, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $packaging->label." - ".number_format($packaging->price, 2, ",", ".") ." €")." | n. ".$product->amount, 0, 0, 'C'); // add the text, align to Center of cell
+                $line += 7;
+            }
+            
             //prezzo scontato
             if(!empty($sale)){
                 $prezzoScontato = 0;
@@ -195,24 +208,23 @@ class GeneratePdf {
                 $pdf->setXY(45, $line-2);
                 $pdf->Cell(10, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", "Sconto: ".$sale->name." del ".$sale->amount."% - ".number_format($prezzoScontato, 2, ",", ".") ." €")." n. ".$product->amount, 0, 0, 'C'); // add the text, align to Center of cell
                 $line += 10;
-            }
-            else{
+            }else{
                 $line += 6;
             }
 
             //add prezzo packaging + prezzo confetti
-            $subtotal       = $prezzoScontato; 
+            $subtotal = $prezzoScontato; 
             $packagingPrice = !empty($packaging) ? floatval($packaging->price) : 0;
             $confettiPrice  = $quote->confetti_omaggio ? 0 : floatval($quote->prezzo_confetti);
             $customPrice    = !empty($quote->custom_amount) ? floatVal($quote->custom_amount) : 0;
-            $totalPrice     = $subtotal + $packagingPrice + $confettiPrice + $customPrice;
+            $totalPrice = $subtotal + $packagingPrice + $confettiPrice + $customPrice;
         
             $line += 1;
             
             $pdf->setTextColor(0, 0, 0);
-            $pdf->setXY(7, $line-9);
+            $pdf->setXY(8, $line-9);
                 $pdf->Cell(10, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", 
-                "Totale: ".number_format($totalPrice, 2, ",", ".") ." €". $quote->custom_amount_omaggio ? "OMAGGIO" : ""
+                "Totale: ".number_format($totalPrice, 2, ",", ".") ." €"
             ));
         }
 
@@ -243,7 +255,7 @@ class GeneratePdf {
 
             if($quote->address){
                 $pdf->setXY(27, 230);
-                $pdf->Cell(30, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quote->address), 0, 0, 'C');
+                $pdf->Cell(50, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quote->address), 0, 0, 'C');
             }
 
             $pdf->setXY(44, 239);
@@ -267,30 +279,24 @@ class GeneratePdf {
                 $pdf->Cell($pdf->Image($placeholder->image,0, 0, 40, 40));
             }
             
+
             $pdf->setFontSize("11");
-            $pdf->setXY(93, 131);
-            $pdf->Cell(0, 10, $quotePlaceholder ? "SI n. ".$quotePlaceholder->amount : "NO", 0, 0, 'C'); // add the text, align to Center of cell
+            $pdf->setXY(90, 131);
+            $pdf->Cell(0, 10, $quotePlaceholder ? "SI n.".$quotePlaceholder->amount : "NO", 0, 0, 'C'); // add the text, align to Center of cell
 
-            $pdf->setXY(95, 143.5);
-            $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", number_format($quotePlaceholder->total, 2, ",", ".")." €"), 0, 0, 'C');
+            $totaleNoVat = $quotePlaceholder->total;
+            $totaleWithVat += $totaleNoVat*(22/100);
+            $pdf->setXY(115, 143.5);
+            $pdf->Cell(100, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", number_format($quotePlaceholder->total, 2, ",", ".")." € + IVA 22% = ".number_format($totaleWithVat, 2, ",", ".")), 0, 0, 'C');
 
-            $placeholderPayment = Payment::findOne(["id_quote_placeholder" => $quotePlaceholder->id]);
-            
-            if(!empty($placeholderPayment)){
-                $pdf->setXY(100, 151.5);
-                $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", number_format($placeholderPayment->amount, 2, ",", ".")." €"), 0, 0, 'C');
-
-                $pdf->setXY(95, 158.5);
-                $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quote->formatDate($placeholderPayment->created_at)), 0, 0, 'C');
-            }
-            
             //shipping
             $pdf->setXY(120, 166);
-            $pdf->Cell(30, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quote->shipping ? "SI" : "NO"), 0, 0, 'C');
+            $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quote->shipping ? "SI" : "NO"), 0, 0, 'C');
 
+            $x = $pdf->getX();
             if($quote->address){
-                $pdf->setXY(130, 181);
-                $pdf->Cell(30, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quote->address), 0, 0, 'C');
+                $pdf->setXY(127, 181);
+                $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quote->address), 0, 0, 'C');
             }
             
             $pdf->setXY(145, 190.5);
@@ -329,16 +335,13 @@ class GeneratePdf {
         $pdf->setXY(0, 215);
         $pdf->Cell(0, 0, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quote->notes), 0, 0, 'C');
 
-        $filename = $file."_".$quote->order_number."_".$client->name."_".$client->surname.".pdf";
-        ob_get_clean();
-
+        $filename           = $file."_".$quote->order_number."_".$client->name."_".$client->surname.".pdf";
+        $fileRelativePath   = Yii::getAlias("@webroot")."/pdf/".$target."/".$file."_".$quote->order_number."_".$client->name."_".$client->surname.".pdf";
         // $pdf->Output();die; //If test
         
-        // $pdf->Output($filename, $flag == "send" ? 'F' : 'D');    
-        $pdf->Output($filename, 'F'); 
+        $pdf->Output($fileRelativePath, $flag == "send" ? 'F' : 'D');    
 
         return $filename;
     }
 }
 ?>
-
