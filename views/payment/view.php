@@ -97,6 +97,12 @@ $id_quote = !empty($model->id_quote) ? $model->id_quote : $model->id_quote_place
                         }
                     ],
                     [
+                        'attribute' => "payed",
+                        'value' => function($model){
+                            return $model->isPayed();
+                        }
+                    ],
+                    [
                         'attribute' => 'created_at',
                         'value' => function($model){
                             return $model->formatDate($model->created_at);

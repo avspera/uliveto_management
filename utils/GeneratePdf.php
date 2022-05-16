@@ -112,21 +112,23 @@ class GeneratePdf {
                     }
                 }
 
-                $packaging = Packaging::find()
-                                ->select(["label", "image"])
-                                ->where(["id_product" => $item->id])
-                                ->one();
-                
-                if(!empty($packaging)){
-                    //do not repeat pack image if already print
-                    if(!in_array($packaging->label, $packName)){
-                        $packName[$i] = $packaging->label;
-                        $ordinate = 225;
-                        $pdf->Cell($pdf->Image($packaging->image, $start_pack_x, $ordinate, 40, 40));
-                        $start_pack_x += 40;
+                if(!empty($products[$i]->id_packaging)){
+                    $packaging = Packaging::find()
+                    ->select(["label", "image"])
+                    ->where(["id_product" => $item->id])
+                    ->one();
+    
+                    if(!empty($packaging)){
+                        //do not repeat pack image if already print
+                        if(!in_array($packaging->label, $packName)){
+                            $packName[$i] = $packaging->label;
+                            $ordinate = 225;
+                            $pdf->Cell($pdf->Image($packaging->image, $start_pack_x, $ordinate, 40, 40));
+                            $start_pack_x += 40;
+                        }
                     }
                 }
-            
+                
             }
             
             /**
@@ -289,7 +291,8 @@ class GeneratePdf {
             $pdf->Cell(0, 10, $quotePlaceholder ? "SI n.".$quotePlaceholder->amount : "NO", 0, 0, 'C'); // add the text, align to Center of cell
 
             $totaleNoVat = $quotePlaceholder->total;
-            $totaleWithVat += $totaleNoVat*(22/100);
+            $totaleWithVat = ($totaleNoVat + ($totaleNoVat / 100) * 22);
+    
             $pdf->setXY(115, 143.5);
             $pdf->Cell(100, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", number_format($quotePlaceholder->total, 2, ",", ".")." € + IVA 22% = ".number_format($totaleWithVat, 2, ",", ".")), 0, 0, 'C');
 
@@ -361,7 +364,7 @@ class GeneratePdf {
         $fileRelativePath   = Yii::getAlias("@webroot")."/pdf/".$target."/".$file."_".$quote->order_number."_".$client->name."_".$client->surname.".pdf";
         // $pdf->Output();die; //If test
         
-        $pdf->Output($fileRelativePath, $flag == "send" ? 'F' : 'D');    
+        $pdf->Output($fileRelativePath, 'F');    
 
         return $filename;
     }

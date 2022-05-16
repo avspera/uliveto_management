@@ -101,9 +101,10 @@ class QuotesController extends Controller
     public function actionGetTotal($id_quote){
         $out = ["status" => "100", "total" => 0];
         $quote = $this->findModel($id_quote);
-
+        $total = $quote->total;
+        $totaleWithVat = ($total + ($total / 100) * 22);
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-        return !empty($quote) ? $out = ["status" => "200", "total" => $quote->total] : 0;
+        return !empty($quote) ? $out = ["status" => "200", "total" => number_format($totaleWithVat, 2, ".", ",")] : 0;
     }
     
     /**
@@ -213,7 +214,7 @@ class QuotesController extends Controller
             $model->confirmed = 1;
             if($model->save()){
                 $pdf = new GeneratePdf();
-                $filename = $pdf->quotePdf($quote, $flag, "preventivo");
+                $filename = $pdf->quotePdf($model, $flag, "preventivo");
                 $this->sendEmail($model, $filename, "invio-ordine");
                 return $this->redirect(['/order/view', "id" => $id]);
             }

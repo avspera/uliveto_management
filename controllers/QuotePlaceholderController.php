@@ -139,7 +139,9 @@ class QuotePlaceholderController extends Controller
         $segnaposto = Segnaposto::findOne(["id" => $quote->id_placeholder]);
         $total = $quote->amount * floatval($segnaposto->price);
         
-        return !empty($quote) ? $out = ["status" => "200", "total" => $total] : 0;
+        $totaleWithVat = ($total + ($total / 100) * 22);
+
+        return !empty($quote) ? $out = ["status" => "200", "total" => number_format($totaleWithVat, 2, ".", ",")] : 0;
     }
 
     /**

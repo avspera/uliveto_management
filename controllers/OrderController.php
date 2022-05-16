@@ -303,9 +303,11 @@ class OrderController extends Controller
             }else{
                 Yii::$app->session->setFlash('error', "Ops...something went wrong");
             }
-
-            return $this->redirect("index");
+        }else{
+            Yii::$app->session->setFlash('success', "Pdf generato correttamente.<a href='/web/pdf/ordini/".$filename."'> Scarica</a>");
         }
+
+        return $this->redirect("index");
     }
 
     protected function manageUploadFiles($model) {

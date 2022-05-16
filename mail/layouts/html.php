@@ -18,6 +18,10 @@ use yii\helpers\Url;
             font-family: 'Montserrat', medium;
         }
 
+        body{
+            font-size: 1.4em;
+        }
+        
     </style>
 </head>
 <body>
@@ -81,8 +85,6 @@ use yii\helpers\Url;
 
 
     </center>
-    
-
 
     <?php $this->endBody() ?>
 </body>

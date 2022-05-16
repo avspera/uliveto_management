@@ -308,8 +308,13 @@ class PaymentController extends Controller
         if ($this->request->isPost) {
             if ($model->load($this->request->post())) {
                 $model->created_at  = date("Y-m-d H:i:s");
-                $model->fatturato   = 0;
-                $model->payed       = 0;
+                if(empty($model->fatturato)){
+                    $model->fatturato   = 0;    
+                }
+
+                if(empty($model->payed)){
+                    $model->payed       = 0;
+                }
                 
                 if($model->save())
                     return $this->redirect(['view', 'id' => $model->id]);

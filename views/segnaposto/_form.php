@@ -11,7 +11,7 @@ use kartik\file\FileInput;
 
 <div class="segnaposto-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data']]) ?>
 
     <div class="row">
         <div class="col-md-4"><?= $form->field($model, 'label')->textInput(['maxlength' => true]) ?></div>

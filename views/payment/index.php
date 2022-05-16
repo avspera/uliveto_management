@@ -122,7 +122,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'attribute' => "allegato",
                         'value' => function($model){
                             if(!empty($model->allegato)){
-                                return Html::a("Ricevuta pagamento", Url::to(Yii::getAlias("@webroot")."uploads/payments/".$model->allegato));
+                                return Html::a("Ricevuta pagamento", Yii::getAlias("@web")."/".Url::to($model->allegato));
                             }else{
                                 return "-";
                             }

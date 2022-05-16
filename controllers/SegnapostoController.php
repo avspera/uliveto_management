@@ -1,7 +1,7 @@
 <?php
 
 namespace app\controllers;
-
+use Yii;
 use app\models\Segnaposto;
 use app\models\SegnapostoSearch;
 use app\models\Quote;
@@ -10,6 +10,10 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
+use app\utils\FKUploadUtils; 
+use yii\helpers\FileHelper;
+use yii\web\UploadedFile;
+
 /**
  * SegnapostoController implements the CRUD actions for Segnaposto model.
  */
@@ -100,6 +104,27 @@ class SegnapostoController extends Controller
         ]);
     }
 
+     /**
+     * check each uploaded media in form.
+     * if !empty, upload to server
+     * path is: /images/blog/category/article_id
+     */
+    protected function manageUploadFiles($model) {
+
+        $uploader   = new FKUploadUtils();
+        $path       = Yii::getAlias('@webroot')."/images/segnaposto/";
+    
+        $dirCreated = FileHelper::createDirectory($path);
+        
+        $image = UploadedFile::getInstance($model, 'image');
+        if (!empty($image)){
+            $filename = $uploader->generateAndSaveFile($image, $path);
+            $model->image = "images/segnaposto/".$filename;
+        }
+        
+        return $model->image;
+    }
+
     /**
      * Creates a new Segnaposto model.
      * If creation is successful, the browser will be redirected to the 'view' page.
@@ -112,6 +137,11 @@ class SegnapostoController extends Controller
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) ) {
                 $model->created_at = date("Y-m-d H:i:s");
+
+                if(!empty($_FILES)){
+                    $model->image = $this->manageUploadFiles($model);
+                }
+
                 if($model->save())
                     return $this->redirect(['view', 'id' => $model->id]);
                 else{
@@ -138,8 +168,14 @@ class SegnapostoController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($this->request->isPost && $model->load($this->request->post())) {
+            
+            if(!empty($_FILES)){
+                $model->image = $this->manageUploadFiles($model);
+            }
+
+            if($model->save())
+                return $this->redirect(['view', 'id' => $model->id]);
         }
 
         return $this->render('update', [
