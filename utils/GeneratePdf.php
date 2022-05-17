@@ -136,11 +136,10 @@ class GeneratePdf {
              * CONFETTI.
              */
             if($confetti == "OMAGGIO"){
-                $pdf->setXY(185, 240.5);
                 $pdf->setTextColor(0, 177, 106);
-            }else{
-                $pdf->setXY(180, 240.5);
             }
+            
+            $pdf->setXY(185, 240.5);
 
             $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $confetti), 0, 0, 'C'); // add the text, align to Center of cell
             /**

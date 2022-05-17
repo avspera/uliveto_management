@@ -146,7 +146,7 @@
                     <?= FileInput::widget([
                         'model' => $payment,
                         'attribute' => 'allegato',
-                        'options' => ['multiple' => false, 'accept' => ["png", "jpg", "pdf"]]
+                        'options' => ['multiple' => true, 'accept' => ["png", "jpg", "pdf"]]
                     ]);?>
                     <div class="form-group">
                         <?= Html::submitButton('Carica', ['class' => 'btn btn-success', 'style' => "margin-top: 5px"]) ?>

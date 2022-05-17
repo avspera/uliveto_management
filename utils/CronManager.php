@@ -36,7 +36,8 @@ class GeneratePdf {
                     $this->sendEmail($payment, $quote, "reminder-payment", 7);
                 }
             }else{
-                $this->sendEmail([], $quote, "reminder-deadline-quote", 7);
+                //first one in 48h after quote creation, second one after 5days, third 7 giorni, last on 15 days later
+                $this->sendEmail([], $quote, "reminder-deadline-quote", 2);
             }
         }
 

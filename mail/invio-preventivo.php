@@ -1,6 +1,6 @@
 
     <div class="text" style="padding: 0 3em; color: #4d4d4d">
-        <h2>Gentile <?= $model->getClient() ?></h2>
+        <p>Gentile <b><?= $model->getClient() ?></b></p>
     </div>
     
     <div class="text" style="padding: 0 3em; color: #4d4d4d">

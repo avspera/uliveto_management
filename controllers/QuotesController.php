@@ -374,7 +374,7 @@ class QuotesController extends Controller
                 )
                 ->setFrom([Yii::$app->params["infoEmail"]])
                 ->setTo($client->email)
-                ->setSubject($model->getClient()." ecco il tuo preventivo bomboniere L'Uliveto");
+                ->setSubject($model->getClient().", ecco l'ordine delle tue bonboniere L'Uliveto");
 
         $fullFilename = "https://manager.orcidelcilento.it/web/pdf/preventivi/".$filename;
         // $message->attachContent("Preventivo", ['fileName' => $filename,'contentType' => 'application/pdf']); 

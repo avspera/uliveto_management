@@ -30,22 +30,14 @@ if(!empty($model->attachments)){
 
     <?php $form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data']]) ?>
 
+    
     <div class="card">
         <div class="card-body">
             <div class="col-12">
                 <?= FileInput::widget([
                     'model' => $model,
                     'attribute' => 'attachments',
-                    'options' => ['multiple' => true, 'accept' => ["png", "jpg"]],
-                    'pluginOptions' => [
-                        'initialPreview'=>[
-                            !empty($model->attachments) ? Html::img($model->attachments, ["width " => "200px"]) : []
-                        ],
-                        'overwriteInitial' => false,
-                        'initialPreviewConfig' => $preview,
-                        'deleteUrl'=> Url::to(['/order/delete-attachment?id_quote='.$model->id]),
-                    ],
-                    
+                    'options' => ['multiple' => true, 'accept' => ["png", "jpg", "pdf"]]
                 ]);?>
             </div>
 

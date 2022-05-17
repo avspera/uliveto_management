@@ -177,7 +177,7 @@ use kartik\select2\Select2;
                     let total = $("#payment-total").val();
                     console.log("data.amount", data.amount);
                     if(data.amount){
-                        $("#payment-amount").val(abs(parseFloat(total) - data.amount));
+                        $("#payment-amount").val(parseFloat(total) - data.amount);
                     }else{
                         $("#payment-amount").val(parseFloat(total));
                     }
