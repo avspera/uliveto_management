@@ -140,8 +140,8 @@ class QuotePlaceholderController extends Controller
         $total = $quote->amount * floatval($segnaposto->price);
         
         $totaleWithVat = ($total + ($total / 100) * 22);
-
-        return !empty($quote) ? $out = ["status" => "200", "total" => number_format($totaleWithVat, 2, ".", ",")] : 0;
+        
+        return !empty($quote) ? $out = ["status" => "200", "total" => $totaleWithVat] : 0;
     }
 
     /**

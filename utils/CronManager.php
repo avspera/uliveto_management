@@ -61,7 +61,7 @@ class GeneratePdf {
         $message = Yii::$app->mailer
                 ->compose(
                     ['html' => $view],
-                    ['payment' => $payment, "order" => $order, "days", $days]
+                    ['payment' => $payment, "order" => $order, "days", $days, "client", $client]
                 )
                 ->setFrom([Yii::$app->params["infoEmail"]])
                 ->setTo($client->email)

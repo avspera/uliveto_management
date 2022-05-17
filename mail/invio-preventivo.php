@@ -8,7 +8,7 @@
         Le ricordiamo che nastro degli astucci e numero confetti sono personalizzabili in base alle sue richieste.
         In allegato troverà tutte le informazioni. <br />
 
-        Scadenza offerta: <?= $model->formatDate($model->deadline) ?> <br>
+        Scadenza offerta: <?= $model->formatDate($model->scadenza_offerta) ?> <br>
         Per qualsiasi richiesta rimaniamo a completa disposizione, può rispondere a questa e-mail o contattarci ai seguenti recapiti:
         <br>
         <br>

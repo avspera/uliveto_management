@@ -102,9 +102,8 @@ class QuotesController extends Controller
         $out = ["status" => "100", "total" => 0];
         $quote = $this->findModel($id_quote);
         $total = $quote->total;
-        $totaleWithVat = ($total + ($total / 100) * 22);
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-        return !empty($quote) ? $out = ["status" => "200", "total" => number_format($totaleWithVat, 2, ".", ",")] : 0;
+        return !empty($quote) ? $out = ["status" => "200", "total" => $total] : 0;
     }
     
     /**

@@ -57,7 +57,7 @@ use kartik\select2\Select2;
         <div class="col-md-4 col-sm-12 col-12">
             <div class="form-group field-payment-id_quote">
                 <label class="control-label" for="payment-id_quote_placeholder">SEGNAPOSTO</label>
-                <select onchange="getTotal()" id="payment-id_quote_placeholder" class="form-control" name="Payment[id_quote_placeholder]" onchange="getTotal('placeholder')">
+                <select id="payment-id_quote_placeholder" class="form-control" name="Payment[id_quote_placeholder]" onchange="getTotal('placeholder')">
                     <?php if(!empty($model->id_quote_placeholder)) ?>
                         <option value=<?= $model->id_quote_placeholder ?>><?= $model->id_quote_placeholder ?></option>
                     <?php ?>
@@ -175,8 +175,9 @@ use kartik\select2\Select2;
                 },
                 success: function (data) {
                     let total = $("#payment-total").val();
+                    console.log("data.amount", data.amount);
                     if(data.amount){
-                        $("#payment-amount").val(parseFloat(total) - data.amount);
+                        $("#payment-amount").val(abs(parseFloat(total) - data.amount));
                     }else{
                         $("#payment-amount").val(parseFloat(total));
                     }

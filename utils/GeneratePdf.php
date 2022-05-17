@@ -90,15 +90,16 @@ class GeneratePdf {
                 $color  = Color::findOne(["id" => $products[$i]->id_color]);
                 $item   = Product::find()->select(["id", "name", "price"])->where(["id" => $products[$i]->id_product])->one(); 
                 
-                if($item->name == "[U]live")
-                    $ordinate = 170;
-                
                 if($item->name == "[U]gliarulo")
-                    $ordinate = 80;
-                    
+                $ordinate = 80;
+
                 if($item->name == "[U]classic")
                     $ordinate = 125;
                 
+                if($item->name == "[U]live")
+                    $ordinate = 170;
+                
+               
                 if(!empty($color->picture)){
                     $pdf->Cell($pdf->Image($color->picture,$start_x, $ordinate, 40, 40));
                     $start_x += 40;
@@ -227,12 +228,17 @@ class GeneratePdf {
             }
 
             //add prezzo packaging + prezzo confetti
-            $subtotal = $prezzoScontato; 
+            $subtotal       = $prezzoScontato; 
             $packagingPrice = !empty($product->id_packaging) ? floatval($packaging->price) : 0;
             $confettiPrice  = $quote->confetti_omaggio ? 0 : floatval($quote->prezzo_confetti);
-            $customPrice    = !empty($quote->custom_amount) ? floatVal($quote->custom_amount) : 0;
-            $totalPrice = $subtotal + $packagingPrice + $confettiPrice + $customPrice;
-        
+            $customPrice    = $quote->custom_amount_omaggio ? 0 : floatVal($quote->custom_amount);
+            $totalPrice     = $subtotal + $packagingPrice + $confettiPrice + $customPrice;
+            // print_r("product". $product->id_product." - ");
+            // print_r("subtotal ". $subtotal." - ");
+            // print_r("packagingPrice ". $packagingPrice." - ");
+            // print_r("confettiPrice ". $confettiPrice." - ");
+            // print_r("customPrice ". $customPrice." - ");
+
             $line += 1;
             
             $pdf->setTextColor(0, 0, 0);
@@ -241,7 +247,7 @@ class GeneratePdf {
                 "Totale: ".number_format($totalPrice, 2, ",", ".") ." €"
             ));
         }
-
+// die;
         //END OF FOREACH
             
         /**

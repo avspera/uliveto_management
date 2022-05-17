@@ -18,14 +18,10 @@ use yii\helpers\Url;
             font-family: 'Montserrat', medium;
         }
 
-        body{
-            font-size: 1.4em;
+        p {
+            font-size: 1.2em;
         }
 
-        div * {
-            font-size: 1.4em;
-        }
-        
     </style>
 </head>
 <body>

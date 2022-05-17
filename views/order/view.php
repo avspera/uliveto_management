@@ -118,8 +118,20 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
                     [
                         'attribute' => "custom_amount",
                         'value' => function($model){
-                            return !empty($model->custom_amount) ? $model->formatNumber($model->custom_amount) : "-";
-                        }
+                            $html = "";
+                            if($model->custom_amount){
+                                if($model->custom_amount_omaggio){
+                                    $html .= "<span style='text-decoration: line-through;'>".$model->formatNumber($model->custom_amount)."</span> <span style='color: green'> - in omaggio</span>";
+                                }
+                                else{
+                                    $html .= "<span>".$model->formatNumber($model->custom_amount)."</span>";
+                                }
+                            }else{
+                                $html .= "-";
+                            }
+                            return $html;
+                        },
+                        'format' => "raw"
                     ],
                     'custom:ntext',
                     'notes:ntext',

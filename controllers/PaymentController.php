@@ -83,9 +83,10 @@ class PaymentController extends Controller
         $out = ["status" => "100", "hasAcconto" => false, "amount" => 0];
 
         $acconto = Payment::findOne(["id_quote" => $id_quote, "type" => 0]);
-        
+        $amount = !empty($acconto) ? floatval($acconto->amount) : 0;
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-        return !empty($acconto) ? $out = ["status" => "200", "hasAcconto" => true, "amount" => floatval($acconto->amount)] : $out;
+        
+        return !empty($acconto) ? $out = ["status" => "200", "hasAcconto" => true, "amount" => $amount] : $out;
     }
 
     public function actionUploadAllegato(){
