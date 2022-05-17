@@ -18,7 +18,7 @@ use yii\helpers\Url;
             font-family: 'Montserrat', medium;
         }
 
-        p {
+        p{
             font-size: 1.2em;
         }
 

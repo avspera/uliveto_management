@@ -214,7 +214,7 @@ class QuotesController extends Controller
             if($model->save()){
                 $pdf = new GeneratePdf();
                 $filename = $pdf->quotePdf($model, $flag, "preventivo");
-                $this->sendEmail($model, $filename, "invio-ordine");
+                $this->sendEmail($model, $filename, "invio-ordine", $model->getClient().", ecco il tuo preventivo delle tue bomboniere L'Uliveto");
                 return $this->redirect(['/order/view', "id" => $id]);
             }
         }catch(Exception $e){
@@ -348,7 +348,7 @@ class QuotesController extends Controller
         $filename = $pdf->quotePdf($quote, $flag, "preventivo", "preventivi");
 
         if($flag == "send"){
-            if($this->sendEmail($quote, $filename, "invio-preventivo")){
+            if($this->sendEmail($quote, $filename, "invio-preventivo", $model->getClient().", ecco l'ordine delle tue bomboniere L'Uliveto")){
                 Yii::$app->session->setFlash('success', "Email con PDF allegato inviato correttamente: ".$filename);
             }else{
                 Yii::$app->session->setFlash('error', "Ops...something went wrong");
@@ -360,7 +360,7 @@ class QuotesController extends Controller
         return $this->redirect(Yii::$app->request->referrer);
     }
 
-    protected function sendEmail($model, $filename, $view){
+    protected function sendEmail($model, $filename, $view, $object){
         
         if(empty($model)) return false;
         $client = Client::find()->select(["email"])->where(["id" => $model->id_client])->one();
@@ -374,7 +374,7 @@ class QuotesController extends Controller
                 )
                 ->setFrom([Yii::$app->params["infoEmail"]])
                 ->setTo($client->email)
-                ->setSubject($model->getClient().", ecco l'ordine delle tue bonboniere L'Uliveto");
+                ->setSubject($object);
 
         $fullFilename = "https://manager.orcidelcilento.it/web/pdf/preventivi/".$filename;
         // $message->attachContent("Preventivo", ['fileName' => $filename,'contentType' => 'application/pdf']); 
