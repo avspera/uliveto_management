@@ -52,8 +52,8 @@ class Payment extends \yii\db\ActiveRecord
         return [
             'id'            => 'ID',
             'id_client'     => 'Cliente',
-            'id_quote'      => 'Preventivo Bomboniere',
-            'id_quote_placeholder' => 'Preventivo Segnaposto',
+            'id_quote'      => 'Ordine Bomboniere',
+            'id_quote_placeholder' => 'Ordine Segnaposto',
             'amount'        => 'Quantità',
             'created_at'    => 'Effettuato il',
             'fatturato'     => "Fatturato",

@@ -19,9 +19,9 @@
     <div class="text" style="padding: 0 3em; color: #4d4d4d">
         <p>
             come richiesto le inviamo il nostro catalogo dedicato alle bomboniere.
-            I nostri orci vengono realizzati e decorati a mano e possono quindi essere personalizzati e anche per adattarsi al tema, ai colori e all'atmosfera del vostro evento.
-            Nel catalogo troverà tutte le nostre collezione, il nostro packaging e una vasta scelta di colori,
-            La caratteristica che accomuna le nostre bomboniere è la sorpresa al loro interno: il nostro olio extravergine di oliva, prodotto nel cuore del Parco Nazionale del Cilento nei comuni di Trentinara e Giungano (SA)
+            I nostri orci vengono realizzati e decorati a mano e possono quindi essere personalizzati anche per adattarsi al tema, ai colori e all'atmosfera del vostro evento.
+            Nel catalogo troverà tutte le nostre collezione, il nostro packaging e una vasta scelta di colori. <br />
+            La caratteristica che accomuna le nostre bomboniere è la sorpresa al loro interno: il nostro olio extravergine di oliva, prodotto nel cuore del Parco Nazionale del Cilento nei comuni di Trentinara e Giungano (SA).
         </p>
         <p>
             Mobile Francesco: + 39 3203828243<br>

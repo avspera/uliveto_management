@@ -59,7 +59,8 @@ use kartik\select2\Select2;
                             'type' => DatePicker::TYPE_INPUT,
                             'pluginOptions' => [
                                 'autoclose' => true,
-                                'format' => 'yyyy-mm-dd'
+                                'format' => 'yyyy-mm-dd',
+                                'startDate' => date("Y-m-d")
                             ]
                         ]);
                     ?>
@@ -71,7 +72,8 @@ use kartik\select2\Select2;
                             'type' => DatePicker::TYPE_INPUT,
                             'pluginOptions' => [
                                 'autoclose' => true,
-                                'format' => 'yyyy-mm-dd'
+                                'format' => 'yyyy-mm-dd',
+                                'startDate' => date("Y-m-d")
                             ]
                         ]);
                     ?>

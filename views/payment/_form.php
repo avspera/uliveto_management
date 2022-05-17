@@ -42,11 +42,29 @@ use kartik\select2\Select2;
             ?>
         </div>
         <div class="col-md-4 col-sm-12 col-12">
-            <?= $form->field($model, 'id_quote')->dropdownList([], ["onchange" => "getTotal()"])->label("BOMBONIERE") ?>
+            <div class="form-group field-payment-id_quote">
+                <label class="control-label" for="payment-id_quote">BOMBONIERE</label>
+                <select onchange="getTotal()" id="payment-id_quote" class="form-control" name="Payment[id_quote]" onchange="getTotal()">
+                    <?php if(!empty($model->id_quote)) ?>
+                        <option value=<?= $model->id_quote ?>><?= $model->id_quote ?></option>
+                    <?php ?>
+                </select>
+
+                <div class="help-block"></div>
+            </div>
         </div>
 
         <div class="col-md-4 col-sm-12 col-12">
-            <?= $form->field($model, 'id_quote_placeholder')->dropdownList([], ['prompt' => 'Scegli', "onchange" => "getTotal('placeholder')"])->label("SEGNAPOSTO") ?>
+            <div class="form-group field-payment-id_quote">
+                <label class="control-label" for="payment-id_quote_placeholder">SEGNAPOSTO</label>
+                <select onchange="getTotal()" id="payment-id_quote_placeholder" class="form-control" name="Payment[id_quote_placeholder]" onchange="getTotal('placeholder')">
+                    <?php if(!empty($model->id_quote_placeholder)) ?>
+                        <option value=<?= $model->id_quote_placeholder ?>><?= $model->id_quote_placeholder ?></option>
+                    <?php ?>
+                </select>
+
+                <div class="help-block"></div>
+            </div>
         </div>
 
     </div>
@@ -54,7 +72,11 @@ use kartik\select2\Select2;
     <div class="row">
 
         <div class="col-md-4 col-sm-6 col-12">
-            <?= $form->field($model, 'total')->textInput(['prompt' => 'Scegli', "readonly" => true])->label("Totale") ?>
+            <div class="form-group field-payment-total">
+                <label class="control-label" for="payment-total">Totale</label>
+                <input value="<?= $model->getTotal() ?>" type="text" id="payment-total" class="form-control" name="Payment[total]" readonly="" prompt="Scegli">
+                <div class="help-block"></div>
+            </div>
         </div>
         
         <div class="col-md-4 col-sm-6 col-12">
@@ -75,7 +97,8 @@ use kartik\select2\Select2;
                     'type' => DatePicker::TYPE_INPUT,
                     'pluginOptions' => [
                         'autoclose' => true,
-                        'format' => 'yyyy-mm-dd'
+                        'format' => 'yyyy-mm-dd',
+                        'startDate' => date("Y-m-d")
                     ]
                 ]);
             ?>
@@ -99,9 +122,11 @@ use kartik\select2\Select2;
 
 <script>
     function getQuotes(id_client){
-        console.log("id_client", id_client);
+        
         $("#payment-id_quote").html("");
         $("#payment-id_quote").append("<option value=''></option>");
+        $("#payment-id_quote_placeholder").html("");
+        $("#payment-id_quote_placeholder").append("<option value=''></option>");
         $.ajax({
             url: '<?= Url::to(['quotes/get-by-client-id']) ?>',
             type: 'get',

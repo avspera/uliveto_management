@@ -244,7 +244,7 @@ class PaymentController extends Controller
     {
         $searchModel = new PaymentSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
-
+        $dataProvider->sort->defaultOrder = ["created_at" => SORT_DESC];
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -349,6 +349,18 @@ class PaymentController extends Controller
             Yii::$app->session->setFlash('error', "Ops...something went wrong [PACK-102]");
         }
 
+        if(!empty($model->id_quote)){
+            $quote = Quote::find()->select(["id", "total"])->where(["id" => $model->id_quote])->one();
+            $model->id_quote = $quote->id;
+        }
+        
+        if(!empty($model->id_quote_placeholder)){
+            $quotePlaceholder = QuotePlaceholder::find()->select(["id"])->where(["id" => $model->id_quote_placeholder])->one();
+            if(!empty($quotePlaceholder)){
+                $model->id_quote_placeholder = $quotePlaceholder->id;
+            }
+        }
+        
         return $this->render('update', [
             'model' => $model,
         ]);

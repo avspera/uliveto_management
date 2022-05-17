@@ -16,6 +16,11 @@ use app\models\Client;
 
 class GeneratePdf {
 
+    function __construct(){
+        parent::__construct();
+        $this->runCron();
+    }
+    
     public function runCron(){
 
         $quotes = Quote::find()
@@ -34,7 +39,16 @@ class GeneratePdf {
                 $this->sendEmail([], $quote, "reminder-deadline-quote", 7);
             }
         }
+
+        $quotes = Quote::find()
+                            ->select(["id"])
+                            ->where(["data_evento" => date("Y-m-d")])
+                            ->andWhere(["confirmed" => 1])
+                            ->all(); 
         
+        foreach($quotes as $quote){
+            $this->sendEmail([], $quote, "send-wishes", 7);
+        }
     }
 
     protected function sendEmail($payment, $order, $view, $days){

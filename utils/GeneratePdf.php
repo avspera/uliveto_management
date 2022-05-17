@@ -114,9 +114,9 @@ class GeneratePdf {
 
                 if(!empty($products[$i]->id_packaging)){
                     $packaging = Packaging::find()
-                    ->select(["label", "image"])
-                    ->where(["id_product" => $item->id])
-                    ->one();
+                                    ->select(["label", "image"])
+                                    ->where(["id_product" => $item->id])
+                                    ->one();
     
                     if(!empty($packaging)){
                         //do not repeat pack image if already print
@@ -198,14 +198,18 @@ class GeneratePdf {
             $pdf->Cell(10, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $item->name." - ".number_format($item->price, 2, ",", ".") ." €")." | n. ".$product->amount, 0, 0, 'C'); // add the text, align to Center of cell
             $line += 7;
 
-            $packaging = Packaging::findOne(["id_product" => $product->id_product]);
-            
-            if(!empty($packaging)){
-                $pdf->setXY(25, $line);
-                $pdf->setFontSize("11");
-                $pdf->setTextColor(0, 0, 0);
-                $pdf->Cell(50, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $packaging->label." - ".number_format($packaging->price, 2, ",", ".") ." €")." | n. ".$product->amount, 0, 0, 'C'); // add the text, align to Center of cell
-                $line += 7;
+            $packaging = new \stdClass;
+            $packaging->price = 0;
+
+            if(!empty($product->id_packaging)){
+                $packaging = Packaging::findOne(["id_product" => $product->id_product]);
+                if(!empty($packaging)){
+                    $pdf->setXY(25, $line);
+                    $pdf->setFontSize("11");
+                    $pdf->setTextColor(0, 0, 0);
+                    $pdf->Cell(50, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $packaging->label." - ".number_format($packaging->price, 2, ",", ".") ." €")." | n. ".$product->amount, 0, 0, 'C'); // add the text, align to Center of cell
+                    $line += 7;
+                }
             }
             
             //prezzo scontato
@@ -224,7 +228,7 @@ class GeneratePdf {
 
             //add prezzo packaging + prezzo confetti
             $subtotal = $prezzoScontato; 
-            $packagingPrice = !empty($packaging) ? floatval($packaging->price) : 0;
+            $packagingPrice = !empty($product->id_packaging) ? floatval($packaging->price) : 0;
             $confettiPrice  = $quote->confetti_omaggio ? 0 : floatval($quote->prezzo_confetti);
             $customPrice    = !empty($quote->custom_amount) ? floatVal($quote->custom_amount) : 0;
             $totalPrice = $subtotal + $packagingPrice + $confettiPrice + $customPrice;
@@ -282,9 +286,8 @@ class GeneratePdf {
             $placeholder = Segnaposto::find()->select(["image"])->where(["id" => $quotePlaceholder->id_placeholder])->one();
 
             if(!empty($placeholder->image)){
-                $pdf->Cell($pdf->Image($placeholder->image,0, 0, 40, 40));
+                $pdf->Cell($pdf->Image($placeholder->image, 130, 90, 40, 40));
             }
-            
 
             $pdf->setFontSize("11");
             $pdf->setXY(90, 131);

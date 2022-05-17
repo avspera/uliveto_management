@@ -21,6 +21,10 @@ use yii\helpers\Url;
         body{
             font-size: 1.4em;
         }
+
+        div * {
+            font-size: 1.4em;
+        }
         
     </style>
 </head>

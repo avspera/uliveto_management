@@ -303,12 +303,12 @@ class QuotesController extends Controller
         
         if(is_null($id_client)) return;
 
-        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         $out = ['results' => [], "status" => "100", "quotesPlaceholder" => []];
         
         $data = Quote::find()
-                    ->select(["id", "created_at"])
+                    ->select(["id", "order_number", "created_at", "confirmed"])
                     ->where(["id_client" => $id_client])
+                    ->andWhere(["confirmed" => 1])
                     ->orderBy(["created_at" => SORT_DESC])
                     ->all();
         
@@ -316,7 +316,7 @@ class QuotesController extends Controller
         $ids = [];
         foreach($data as $item){
             $out["results"][$i]["id"]   = $item->id;
-            $out["results"][$i]["text"] = $item->id. " - ".$item->formatDate($item->created_at);
+            $out["results"][$i]["text"] = $item->order_number. " - ".$item->formatDate($item->created_at);
             $ids[$i] = $item->id;
             $i++;     
         }
@@ -336,6 +336,7 @@ class QuotesController extends Controller
         
         $out["status"] = "200";
         
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         return $out;
     }
 
@@ -354,7 +355,7 @@ class QuotesController extends Controller
                 Yii::$app->session->setFlash('error', "Ops...something went wrong");
             }
         }else{
-            Yii::$app->session->setFlash('success', "Pdf generato correttamente.<a href='/web/".$filename."'> Scarica</a>");
+            Yii::$app->session->setFlash('success', "Pdf generato correttamente.<a href='/web/pdf/preventivi/".$filename."'>Scarica</a>");
         }
 
         return $this->redirect(Yii::$app->request->referrer);

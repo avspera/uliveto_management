@@ -253,7 +253,8 @@ $placeholders = \app\models\Segnaposto::find()->all();
                             'pluginOptions' => [
                                 'autoclose' => true,
                                 'format' => 'yyyy-mm-dd',
-                                'language' => "it"
+                                'language' => "it",
+                                'startDate' => date("Y-m-d")
                             ]
                         ]);
                     ?></div>
@@ -270,7 +271,8 @@ $placeholders = \app\models\Segnaposto::find()->all();
                                 'pluginOptions' => [
                                     'autoclose' => true,
                                     'format' => 'yyyy-mm-dd',
-                                    'language' => "it"
+                                    'language' => "it",
+                                    'startDate' => date("Y-m-d")
                                 ]
                             ]);
                         ?>
@@ -289,7 +291,8 @@ $placeholders = \app\models\Segnaposto::find()->all();
                             'pluginOptions' => [
                                 'autoclose' => true,
                                 'format' => 'yyyy-mm-dd',
-                                'language' => "it"
+                                'language' => "it",
+                                'startDate' => date("Y-m-d")
                             ]
                         ]);
                     ?></div>
@@ -301,7 +304,21 @@ $placeholders = \app\models\Segnaposto::find()->all();
                             'pluginOptions' => [
                                 'autoclose' => true,
                                 'format' => 'yyyy-mm-dd',
-                                'language' => "it"
+                                'language' => "it",
+                                'startDate' => date("Y-m-d")
+                            ]
+                        ]);
+                    ?></div>
+                    <div class="col-md-4 col-sm-4 col-12"><?php
+                        echo '<label class="form-label">Scadenza offerta </label>';
+                        echo DatePicker::widget([
+                            'name' => 'Quote[scadenza_offerta]',
+                            'type' => DatePicker::TYPE_INPUT,
+                            'pluginOptions' => [
+                                'autoclose' => true,
+                                'format' => 'yyyy-mm-dd',
+                                'language' => "it",
+                                'startDate' => date("Y-m-d")
                             ]
                         ]);
                     ?></div>

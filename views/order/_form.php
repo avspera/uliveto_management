@@ -191,7 +191,8 @@ $clientData     = !empty($client) ? $client->name." ".$client->surname : ""
                             'type' => DatePicker::TYPE_INPUT,
                             'pluginOptions' => [
                                 'autoclose' => true,
-                                'format' => 'yyyy-mm-dd'
+                                'format' => 'yyyy-mm-dd',
+                                'startDate' => date("Y-m-d")
                             ]
                         ]);
                     ?></div>
@@ -206,7 +207,8 @@ $clientData     = !empty($client) ? $client->name." ".$client->surname : ""
                                 'type' => DatePicker::TYPE_INPUT,
                                 'pluginOptions' => [
                                     'autoclose' => true,
-                                    'format' => 'yyyy-mm-dd'
+                                    'format' => 'yyyy-mm-dd',
+                                    'startDate' => date("Y-m-d")
                                 ]
                             ]);
                         ?>
@@ -224,7 +226,8 @@ $clientData     = !empty($client) ? $client->name." ".$client->surname : ""
                             'type' => DatePicker::TYPE_INPUT,
                             'pluginOptions' => [
                                 'autoclose' => true,
-                                'format' => 'yyyy-mm-dd'
+                                'format' => 'yyyy-mm-dd',
+                                'startDate' => date("Y-m-d")
                             ]
                         ]);
                     ?></div>
@@ -235,7 +238,8 @@ $clientData     = !empty($client) ? $client->name." ".$client->surname : ""
                             'type' => DatePicker::TYPE_INPUT,
                             'pluginOptions' => [
                                 'autoclose' => true,
-                                'format' => 'yyyy-mm-dd'
+                                'format' => 'yyyy-mm-dd',
+                                'startDate' => date("Y-m-d")
                             ]
                         ]);
                     ?></div>

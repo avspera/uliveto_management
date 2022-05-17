@@ -109,12 +109,6 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
                         'format' => "raw"
                     ],
                     [
-                        'attribute' => 'placeholder',
-                        'value' => function($model){
-                            return $model->getPlaceholder();
-                        }
-                    ],
-                    [
                         'attribute' => "custom_amount",
                         'value' => function($model){
                             $html = "";
@@ -187,6 +181,12 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
                         'attribute' => 'deadline',
                         'value' => function($model){
                             return $model->formatDate($model->deadline);
+                        },
+                    ],
+                    [
+                        'attribute' => 'scadenza_offerta',
+                        'value' => function($model){
+                            return $model->formatDate($model->scadenza_offerta);
                         },
                         'format' => "raw"
                     ],

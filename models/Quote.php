@@ -29,6 +29,7 @@ use app\models\QuotePlaceholder;
  * @property float|null $balance
  * @property int $shipping
  * @property string $deadline
+ * @property string $scandenza_offerta
  * @property string $date_deposit
  * @property string $date_balance
  */
@@ -53,7 +54,7 @@ class Quote extends \yii\db\ActiveRecord
             [['created_at', 'updated_at', 'data_evento', 'deadline', 'product', 'amount', 'color', 'packaging', 'total_no_vat',
                 'date_deposit', 'date_balance','placeholder', 'address', 'custom_color', 'placeholder_amount',
                     'confetti', 'custom', 'custom_amount', 'id_sconto', 'custom_amount_omaggio',
-                    'prezzo_confetti', 'confetti_omaggio', 'delivered'], 'safe'],
+                    'prezzo_confetti', 'confetti_omaggio', 'delivered', 'scadenza_offerta'], 'safe'],
             [['notes', 'address'], 'string'],
             [['total', 'deposit', 'balance', 'delivered'], 'number'],
             [['attachments'], 'file', 'skipOnEmpty' => true, 'extensions' => 'jpg, png, pdf'],
@@ -95,7 +96,8 @@ class Quote extends \yii\db\ActiveRecord
             'attachments'  => "Allegati",
             'id_sconto'     => "Sconto",
             'delivered'     => "Consegnato",
-            'custom_amount_omaggio' => "Personalizzazione omaggio"
+            'custom_amount_omaggio' => "Personalizzazione omaggio",
+            'scadenza_offerta' => "Scadenza offerta"
         ];
     }
 
