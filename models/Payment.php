@@ -58,7 +58,8 @@ class Payment extends \yii\db\ActiveRecord
             'created_at'    => 'Effettuato il',
             'fatturato'     => "Fatturato",
             'type'          => "Tipo",
-            'payed'         => "Versato"
+            'payed'         => "Versato",
+            
         ];
     }
 
@@ -102,19 +103,26 @@ class Payment extends \yii\db\ActiveRecord
         $quote = Quote::find()->select(["total"])->where(["id" => $this->id_quote])->one();
         
         if(empty($quote)){
-            $quote = QuotePlaceholder::find()->where(["id" => $this->id_quote])->one();
+            $quote = QuotePlaceholder::find()->where(["id" => $this->id_quote_placeholder])->one();
             if(!empty($quote))
                 $total = $quote->getTotal();
         }
         else{
-            $total = $quote->total;
+            $total = $quote->formatNumber($quote->total);
         }
 
         return $total;
     }
 
     public function checkPayments(){
-        $pagamenti = Payment::findAll(["id_quote" => $this->id_quote]);
+        if(!empty($model->id_quote))
+            $pagamenti = Payment::findAll(["id_quote" => $this->id_quote]);
+        else if(!empty($model->id_quote_placeholder)){
+            $pagamenti = Payment::findAll(["id_quote" => $this->id_quote_placeholder]);
+        }else{
+            $pagamenti = [];
+        }
+
         return count($pagamenti);
     }
 

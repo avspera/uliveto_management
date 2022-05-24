@@ -3,9 +3,12 @@
 namespace app\controllers;
 
 use Yii;
+use app\models\Quote;
 use app\models\QuotePlaceholder;
 use app\models\QuotePlaceholderSearch;
 use app\models\Segnaposto;
+use app\models\Client;
+use app\utils\GeneratePdf;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -38,7 +41,10 @@ class QuotePlaceholderController extends Controller
                             'update', 
                             'delete', 
                             'create', 
-                            'get-total'
+                            'get-total',
+                            'generate-pdf',
+                            'send-email-payment',
+                            'confirm'
                         ],
                         'allow' => true,
                         'roles' => ['@'],
@@ -85,6 +91,7 @@ class QuotePlaceholderController extends Controller
     public function actionCreate($id_quote = "")
     {
         $model = new QuotePlaceholder();
+
         if(!empty($id_quote)){
             $model->id_quote = $id_quote;
         }
@@ -94,6 +101,7 @@ class QuotePlaceholderController extends Controller
             if ($model->load($this->request->post())) {
                 
                 $model->created_at = date("Y-m-d H:i:s");
+                
                 if($model->save())
                     return $this->redirect(['view', 'id' => $model->id]);
                 else{
@@ -104,10 +112,35 @@ class QuotePlaceholderController extends Controller
         } else {
             $model->loadDefaultValues();
         }
-
+        $placeholders = Segnaposto::find()->select(["id", "label", "price"])->all();
         return $this->render('create', [
-            'model' => $model,
+            'model'         => $model,
+            'placeholders'  => $placeholders
         ]);
+    }
+
+    public function actionConfirm($id){
+        try{
+            $model = $this->findModel($id);
+            $model->confirmed = 1;
+            if($model->save()){
+                // $pdf = new GeneratePdf();
+                // $filename = $pdf->quotePdf($model, $flag, "preventivo");
+                Yii::$app->session->setFlash('success', "Preventivo segnaposto confermato con successo");
+                // $this->sendEmail($model, $filename, "invio-ordine-placeholder", $model->getClient().", ecco l'ordine dei tuoi segnaposto L'Uliveto");
+                return $this->redirect(Yii::$app->request->referrer);
+            }else{
+                Yii::$app->session->setFlash('error', "Ops...something went wrong [QU-107]");
+                return $this->redirect(Yii::$app->request->referrer);
+            }
+        }catch(Exception $e){
+            Yii::$app->session->setFlash('error', "Ops...something went wrong [QU-103]");
+            
+            return $this->render('view', [
+                'model' => $model,
+            ]);
+        }
+        
     }
 
     /**
@@ -126,12 +159,75 @@ class QuotePlaceholderController extends Controller
             if($model->save())
                 return $this->redirect(['view', 'id' => $model->id]);
         }
-
+        $placeholders = Segnaposto::find()->select(["id", "label", "price"])->all();
         return $this->render('update', [
-            'model' => $model,
+            'model'         => $model,
+            'placeholders'  => $placeholders
         ]);
     }
 
+    public function actionGeneratePdf($id, $flag){
+        $quotePlaceholder      = $this->findModel($id);
+        
+        if(empty($quotePlaceholder)) return;
+        
+        $pdf = new GeneratePdf();
+        $filename = $pdf->quotePdf($quotePlaceholder, $flag, "preventivo", "preventivi");
+        $quote  = Quote::findOne(["id" => $quotePlaceholder->id_quote]);
+        $client = Client::findOne(["id" => $quote->id_client]);
+        if($flag == "send"){
+            
+            if($this->sendEmail($quotePlaceholder, $filename, "invio-preventivo-segnaposto", $quote->getClient().", ecco il preventivo delle tue bomboniere L'Uliveto", $client)){
+                Yii::$app->session->setFlash('success', "Email con PDF allegato inviato correttamente: ".$filename);
+            }else{
+                Yii::$app->session->setFlash('error', "Ops...something went wrong");
+            }
+        }else{
+            Yii::$app->session->setFlash('success', "Pdf generato correttamente.<a href='/web/pdf/preventivi/".$filename."'>Scarica</a>");
+        }
+
+        return $this->redirect(Yii::$app->request->referrer);
+    }
+
+    public function actionSendEmailPayment($id_client, $id_quote){
+        if(empty($id_client) || empty($id_quote)) return;
+        
+        $this->layout = "external-payment";
+        print_r($id_client);
+        print_r($id_quote);die;
+        $client = Client::findOne(["id" => $id_client]);
+        $order  = QuotePlaceholder::findOne(["id" => $id_quote]);
+        
+        if(empty($client) || empty($order)) return;
+        
+        if($this->sendEmail($model, $filename, "invio-ordine", $client->name." ".$client->surname.", ecco l'ordine delle tue bomboniere L'Uliveto", $client)){
+            Yii::$app->session->setFlash('success', "Email inviata correttamente");
+        }else{
+            Yii::$app->session->setFlash('error', "Ops...something went wrong [ORDER_SEND_EMAIL-100]");
+        }
+
+        return $this->redirect(["view", "id" => $id_quote]);
+    }
+
+    protected function sendEmail($model, $filename, $view, $client){
+        
+        if(empty($model)) return false;
+        
+        $message = Yii::$app->mailer
+                ->compose(
+                    ['html' => $view],
+                    ['model' => $model]
+                )
+                ->setFrom([Yii::$app->params["infoEmail"]])
+                ->setTo($client->email)
+                ->setSubject($object);
+
+        $fullFilename = "https://manager.orcidelcilento.it/web/pdf/preventivi/".$filename;
+        $message->attach($fullFilename);
+
+        return $message->send();
+    }
+    
     public function actionGetTotal($id_quote){
         $out = ["status" => "100", "total" => 0];
         $quote = $this->findModel($id_quote);
@@ -155,7 +251,7 @@ class QuotePlaceholderController extends Controller
     {
         $this->findModel($id)->delete();
 
-        return $this->redirect(Yii::$app->request->referrer);
+        return $this->redirect(["index"]);
     }
 
     /**

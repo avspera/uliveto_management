@@ -113,7 +113,7 @@ class MessagesController extends Controller
     {
         $this->findModel($id)->delete();
 
-        return $this->redirect(Yii::$app->request->referrer);
+        return $this->redirect(["index"]);
     }
 
     /**

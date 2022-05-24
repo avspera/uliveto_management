@@ -13,7 +13,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div class="card">
         <div class="card-body table-responsive">
-            <?= $this->render('_form', ['model' => $model]) ?>
+            <?= $this->render('_form', ['model' => $model, "placeholders" => $placeholders]) ?>
         </div>
     </div>
 

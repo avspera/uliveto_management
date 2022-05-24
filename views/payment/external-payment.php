@@ -190,7 +190,8 @@
         return amount
     }
 
-    function registerTransaction(transaction){
+    functioan registerTransaction(transaction){
+        console.log("transaction", transaction);
         $.ajax({
             url: '<?= Url::to(['payment/register-transaction']) ?>',
             type: 'get',

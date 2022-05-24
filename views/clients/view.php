@@ -114,6 +114,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                         'pluginOptions' => [
                                             'autoclose'=>true,
                                             'format' => 'yyyy-mm-dd',
+                                            'startDate' => date("Y-m-d")
                                         ]
                                     ])
                                 ],

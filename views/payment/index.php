@@ -5,6 +5,7 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\ActionColumn;
 use kartik\grid\GridView;
+use app\models\QuotePlaceholder;
 use app\models\Quote;
 
 /* @var $this yii\web\View */
@@ -52,10 +53,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     [
                         'attribute' => "total",
                         'value' => function($model){
-                            return $model->formatNumber($model->getTotal());
+                            return $model->getTotal();
                         },
                         'format' => "raw",
-                        'label' => "Totale ordine"
+                        'label' => "Totale"
                     ],
                     [
                         'attribute' => 'amount',
@@ -97,7 +98,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'value' => function($model){
                             $pagamenti = $model->checkPayments();
                             if($pagamenti == 2){
-                                return "0";
+                                return 0;
                             }else{
                                 $totale = $model->getTotal();
                                 if(!$totale) return;
@@ -110,10 +111,17 @@ $this->params['breadcrumbs'][] = $this->title;
                     [
                         'attribute' => "data_saldo",
                         'value' => function($model){
-                            // $date = new DateTime($model->created_at);
-                            // $date->add(new DateInterval('P10D'));
-                            $quote = Quote::findOne($model->id_quote);
-                            return $model->formatDate($quote->date_balance);
+                            $date = "";
+                            if(!empty($model->id_quote)){
+                                $quote = Quote::findOne($model->id_quote);
+                                $date = $model->formatDate($quote->date_balance);
+                            }else if(!empty($model->id_quote_placeholder)){
+                                $quotePlacelhoder = QuotePlaceholder::findOne(["id" => $model->id_quote_placeholder]);
+                                $date = !empty($quotePlacelhoder) ? $quotePlacelhoder->formatDate($quotePlacelhoder->date_balance) : "-";
+                            }else{
+                                $date = "-";
+                            }
+                            return $date;
                         },
                         'format' => "raw",
                         'label' => "Data Saldo"

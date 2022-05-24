@@ -77,7 +77,7 @@ class PaymentSearch extends Payment
             else    
                 $query->andFilterWhere(['>=', 'created_at', $start_date ])->andFilterWhere(['<=', 'created_at', $end_date]);
         }
-
+        
         return $dataProvider;
     }
 }

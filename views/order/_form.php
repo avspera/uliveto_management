@@ -183,35 +183,28 @@ $clientData     = !empty($client) ? $client->name." ".$client->surname : ""
                 </div>
                 <div class="row">
                     <div class="col-md-4 col-sm-4 col-12"><?= $form->field($model, 'deposit')->textInput(['maxlength' => true, "onchange" => "subtractDeposit()"]) ?></div>
-                    <div class="col-md-4 col-sm-4 col-12"><?php
-                        echo '<label class="form-label">Data </label>';
-                        echo DatePicker::widget([
-                            'language' => "it",
-                            'name' => 'Quote[date_deposit]',
-                            'type' => DatePicker::TYPE_INPUT,
+                    <div class="col-md-4 col-sm-4 col-12">
+                        <?= $form->field($model, 'date_deposit')->widget(DatePicker::classname(), [
+                            'options' => ['placeholder' => 'Scegli una data ...'],
                             'pluginOptions' => [
                                 'autoclose' => true,
                                 'format' => 'yyyy-mm-dd',
                                 'startDate' => date("Y-m-d")
                             ]
-                        ]);
-                    ?></div>
+                        ]); ?>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-md-4 col-sm-4 col-12"><?= $form->field($model, 'balance')->textInput(['maxlength' => true, "readonly" => true]) ?></div>
                     <div class="col-md-4 col-sm-4 col-12">
-                        <?php
-                            echo '<label class="form-label">Data saldo</label>';
-                            echo DatePicker::widget([
-                                'name' => 'Quote[date_balance]',
-                                'type' => DatePicker::TYPE_INPUT,
-                                'pluginOptions' => [
-                                    'autoclose' => true,
-                                    'format' => 'yyyy-mm-dd',
-                                    'startDate' => date("Y-m-d")
-                                ]
-                            ]);
-                        ?>
+                        <?= $form->field($model, 'date_balance')->widget(DatePicker::classname(), [
+                            'options' => ['placeholder' => 'Scegli una data ...'],
+                            'pluginOptions' => [
+                                'autoclose' => true,
+                                'format' => 'yyyy-mm-dd',
+                                'startDate' => date("Y-m-d")
+                            ]
+                        ]); ?>
                     </div>
                 </div>
                 <div class="row">

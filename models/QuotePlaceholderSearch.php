@@ -17,8 +17,9 @@ class QuotePlaceholderSearch extends QuotePlaceholder
     public function rules()
     {
         return [
-            [['id', 'id_quote', 'amount', 'id_placeholder', 'id_quote'], 'integer'],
-            [['created_at', "updated_at"], 'safe']
+            [['id', 'id_quote', 'amount', 'id_placeholder', 'id_quote', 'confirmed'], 'integer'],
+            [['date_deposit', 'date_balance'], 'string'],
+            [['created_at', "updated_at", "saldo", "acconto"], 'safe']
         ];
     }
 
@@ -64,7 +65,14 @@ class QuotePlaceholderSearch extends QuotePlaceholder
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'amount' => $this->amount,
+            'saldo' => $this->saldo,
+            'acconto' => $this->acconto,
+            'confirmed' => $this->confirmed,
         ]);
+
+        $query->andFilterWhere(['like', 'date_deposit', $this->date_deposit])
+            ->andFilterWhere(['like', 'date_balance', $this->date_balance]);
+
 
         return $dataProvider;
     }

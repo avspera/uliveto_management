@@ -92,7 +92,7 @@ class OrderController extends Controller
         $searchModel->confirmed = 1;
         $searchModel->delivered = 0;
         $dataProvider = $searchModel->search($this->request->queryParams);
-        $dataProvider->sort->defaultOrder = ["deadline" => SORT_DESC];
+        $dataProvider->sort->defaultOrder = ["deadline" => SORT_ASC];
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -332,6 +332,7 @@ class OrderController extends Controller
         }
         
         return $model->attachments;
+
     }
 
     public function actionDeleteAttachment($id_quote = ""){
@@ -362,7 +363,7 @@ class OrderController extends Controller
                 
             }
             \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-            return $this->redirect(Yii::$app->request->referrer);;
+            return $this->redirect(Yii::$app->request->referrer);
         }
     }
 

@@ -92,7 +92,7 @@ class ColorsController extends Controller
             }
 
             \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-            return $this->redirect(Yii::$app->request->referrer);;
+            return $this->redirect(Yii::$app->request->referrer);
         }
     }
 
@@ -221,7 +221,7 @@ class ColorsController extends Controller
             Yii::$app->session->setFlash('error', "Ops...something went wrong [ORDER_DEL-101]");
         }
         
-        return $this->redirect(Yii::$app->request->referrer);
+        return $this->redirect(["index"]);
     }
 
     /**

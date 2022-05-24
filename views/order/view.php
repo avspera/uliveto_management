@@ -24,11 +24,6 @@ $text   = urlencode($decodedText);
 $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
 
 ?>
-<style>
-    .btn{
-        margin: 3px;
-    }
-</style>
 
 <div class="order-view">
 
@@ -341,6 +336,39 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
                                 'label' => "Totale"
                             ],
                             [
+                                'attribute' => 'acconto',
+                                'value' => function($model){
+                                    return $model->formatNumber($model->acconto);
+                                },
+                                'format' => "raw"
+                            ],
+                            [
+                                'attribute' => 'date_deposit',
+                                'value' => function($model){
+                                    return $model->formatDate($model->date_deposit);
+                                }
+                            ],
+                            [
+                                'attribute' => 'saldo',
+                                'value' => function($model){
+                                    return $model->formatNumber($model->saldo);
+                                },
+                                'format' => "raw"
+                            ],
+                            [
+                                'attribute' => 'date_balance',
+                                'value' => function($model){
+                                    return $model->formatDate($model->date_balance);
+                                }
+                            ],
+                            [
+                                'attribute' => "confirmed",
+                                'value' => function($model){
+                                    return $model->confirmed ? "SI" : "NO";
+                                },
+                                'filter' => [0 => "NO", 1 => "SI"]
+                            ],
+                            [
                                 'attribute' => 'created_at',
                                 'value' => function($model){
                                     return $model->formatDate($model->created_at);
@@ -353,7 +381,17 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
                                 }
                             ],
                             [
-                                'class' => ActionColumn::className(),
+                                'class' => 'yii\grid\ActionColumn',
+                                'template' => '{view} {update} {delete}',
+                                'buttons' => [
+                                    'view' => function ($model) {
+                                        return Html::a(
+                                            '<span class="fas fa-eye"></span>',
+                                            Url::to(["/quote-placeholder/view", "id" => $model->id])
+                                            
+                                        );
+                                    },
+                                ],
                             ],
                         ],
                     ]); ?>

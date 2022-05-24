@@ -6,6 +6,7 @@ use Yii;
 use app\models\Quote;
 use app\models\Product;
 use app\models\Sales;
+use app\models\Payment;
 use app\models\Packaging;
 use app\models\Segnaposto;
 use app\models\QuotePlaceholder;
@@ -26,9 +27,16 @@ class GeneratePdf {
         $quotePlaceholder = QuotePlaceholder::find()->where(["id_quote" => $quote->id])->one();
         $products   = QuoteDetails::findAll(["id_quote" => $quote->id]);
         $colors     = [];
-        $sale       = Sales::findOne([$quote->id_sconto]);
+        $sale       = isset($quote->id_sconto) ? Sales::findOne([$quote->id_sconto]) : 0;
         
-        $client     = Client::findOne(["id" => $quote->id_client]);
+        $client     = "";
+        if(isset($quote->id_client) && !empty($quote->id_client)){
+            $client = $quote->getClient();
+        }else{
+            $quote = Quote::findOne(["id" => $quote->id_quote]);
+            $client = $quote->getClient();
+        }
+
         $confetti   = "NO";
         
         if($quote->confetti){
@@ -289,7 +297,7 @@ class GeneratePdf {
         if($quotePlaceholder){
 
             $placeholder = Segnaposto::find()->select(["image"])->where(["id" => $quotePlaceholder->id_placeholder])->one();
-
+            
             if(!empty($placeholder->image)){
                 $pdf->Cell($pdf->Image($placeholder->image, 130, 90, 40, 40));
             }
@@ -302,7 +310,21 @@ class GeneratePdf {
             $totaleWithVat = ($totaleNoVat + ($totaleNoVat / 100) * 22);
     
             $pdf->setXY(115, 143.5);
-            $pdf->Cell(100, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", number_format($quotePlaceholder->total, 2, ",", ".")." € + IVA 22% = ".number_format($totaleWithVat, 2, ",", ".")), 0, 0, 'C');
+            $pdf->Cell(100, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", number_format($quotePlaceholder->total, 2, ",", ".")), 0, 0, 'C');
+
+            $paymentPlaceholder = Payment::findAll(["id_quote_placeholder" => $quotePlaceholder->id]);
+            if(!empty($paymentPlaceholder)){
+                foreach($paymentPlaceholder as $payment){
+                    if($payment->type == 0){
+                        $pdf->setXY(110, 152);
+                        $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $payment->amount. " - ".$quotePlaceholder->formatDate($quotePlaceholder->date_deposit)), 0, 0, 'C');
+                    }else {
+                        $pdf->setXY(110, 155);
+                        $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $payment->amount. " - ".$quotePlaceholder->formatDate($quotePlaceholder->date_deposit)), 0, 0, 'C');
+                    }
+                }
+                
+            }
 
             //shipping
             $pdf->setXY(120, 166);

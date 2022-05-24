@@ -3,6 +3,8 @@
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\DetailView;
+use app\models\QuotePlaceholder;
+use app\models\Quote;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Client */
@@ -15,6 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
 $id_quote = !empty($model->id_quote) ? $model->id_quote : $model->id_quote_placeholder;
 
 ?>
+
 <div class="paymeny-view">
 
     <?php if(Yii::$app->session->hasFlash('error')): ?>
@@ -47,7 +50,7 @@ $id_quote = !empty($model->id_quote) ? $model->id_quote : $model->id_quote_place
             ]) ?>
             <?= Html::a('<i class="fas fa-file-pdf"></i> Genera fattura pro forma', ['generate-fattura-pro-forma', 'id' => $model->id], ['class' => 'btn btn-success']) ?>
             <?= Html::a('<i class="fas fa-file-pdf"></i> Segna come fatturato', ['set-as-invoiced', 'id' => $model->id], ['class' => 'btn btn-info']) ?>
-            <?= Html::a('<span style="color:white"><i class="fas fa-envelope"></i> Invia email pagamento</span>', ['send-email-payment', 'id_client' => $model->id_client, "id_quote" => $id_quote, "id_payment" => $model->id], ['class' => 'btn btn-success']) ?>
+            <?= Html::a('<i class="fas fa-envelope"></i> Invia email', ['generate-pdf', 'id' => $model->id, 'flag' => "send"], ['class' => 'btn btn-success']) ?>
         </div>
 
         <div class="card-body table-responsive">
@@ -91,6 +94,24 @@ $id_quote = !empty($model->id_quote) ? $model->id_quote : $model->id_quote_place
                         }
                     ],
                     [
+                        'attribute' => "data_saldo",
+                        'value' => function($model){
+                            $date = "";
+                            if(!empty($model->id_quote)){
+                                $quote = Quote::findOne($model->id_quote);
+                                $date = $model->formatDate($quote->date_balance);
+                            }else if(!empty($model->id_quote_placeholder)){
+                                $quotePlacelhoder = QuotePlaceholder::findOne(["id" => $model->id_quote_placeholder]);
+                                $date = !empty($quotePlacelhoder) ? $quotePlacelhoder->formatDate($quotePlacelhoder->date_balance) : "-";
+                            }else{
+                                $date = "-";
+                            }
+                            return $date;
+                        },
+                        'format' => "raw",
+                        'label' => "Data Saldo"
+                    ],
+                    [
                         'attribute' => "fatturato",
                         'value' => function($model){
                             return $model->isFatturato();
@@ -102,6 +123,7 @@ $id_quote = !empty($model->id_quote) ? $model->id_quote : $model->id_quote_place
                             return $model->isPayed();
                         }
                     ],
+                    'id_transaction',
                     [
                         'attribute' => 'created_at',
                         'value' => function($model){

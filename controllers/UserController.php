@@ -188,7 +188,7 @@ class UserController extends Controller
     {
         $this->findModel($id)->delete();
         Yii::$app->session->setFlash('success', "Elemento cancellato con successo");
-        return $this->redirect(Yii::$app->request->referrer);
+        return $this->redirect(["index"]);
     }
 
     /**

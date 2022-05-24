@@ -22,12 +22,6 @@ $decodedText = str_ireplace("<br />", "\r\n", $encodedText);
 $text   = urlencode($decodedText);
 $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
 ?>
-<style>
-    .btn{
-        margin: 3px;
-    }
-</style>
-
 <div class="quote-view">
 
     <?php if(Yii::$app->session->hasFlash('error')): ?>

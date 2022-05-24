@@ -214,7 +214,7 @@ class QuotesController extends Controller
             if($model->save()){
                 $pdf = new GeneratePdf();
                 $filename = $pdf->quotePdf($model, $flag, "preventivo");
-                $this->sendEmail($model, $filename, "invio-ordine", $model->getClient().", ecco il tuo preventivo delle tue bomboniere L'Uliveto");
+                $this->sendEmail($model, $filename, "invio-ordine", $model->getClient().", ecco l'ordine delle tue bomboniere L'Uliveto");
                 return $this->redirect(['/order/view', "id" => $id]);
             }
         }catch(Exception $e){
@@ -295,7 +295,7 @@ class QuotesController extends Controller
         $payments       = Payment::deleteAll(["id_quote" => $id]);
         $quotePlaceholder = QuotePlaceholder::deleteAll(["id_quote" => $id]);
         Yii::$app->session->setFlash('success', "Preventivo cancellato con successo");
-        return $this->redirect(Yii::$app->request->referrer);
+        return $this->redirect(["index"]);
     }
 
     public function actionGetByClientId($id_client){
@@ -348,7 +348,7 @@ class QuotesController extends Controller
         $filename = $pdf->quotePdf($quote, $flag, "preventivo", "preventivi");
 
         if($flag == "send"){
-            if($this->sendEmail($quote, $filename, "invio-preventivo", $model->getClient().", ecco l'ordine delle tue bomboniere L'Uliveto")){
+            if($this->sendEmail($quote, $filename, "invio-preventivo", $quote->getClient().", ecco il preventivo delle tue bomboniere L'Uliveto")){
                 Yii::$app->session->setFlash('success', "Email con PDF allegato inviato correttamente: ".$filename);
             }else{
                 Yii::$app->session->setFlash('error', "Ops...something went wrong");

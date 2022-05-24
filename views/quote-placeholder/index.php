@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\ActionColumn;
 use yii\grid\GridView;
+use kartik\date\DatePicker;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\QuotePlaceholderSearch */
@@ -42,6 +43,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'filterModel'   => $searchModel,
                 'columns' => [
                     ['class' => 'yii\grid\SerialColumn'],
+                    'id',
                     [
                        'attribute' => 'id_quote',
                        'value' => function($model){
@@ -58,14 +60,14 @@ $this->params['breadcrumbs'][] = $this->title;
                         'filter' => yii\helpers\ArrayHelper::map(app\models\Segnaposto::find()->orderBy('label')->all(), 'id', 'label')
                     ],
                     'amount',
-                    [
-                        'attribute' => "total_no_vat",
-                        'value' => function($model){
-                            return $model->getTotal();
-                        },
-                        'format' => "raw",
-                        'label' => "Totale senza iva"
-                    ],
+                    // [
+                    //     'attribute' => "total_no_vat",
+                    //     'value' => function($model){
+                    //         return $model->getTotal();
+                    //     },
+                    //     'format' => "raw",
+                    //     'label' => "Totale senza iva"
+                    // ],
                     [
                         'attribute' => "total",
                         'value' => function($model){
@@ -73,6 +75,59 @@ $this->params['breadcrumbs'][] = $this->title;
                         },
                         'format' => "raw",
                         'label' => "Totale"
+                    ],
+                    [
+                        'attribute' => 'date_deposit',
+                        'value' => function($model){
+                            return $model->formatDate($model->date_deposit);
+                        },
+                        'format' => "raw",
+                        'filter' => DatePicker::widget([
+                            'name' => 'date_deposit',
+                            'language' => 'it',
+                            'type' => DatePicker::TYPE_INPUT,
+                            'pluginOptions' => [
+                                'autoclose'=>true,
+                                'format' => 'yyyy-mm-dd',
+                                'startDate' => date("Y-m-d")
+                            ]
+                        ])
+                    ],
+                    [
+                        'attribute' => 'acconto',
+                        'value' => function($model){
+                            return $model->formatNumber($model->acconto);
+                        },
+                    ],
+                    [
+                        'attribute' => 'date_balance',
+                        'value' => function($model){
+                            return $model->formatDate($model->date_balance);
+                        },
+                        'format' => "raw",
+                        'filter' => DatePicker::widget([
+                            'name' => 'date_balance',
+                            'language' => 'it',
+                            'type' => DatePicker::TYPE_INPUT,
+                            'pluginOptions' => [
+                                'autoclose'=>true,
+                                'format' => 'yyyy-mm-dd',
+                                'startDate' => date("Y-m-d")
+                            ]
+                        ])
+                    ],
+                    [
+                        'attribute' => 'saldo',
+                        'value' => function($model){
+                            return $model->formatNumber($model->acconto);
+                        },
+                    ],
+                    [
+                        'attribute' => "confirmed",
+                        'value' => function($model){
+                            return $model->confirmed ? "SI" : "NO";
+                        },
+                        'filter' => [0 => "NO", 1 => "SI"]
                     ],
                     [
                         'attribute' => 'created_at',

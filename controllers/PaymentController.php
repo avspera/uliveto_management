@@ -135,7 +135,7 @@ class PaymentController extends Controller
             $client = Client::find()->select(["name", "surname", "email"])->where(["id" => $id_client])->one();
             $order = Quote::findOne(["id" => $id_quote]);
             // return $this->render("@app/mail/transaction-completed", ["client" => $client, "transaction" => $transaction, "order" => $order]);
-            $this->sendEmail($client, $transaction, $order);
+            $this->sendEmail($client, $transaction, $order, $payment->id);
         }
 
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -168,7 +168,7 @@ class PaymentController extends Controller
         
         if(empty($client) || empty($order)) return false;
         
-        $subject = !empty($transaction) ? $client->name." ".$client->surname." grazie per aver effettuato il pagamento" : $client->name." ".$client->surname." procedi per effettuare il tuo pagamento";
+        $subject = !empty($transaction) ? $client->name." ".$client->surname.", grazie per aver effettuato il pagamento" : $client->name." ".$client->surname." procedi per effettuare il tuo pagamento";
         $message = Yii::$app->mailer
                 ->compose(
                     ['html' => !empty($transaction) ? "transaction-completed" : "send-payment"],

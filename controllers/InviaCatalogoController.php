@@ -238,7 +238,7 @@ class InviaCatalogoController extends Controller
     {
         $this->findModel($id)->delete();
         Yii::$app->session->setFlash('success', "Catalogo cancellato con successo");
-        return $this->redirect(Yii::$app->request->referrer);
+        return $this->redirect(["index"]);
     }
 
     protected function sendEmail($model){
@@ -256,7 +256,7 @@ class InviaCatalogoController extends Controller
                 )
                 ->setFrom([Yii::$app->params["infoEmail"]])
                 ->setTo($model->email)
-                ->setSubject($model->name." ecco il nostro catalogo bomboniere L'Uliveto ");
+                ->setSubject($model->name.", ecco il nostro catalogo bomboniere L'Uliveto ");
 
         
         foreach($existingFiles as $file) {

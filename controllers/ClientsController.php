@@ -189,7 +189,7 @@ class ClientsController extends Controller
         else
             Yii::$app->session->setFlash('error', "Ops...something went wrong [CL-103]");
 
-        return $this->redirect(Yii::$app->request->referrer);
+        return $this->redirect(["index"]);
     }
 
     /**
