@@ -108,24 +108,43 @@ class Payment extends \yii\db\ActiveRecord
                 $total = $quote->getTotal();
         }
         else{
-            $total = $quote->formatNumber($quote->total);
+            $total = $quote->total;
         }
 
         return $total;
     }
 
     public function checkPayments(){
-        if(!empty($model->id_quote))
+        if(!empty($this->id_quote))
             $pagamenti = Payment::findAll(["id_quote" => $this->id_quote]);
-        else if(!empty($model->id_quote_placeholder)){
-            $pagamenti = Payment::findAll(["id_quote" => $this->id_quote_placeholder]);
+        else if(!empty($this->id_quote_placeholder)){
+            $pagamenti = Payment::findAll(["id_quote_placeholder" => $this->id_quote_placeholder]);
         }else{
             $pagamenti = [];
         }
-
+        
         return count($pagamenti);
     }
 
+    public function getSaldo(){
+        if(!empty($model->id_quote))
+            $pagamenti = Payment::find()->where(["id_quote" => $this->id_quote])->all();
+        else{
+            $pagamenti = Payment::findAll(["id_quote" => $this->id_quote_placeholder]);
+        }
+        
+        $acconto = 0;
+        foreach($pagamenti as $payment){
+            if($payment->type == 0){
+                $acconto = $payment->amount;
+            }
+        }
+
+        $totale = $this->getTotal();
+        return $acconto;
+        return ($totale-$acconto);
+    }
+    
     public function getClient(){
         $client = Client::findOne([$this->id_client]);
         return !empty($client) ? $client->name." ".$client->surname : "";

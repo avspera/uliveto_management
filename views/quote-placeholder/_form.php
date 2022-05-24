@@ -140,7 +140,7 @@ use app\models\Segnaposto;
     }
  
     function applyIvaToTotal(newTotalNoVat){
-        let out = (newTotalNoVat + (newTotalNoVat / 100) * 4);
+        let out = (newTotalNoVat + (newTotalNoVat / 100) * 22);
         out     = isNaN(out) ? 0 : Math.abs(parseFloat(out).toFixed(2));
         $('#quote-total').val(out);
         return out;

@@ -266,6 +266,8 @@ class OrderController extends Controller
                         $i++;
                     }
                 }
+            }else{
+                Yii::$app->session->setFlash('error', json_encode($model->getErrors()));
             }
             
             return $this->redirect(['view', 'id' => $model->id]);

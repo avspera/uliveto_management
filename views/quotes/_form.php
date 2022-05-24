@@ -274,32 +274,30 @@ $placeholders = \app\models\Segnaposto::find()->all();
                     <div class="col-md-4 col-sm-6 col-12"><?= $form->field($model, 'address')->textInput(["maxlength" => true]) ?></div>
                 </div>
                 <div class="row">
-                    <div class="col-md-4 col-sm-4 col-12"><?php
-                        echo '<label class="form-label">Data evento </label>';
-                        echo DatePicker::widget([
-                            'name' => 'Quote[data_evento]',
-                            'type' => DatePicker::TYPE_INPUT,
-                            'pluginOptions' => [
-                                'autoclose' => true,
-                                'format' => 'yyyy-mm-dd',
-                                'language' => "it",
-                                'startDate' => date("Y-m-d")
-                            ]
-                        ]);
-                    ?></div>
-                    <div class="col-md-4 col-sm-4 col-12"><?php
-                        echo '<label class="form-label">Consegna (entro il) </label>';
-                        echo DatePicker::widget([
-                            'name' => 'Quote[deadline]',
-                            'type' => DatePicker::TYPE_INPUT,
-                            'pluginOptions' => [
-                                'autoclose' => true,
-                                'format' => 'yyyy-mm-dd',
-                                'language' => "it",
-                                'startDate' => date("Y-m-d")
-                            ]
-                        ]);
-                    ?></div>
+                    <div class="col-md-4 col-sm-4 col-12">
+                        <?= $form->field($model, 'data_evento')
+                                    ->widget(DatePicker::classname(), [
+                                    'pluginOptions' => [
+                                        'autoclose' => true,
+                                        'autoclose' => true,
+                                        'format' => 'yyyy-mm-dd',
+                                        'startDate' => date("Y-m-d")
+                                    ]
+                                ]); 
+                        ?>
+                    </div>
+                    <div class="col-md-4 col-sm-4 col-12">
+                        <?= $form->field($model, 'deadline')
+                                ->widget(DatePicker::classname(), [
+                                'pluginOptions' => [
+                                    'autoclose' => true,
+                                    'autoclose' => true,
+                                    'format' => 'yyyy-mm-dd',
+                                    'startDate' => date("Y-m-d")
+                                ]
+                            ]); 
+                        ?>
+                    </div>
                     <div class="col-md-4 col-sm-4 col-12"><?php
                         echo '<label class="form-label">Scadenza offerta </label>';
                         echo DatePicker::widget([

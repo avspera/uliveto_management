@@ -124,12 +124,12 @@ class GeneratePdf {
                 if(!empty($products[$i]->id_packaging)){
                     $packaging = Packaging::find()
                                     ->select(["label", "image"])
-                                    ->where(["id_product" => $item->id])
+                                    ->where(["id" =>$products[$i]->id_packaging])
                                     ->one();
-    
+                    
                     if(!empty($packaging)){
                         //do not repeat pack image if already print
-                        if(!in_array($packaging->label, $packName)){
+                        if(!in_array($packaging->label, $packName) && !empty($packaging->image)){
                             $packName[$i] = $packaging->label;
                             $ordinate = 225;
                             $pdf->Cell($pdf->Image($packaging->image, $start_pack_x, $ordinate, 40, 40));
@@ -390,9 +390,9 @@ class GeneratePdf {
         $pdf->setXY(0, 215);
         $pdf->Cell(0, 0, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quote->notes), 0, 0, 'C');
 
-        $filename           = $file."_".$quote->order_number."_".$client->name."_".$client->surname.".pdf";
+        $filename           = $file."_".$quote->order_number."_".$quote->getClient().".pdf";
         $fileRelativePath   = Yii::getAlias("@webroot")."/pdf/".$target."/".$file."_".$quote->order_number."_".$client->name."_".$client->surname.".pdf";
-        // $pdf->Output();die; //If test
+        $pdf->Output();die; //If test
         
         $pdf->Output($fileRelativePath, 'F');    
 

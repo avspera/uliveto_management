@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\DetailView;
+use app\utils\GeneratePdf;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\QuotePlaceholder */
@@ -11,6 +12,7 @@ $this->title = $model->id." - ".$model->getQuoteInfo();
 $this->params['breadcrumbs'][] = ['label' => 'Preventivi Segnaposto', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
+
 ?>
 <div class="quote-placeholder-view">
 
@@ -42,8 +44,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'method' => 'post',
                 ],
             ]) ?>
-                    <?= Html::a('<i class="fas fa-check"></i> Conferma', ['confirm', 'id' => $model->id], ['class' => 'btn btn-info']) ?>
-            <?= Html::a('<i class="fas fa-file-pdf"></i> Genera PDF', ['generate-pdf', 'id' => $model->id, 'flag' => "generate"], ['class' => 'btn btn-success']) ?>
+            <?= Html::a('<i class="fas fa-check"></i> Conferma', ['confirm', 'id' => $model->id], ['class' => 'btn btn-info']) ?>
             <?= $phone ? Html::a('<i class="fas fa-comment"></i> Whatsapp', Url::to("https://wa.me/".$phone."/?text=".$text), ['class' => 'btn btn-primary', 'target' => "_blank"]) : "" ?>
             <?= Html::a('<i class="fas fa-envelope"></i> Invia email', ['generate-pdf', 'id' => $model->id, 'flag' => "send"], ['class' => 'btn btn-success']) ?>
         </div>

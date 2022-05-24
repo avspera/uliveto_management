@@ -6,15 +6,24 @@
 
     $today          = date("Y-m-d");
     $expiring       = app\models\Quote::find()
-                        ->where(["<=", "deadline", $today])
+                        ->select(["id", "deadline", "id_client"])
+                        ->andWhere(["<=", "deadline", date('Y-m-d', strtotime('+10 days'))])
                         ->andWhere(["confirmed" => 1])
                         ->orderBy(["deadline" => SORT_DESC])
                         ->limit(10)
                         ->all();
-    $expiringCount  = app\models\Quote::find()->where(["<=", "deadline", $today])->andWhere(["confirmed" => 1])->count();
+    
+    $expiringCount  = app\models\Quote::find()
+                                    ->where(["<=", "deadline", $today])
+                                    ->andWhere(["confirmed" => 1])
+                                    ->count();
+
     $messageCount   = app\models\Message::find()->where(["not",  ["replied_at" => null]])->count();
     $paymentsCount  = app\models\Payment::find()->count();
-    $payments       = app\models\Payment::find()->orderBy(["created_at" => SORT_DESC])->limit(10)->all();
+    $payments       = app\models\Payment::find()
+                                    ->orderBy(["created_at" => SORT_DESC])
+                                    ->limit(10)
+                                    ->all();
 ?>
 
 <!-- Navbar -->
@@ -96,7 +105,7 @@
                             <div class="media-body">
                                 <h3 class="dropdown-item-title">
                                     <?= !empty($client) ? $client->name." ".$client->surname : ""?>
-                                    <span class="float-right text-sm text-success"><i class="fas fa-coins"></i></span>
+                                    <span class="float-right text-sm text-<?= $item->payed ? "success" : "warning" ?>"><i class="fas fa-coins"></i></span>
                                 </h3>
                                 <div class="row" style="margin: 3px">
                                     <p class="text-sm" style="margin-right:5px"><?= $item->formatNumber($item->amount) ?></p>

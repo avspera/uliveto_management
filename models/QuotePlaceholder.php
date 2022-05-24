@@ -33,7 +33,7 @@ class QuotePlaceholder extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id_quote', 'id_placeholder', 'amount', 'created_at'], 'required'],
+            [['id_quote', 'id_placeholder', 'amount', 'created_at', "total"], 'required'],
             [['id_quote', 'id_placeholder', 'amount', 'confirmed'], 'integer'],
             [['date_deposit', 'date_balance', 'created_at', 'updated_at'], 'string'],
             [['created_at', 'updated_at', 'date_deposit', "date_balance","saldo", "acconto"], 'safe'],

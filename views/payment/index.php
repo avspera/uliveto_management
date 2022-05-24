@@ -92,17 +92,19 @@ $this->params['breadcrumbs'][] = $this->title;
                         },
                         'filter' => [0 => "NO", 1 => "SI"]
                     ],
-                    
                     [
                         'attribute' => "saldo",
                         'value' => function($model){
                             $pagamenti = $model->checkPayments();
+                            
                             if($pagamenti == 2){
                                 return 0;
+                            }else if ($pagamenti == 1){
+                                $saldo = $model->getSaldo();
+                                return $model->formatNumber($saldo);
                             }else{
                                 $totale = $model->getTotal();
-                                if(!$totale) return;
-                                return $totale - $model->amount < 0 ? 0 : $model->formatNumber($totale - $model->amount);
+                                return $model->formatNumber($totale);
                             }
                         },
                         'format' => "raw",
