@@ -307,7 +307,6 @@ class QuotesController extends Controller
         $data = Quote::find()
                     ->select(["id", "order_number", "created_at", "confirmed"])
                     ->where(["id_client" => $id_client])
-                    ->andWhere(["confirmed" => 1])
                     ->orderBy(["created_at" => SORT_DESC])
                     ->all();
         

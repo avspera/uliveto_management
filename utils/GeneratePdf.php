@@ -29,13 +29,14 @@ class GeneratePdf {
         $colors     = [];
         $sale       = isset($quote->id_sconto) ? Sales::findOne([$quote->id_sconto]) : 0;
         
-        $client     = "";
         if(isset($quote->id_client) && !empty($quote->id_client)){
             $client = $quote->getClient();
         }else{
             $quote = Quote::findOne(["id" => $quote->id_quote]);
             $client = $quote->getClient();
         }
+       
+        $client = str_replace(" ", "_", $client);
 
         $confetti   = "NO";
         
@@ -390,9 +391,9 @@ class GeneratePdf {
         $pdf->setXY(0, 215);
         $pdf->Cell(0, 0, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quote->notes), 0, 0, 'C');
 
-        $filename           = $file."_".$quote->order_number."_".$quote->getClient().".pdf";
-        $fileRelativePath   = Yii::getAlias("@webroot")."/pdf/".$target."/".$file."_".$quote->order_number."_".$client->name."_".$client->surname.".pdf";
-        $pdf->Output();die; //If test
+        $filename           = $file."_".$quote->order_number."_".$client.".pdf";
+        $fileRelativePath   = Yii::getAlias("@webroot")."/pdf/".$target."/".$file."_".$quote->order_number."_".$client.".pdf";
+        // $pdf->Output();die; //If test
         
         $pdf->Output($fileRelativePath, 'F');    
 

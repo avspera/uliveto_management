@@ -44,7 +44,8 @@ class QuotePlaceholderController extends Controller
                             'get-total',
                             'generate-pdf',
                             'send-email-payment',
-                            'confirm'
+                            'confirm',
+                            'search-for-clients-from-select'
                         ],
                         'allow' => true,
                         'roles' => ['@'],
@@ -171,15 +172,17 @@ class QuotePlaceholderController extends Controller
         
         if(empty($quotePlaceholder)) return;
         
-        $pdf = new GeneratePdf();
-        $filename = $pdf->quotePdf($quotePlaceholder, $flag, "preventivo", "preventivi");
-        $quote  = Quote::findOne(["id" => $quotePlaceholder->id_quote]);
-        $client = Client::findOne(["id" => $quote->id_client]);
+        $pdf        = new GeneratePdf();
+        $filename   = $pdf->quotePdf($quotePlaceholder, $flag, "preventivo", "preventivi");
+        
+        $quote      = Quote::findOne(["id" => $quotePlaceholder->id_quote]);
+        $client     = Client::findOne(["id" => $quote->id_client]);
         if($flag == "send"){
             
             if($this->sendEmail($quotePlaceholder, $filename, "invio-preventivo-segnaposto", $quote->getClient().", ecco il preventivo delle tue bomboniere L'Uliveto", $client)){
-                Yii::$app->session->setFlash('success', "Email con PDF allegato inviato correttamente: ".$filename);
+                Yii::$app->session->setFlash('success', "Email con PDF allegato inviato correttamente: ".$filename." - email: ".$client->email);
             }else{
+
                 Yii::$app->session->setFlash('error', "Ops...something went wrong");
             }
         }else{
@@ -209,6 +212,40 @@ class QuotePlaceholderController extends Controller
         return $this->redirect(["view", "id" => $id_quote]);
     }
 
+    public function actionSearchForClientsFromSelect($q = ""){
+        $term = $q;
+
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $out = ['results' => [], "status" => "100"];
+        
+        if (!is_null($term)) {
+            $data = Client::find()
+                        ->select(["id", "name", "surname"])
+                        ->where(["LIKE", "surname", $term])
+                        ->orWhere(["LIKE", "name", $term])
+                        ->orderBy(["name" => SORT_ASC])
+                        ->all();
+                
+            $i = 0;
+            foreach($data as $client){
+                $quote = Quote::findOne(["id_client" => $client->id]);
+                if(!empty($quote)){
+                    $out["results"][$i]["id"]   = $quote->id;
+                    $out["results"][$i]["text"] = $quote->id."-".$client->name." ".$client->surname;
+                    $i++;
+                }
+            }
+            print_r($out);die;
+            if(!empty($out["results"])){
+                $out["status"] = "200";
+            }
+        }
+        else if($id > 0){
+            $out['results'] = ['id' => $id, 'text' => Client::find($id)->surname." ".Client::find($id)->name];
+        }
+        return $out;
+    }
+
     protected function sendEmail($model, $filename, $view, $client){
         
         if(empty($model)) return false;
@@ -223,8 +260,9 @@ class QuotePlaceholderController extends Controller
                 ->setSubject($object);
 
         $fullFilename = "https://manager.orcidelcilento.it/web/pdf/preventivi/".$filename;
+        
         $message->attach($fullFilename);
-
+        
         return $message->send();
     }
     

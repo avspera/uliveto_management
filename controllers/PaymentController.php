@@ -35,6 +35,7 @@ class PaymentController extends Controller
                             'external-payment', 
                             'register-transaction',
                             'upload-allegato',
+                            'generate-pdf'
                         ],
                         'allow' => true,
                         'allow' => ['?'],
@@ -159,6 +160,27 @@ class PaymentController extends Controller
             Yii::$app->session->setFlash('success', "Email inviata correttamente");
         }else{
             Yii::$app->session->setFlash('error', "Ops...something went wrong [ORDER_SEND_EMAIL-100]");
+        }
+
+        return $this->redirect(Yii::$app->request->referrer);
+    }
+
+    public function actionGeneratePdf($id, $flag){
+        $quote      = Quote::findOne(["id" => $id]);
+        
+        if(empty($quote)) return;
+        
+        $pdf = new GeneratePdf();
+        $filename = $pdf->quotePdf($quote, $flag, "preventivo", "preventivi");
+
+        if($flag == "send"){
+            if($this->sendEmail($quote, $filename, "invio-preventivo", $quote->getClient().", ecco il preventivo delle tue bomboniere L'Uliveto")){
+                Yii::$app->session->setFlash('success', "Email con PDF allegato inviato correttamente: ".$filename);
+            }else{
+                Yii::$app->session->setFlash('error', "Ops...something went wrong");
+            }
+        }else{
+            Yii::$app->session->setFlash('success', "Pdf generato correttamente.<a href='/web/pdf/preventivi/".$filename."'>Scarica</a>");
         }
 
         return $this->redirect(Yii::$app->request->referrer);

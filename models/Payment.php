@@ -54,7 +54,7 @@ class Payment extends \yii\db\ActiveRecord
             'id_client'     => 'Cliente',
             'id_quote'      => 'Ordine Bomboniere',
             'id_quote_placeholder' => 'Ordine Segnaposto',
-            'amount'        => 'Quantità',
+            'amount'        => 'Importo',
             'created_at'    => 'Effettuato il',
             'fatturato'     => "Fatturato",
             'type'          => "Tipo",

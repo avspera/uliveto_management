@@ -64,9 +64,9 @@ class QuotePlaceholderSearch extends QuotePlaceholder
             'id_placeholder' => $this->id_placeholder,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            'amount' => $this->amount,
-            'saldo' => $this->saldo,
-            'acconto' => $this->acconto,
+            'amount'    => $this->amount,
+            'saldo'     => $this->saldo,
+            'acconto'    => $this->acconto,
             'confirmed' => $this->confirmed,
         ]);
 

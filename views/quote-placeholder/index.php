@@ -33,6 +33,8 @@ $this->params['breadcrumbs'][] = $this->title;
       </div>
     <?php endif; ?> 
 
+    <?php echo $this->render('_search', ['model' => $searchModel]); ?>
+
     <div class="card">
         <div class="card-header">
             <?= Html::a('Aggiungi', ['create'], ['class' => 'btn btn-success']) ?>
@@ -46,7 +48,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     [
                        'attribute' => 'id_quote',
                        'value' => function($model){
-                           return Html::a($model->getQuoteInfo(), Url::to(["quote/view", "id" => $model->id]));
+                           return Html::a($model->getQuoteInfo(), Url::to(["quote/view", "id" => $model->id_quote]));
                         },
                         'format' => "raw"
                     ],
@@ -97,6 +99,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'value' => function($model){
                             return $model->formatNumber($model->acconto);
                         },
+                        'format' => "raw"
                     ],
                     [
                         'attribute' => 'date_balance',
@@ -118,8 +121,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     [
                         'attribute' => 'saldo',
                         'value' => function($model){
-                            return $model->formatNumber($model->acconto);
+                            return $model->formatNumber($model->saldo);
                         },
+                        'format' => "raw"
                     ],
                     [
                         'attribute' => "confirmed",

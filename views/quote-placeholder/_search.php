@@ -1,35 +1,59 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\ActiveForm;
-
-/* @var $this yii\web\View */
-/* @var $model app\models\QuotePlaceholderSearch */
-/* @var $form yii\widgets\ActiveForm */
+use kartik\date\DatePicker;
+use yii\web\JsExpression;
+use kartik\select2\Select2;
 ?>
 
-<div class="quote-placeholder-search">
+<div class="quote-search">
 
     <?php $form = ActiveForm::begin([
         'action' => ['index'],
         'method' => 'get',
     ]); ?>
 
-    <?= $form->field($model, 'id') ?>
+    
+    <div class="card card-success">
+        <div class="card-header"> <i class="fas fa-search"></i> Cerca</div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4 col-sm-4 col-12">
+                    <?= $form->field($model, 'id_quote')->widget(Select2::classname(), [
+                            'options' => [
+                                'multiple'=>false, 
+                                'placeholder' => 'Cerca per cliente ...'
+                            ],
+                            'pluginOptions' => [
+                                'allowClear' => true,
+                                'minimumInputLength' => 3,
+                                'language' => [
+                                    'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                                ],
+                                'ajax' => [
+                                    'url' => Url::to(["quote-placeholder/search-for-clients-from-select"]),
+                                    'dataType' => 'json',
+                                    'data' => new JsExpression('function(params) { return {q:params.term}; }')
+                                ],
+                                'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                                'templateResult' => new JsExpression('function(client) { return client.text; }'),
+                                'templateSelection' => new JsExpression('function (client) { return client.text; }'),
+                            ],
+                        ]);
+                    ?>
+                </div>
+            </div>
+ 
+            <div class="row">
+                <div class="form-group">
+                    <?= Html::submitButton('Cerca', ['class' => 'btn btn-primary']) ?>
+                    <?= Html::a('<span>Cancella Filtri</span>', ['index'], ['class' => 'btn btn-outline-secondary'])?>
+                </div>
+            </div>
 
-    <?= $form->field($model, 'id_quote') ?>
-
-    <?= $form->field($model, 'id_placeholder') ?>
-
-    <?= $form->field($model, 'amount') ?>
-
-    <?= $form->field($model, 'created_at') ?>
-
-    <?php // echo $form->field($model, 'updated_at') ?>
-
-    <div class="form-group">
-        <?= Html::submitButton('Search', ['class' => 'btn btn-primary']) ?>
-        <?= Html::resetButton('Reset', ['class' => 'btn btn-outline-secondary']) ?>
+        </div>
     </div>
 
     <?php ActiveForm::end(); ?>

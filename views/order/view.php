@@ -412,6 +412,12 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
                         'dataProvider' => $payments,
                         'columns' => [
                             [
+                                'attribute' => "type",
+                                'value' => function($model){
+                                    return $model->getType();
+                                }
+                            ],
+                            [
                                 'attribute' => 'amount',
                                 'value' => function($model){
                                     return $model->formatNumber($model->amount);
@@ -419,18 +425,25 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
                                 'format' => "raw"
                             ],
                             [
-                                'attribute' => "fatturato",
-                                'value' => function($model){
-                                    return $model->isFatturato();
-                                },
-                                'filter' => [0 => "NO", 1 => "SI"]
-                            ],
-                            [
                                 'attribute' => 'created_at',
                                 'value' => function($model){
                                     return $model->formatDate($model->created_at);
                                 },
                                 'label' => "Data pagamento"
+                            ],
+                            [
+                                'attribute' => "payed",
+                                'value' => function($model){
+                                    return $model->isPayed();
+                                },
+                                'filter' => [0 => "NO", 1 => "SI"]
+                            ],
+                            [
+                                'attribute' => "fatturato",
+                                'value' => function($model){
+                                    return $model->isFatturato();
+                                },
+                                'filter' => [0 => "NO", 1 => "SI"]
                             ],
                             [
                                 'attribute' => "saldo",
@@ -441,12 +454,6 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
                                 },
                                 'format' => "raw",
                                 'label' => "Resta da saldare"
-                            ],
-                            [
-                                'attribute' => "type",
-                                'value' => function($model){
-                                    return $model->getType();
-                                }
                             ],
                             [ 'class' => ActionColumn::className() ],
                         ],

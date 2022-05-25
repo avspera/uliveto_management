@@ -49,7 +49,7 @@ class QuotePlaceholder extends \yii\db\ActiveRecord
             'id' => 'ID',
             'id_quote' => 'Preventivo/ordine',
             'id_placeholder' => 'Segnaposto',
-            'amount' => 'Quantità',
+            'amount' => 'Unità',
             'created_at' => 'Creato il',
             'updated_at' => 'Aggiornato il',
             'date_deposit' => "Data acconto",

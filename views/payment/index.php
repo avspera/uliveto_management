@@ -46,7 +46,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     [
                         'attribute' => 'id_quote_placeholder',
                         'value' => function($model){
-                            return !empty($model->id_quote_placeholder) ? Html::a($model->id_quote_placeholder, Url::to(["quote-placeholder/view", "id" => $model->id_quote_placeholder])) : "-";
+                            $quote = $model->getQuotePlaceholder();
+                            return Html::a($quote["quote"], Url::to(["quote-placeholder/view", "id" => $model->id_quote_placeholder]));
                         },
                         'format' => "raw"
                     ],
@@ -96,7 +97,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'attribute' => "saldo",
                         'value' => function($model){
                             $pagamenti = $model->checkPayments();
-                            
+                            // return $pagamenti;
                             if($pagamenti == 2){
                                 return 0;
                             }else if ($pagamenti == 1){
@@ -152,21 +153,4 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
 
-    <?php 
-        // Modal::begin([
-        //     'header' => '<h3>Crear Evento</h3>',
-        //     'id'=>'create',
-        //     'size'=>'modal-lg',
-        // ]);
-
-        // echo "<div id='modalCreate'></div>";
-        // Modal::end();
-    ?>
 </div>
-
-
-<script>
-    function openModal(){
-        console.log("stocazzo")
-    }
-</script>
