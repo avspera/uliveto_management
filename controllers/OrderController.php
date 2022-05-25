@@ -173,12 +173,25 @@ class OrderController extends Controller
         $payments     = $paymentModel->search([]);
         $payments->sort->defaultOrder = ["created_at" => SORT_DESC];
         
+        /**
+         * Quote placheolder payments
+         */
+        $quotePlaceholder = QuotePlaceholder::findOne(["id_quote" => $id ]);
+        if(!empty($quotePlaceholder)){
+            $paymentModel = new PaymentSearch();
+            $paymentModel->id_quote_placeholder = $quotePlaceholder->id;
+            $paymentsPlaceholder = $payments->search([]);
+            $paymentsPlaceholder->sort->defaultOrder = ["created_at" => SORT_DESC];
+    
+        }
+        
         return $this->render('view', [
             'model'         => $model,
             'client'        => !empty($client) ? $client->name." ".$client->surname : "",
             'products'      => $products,
             'payments'      => $payments,
-            'segnaposto'    => $segnaposto
+            'segnaposto'    => $segnaposto,
+            'paymentsPlaceholder' => $paymentsPlaceholder
         ]);
     }
 

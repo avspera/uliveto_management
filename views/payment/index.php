@@ -97,7 +97,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'attribute' => "saldo",
                         'value' => function($model){
                             $pagamenti = $model->checkPayments();
-                            // return $pagamenti;
+                            
                             if($pagamenti == 2){
                                 return 0;
                             }else if ($pagamenti == 1){

@@ -228,14 +228,17 @@ class QuotePlaceholderController extends Controller
                 
             $i = 0;
             foreach($data as $client){
-                $quote = Quote::findOne(["id_client" => $client->id]);
-                if(!empty($quote)){
-                    $out["results"][$i]["id"]   = $quote->id;
-                    $out["results"][$i]["text"] = $quote->id."-".$client->name." ".$client->surname;
-                    $i++;
+                $quotes = Quote::findAll(["id_client" => $client->id]);
+                foreach($quotes as $quote){
+                    if(!empty($quote)){
+                        $out["results"][$i]["id"]   = $quote->id;
+                        $out["results"][$i]["text"] = $quote->order_number."-".$client->name." ".$client->surname;
+                        $i++;
+                    }
                 }
+                
             }
-            print_r($out);die;
+            
             if(!empty($out["results"])){
                 $out["status"] = "200";
             }

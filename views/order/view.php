@@ -161,7 +161,8 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
                     [
                         'attribute' => 'balance',
                         'value' => function($model){
-                            return $model->formatNumber($model->balance);
+                            $saldo = $model->total - $model->deposit;
+                            return $model->formatNumber($saldo);
                         },
                         'format' => "raw"
                     ],
@@ -403,13 +404,75 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
     <?php if(!empty($payments)) { ?>
         <div class="card card-info">
                 <div class="card-header">
-                    <div class="text-md">Pagamenti 
+                    <div class="text-md">Pagamenti bomboniere
                         <?= Html::a('<i class="fas fa-plus-circle" style="margin-left: 5px;"></i>', ['payment/create']) ?>
                     </div>
                 </div>
                 <div class="card-body">
                     <?= GridView::widget([
                         'dataProvider' => $payments,
+                        'columns' => [
+                            [
+                                'attribute' => "type",
+                                'value' => function($model){
+                                    return $model->getType();
+                                }
+                            ],
+                            [
+                                'attribute' => 'amount',
+                                'value' => function($model){
+                                    return $model->formatNumber($model->amount);
+                                },
+                                'format' => "raw"
+                            ],
+                            [
+                                'attribute' => 'created_at',
+                                'value' => function($model){
+                                    return $model->formatDate($model->created_at);
+                                },
+                                'label' => "Data pagamento"
+                            ],
+                            [
+                                'attribute' => "payed",
+                                'value' => function($model){
+                                    return $model->isPayed();
+                                },
+                                'filter' => [0 => "NO", 1 => "SI"]
+                            ],
+                            [
+                                'attribute' => "fatturato",
+                                'value' => function($model){
+                                    return $model->isFatturato();
+                                },
+                                'filter' => [0 => "NO", 1 => "SI"]
+                            ],
+                            [
+                                'attribute' => "saldo",
+                                'value' => function($model){
+                                    $totale = $model->getTotal();
+                                    if(!$totale) return;
+                                    return $totale - $model->amount < 0 ? 0 : $model->formatNumber($totale - $model->amount);
+                                },
+                                'format' => "raw",
+                                'label' => "Resta da saldare"
+                            ],
+                            [ 'class' => ActionColumn::className() ],
+                        ],
+                    ]); ?>
+                </div>
+        </div>
+    <?php } ?>
+
+    <?php if(!empty($paymentsPlaceholder)) { ?>
+        <div class="card card-info">
+                <div class="card-header">
+                    <div class="text-md">Pagamenti segnaposto
+                        <?= Html::a('<i class="fas fa-plus-circle" style="margin-left: 5px;"></i>', ['payment/create']) ?>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <?= GridView::widget([
+                        'dataProvider' => $paymentsPlaceholder,
                         'columns' => [
                             [
                                 'attribute' => "type",

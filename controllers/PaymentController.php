@@ -168,13 +168,21 @@ class PaymentController extends Controller
     public function actionGeneratePdf($id, $flag){
         $quote      = Quote::findOne(["id" => $id]);
         
+        if(empty($quote)){
+            $quote = QuotePlaceholder::findOne(["id" => $id]);
+            $quoteTmp = Quote::findOne(["id" => $quote->id_quote]);
+            $client = Client::findOne(["id" => $quoteTmp->id_client]);
+        }else{
+            $client = Client::findOne(["id" => $quote->id_client]);
+        }
+
         if(empty($quote)) return;
         
         $pdf = new GeneratePdf();
         $filename = $pdf->quotePdf($quote, $flag, "preventivo", "preventivi");
 
         if($flag == "send"){
-            if($this->sendEmail($quote, $filename, "invio-preventivo", $quote->getClient().", ecco il preventivo delle tue bomboniere L'Uliveto")){
+            if($this->sendEmail($quote, [], $filename, $client)){
                 Yii::$app->session->setFlash('success', "Email con PDF allegato inviato correttamente: ".$filename);
             }else{
                 Yii::$app->session->setFlash('error', "Ops...something went wrong");
@@ -186,7 +194,7 @@ class PaymentController extends Controller
         return $this->redirect(Yii::$app->request->referrer);
     }
 
-    protected function sendEmail($client, $transaction = [], $order, $id_payment){
+    protected function sendEmail($order, $transaction = [], $filename, $client, $id_payment = ""){
         
         if(empty($client) || empty($order)) return false;
         

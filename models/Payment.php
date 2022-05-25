@@ -119,6 +119,7 @@ class Payment extends \yii\db\ActiveRecord
             $pagamenti = Payment::findAll(["id_quote" => $this->id_quote]);
         else if(!empty($this->id_quote_placeholder)){
             $pagamenti = Payment::findAll(["id_quote_placeholder" => $this->id_quote_placeholder]);
+            
         }else{
             $pagamenti = [];
         }
@@ -127,22 +128,26 @@ class Payment extends \yii\db\ActiveRecord
     }
 
     public function getSaldo(){
-        if(!empty($model->id_quote))
-            $pagamenti = Payment::find()->where(["id_quote" => $this->id_quote])->all();
+        if(!empty($this->id_quote))
+            $pagamento = Payment::find()
+                            ->where(["id_quote" => $this->id_quote])
+                            ->andWhere(["type" => 0])
+                            ->one();
         else{
-            $pagamenti = Payment::findAll(["id_quote" => $this->id_quote_placeholder]);
+            $pagamento = Payment::find()
+                            ->where(["id_quote_placeholder" => $this->id_quote_placeholder])
+                            ->andWhere(["type" => 0])
+                            ->one();
         }
         
         $acconto = 0;
-        foreach($pagamenti as $payment){
-            if($payment->type == 0){
-                $acconto = $payment->amount;
-            }
+        if(!empty($pagamento->amount)){
+            $acconto = $pagamento->amount;
         }
-
+        
         $totale = $this->getTotal();
-        return $acconto;
-        return ($totale-$acconto);
+        
+        return floatval($totale-$acconto);
     }
     
     public function getClient(){

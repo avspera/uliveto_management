@@ -59,13 +59,19 @@ class PaymentSearch extends Payment
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'id' => $this->id,
             'id_client' => $this->id_client,
             'id_quote' => $this->id_quote,
             'payed' => $this->payed,
             'amount' => $this->amount,
         ]);
 
+        $quotes = Quote::find()->where(["id" => $this->id_quote])->orderBy(["date_balance" => SORT_DESC])->all();
+        $ids = [];
+        foreach($quotes as $quote){
+            $ids[$quote->id] = $quote->id;
+        }
+        
+        
         if(!empty($params["PaymentSearch"]["start_date"]) || !empty($params["PaymentSearch"]["end_date"]))
         {
             $tmp_start_date = explode("/", $params["PaymentSearch"]["start_date"]);
