@@ -437,6 +437,7 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
                                 'value' => function($model){
                                     return $model->isPayed();
                                 },
+                                'format' => "raw",
                                 'filter' => [0 => "NO", 1 => "SI"]
                             ],
                             [
@@ -444,6 +445,7 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
                                 'value' => function($model){
                                     return $model->isFatturato();
                                 },
+                                'format' => "raw",
                                 'filter' => [0 => "NO", 1 => "SI"]
                             ],
                             [
@@ -456,7 +458,27 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
                                 'format' => "raw",
                                 'label' => "Resta da saldare"
                             ],
-                            [ 'class' => ActionColumn::className() ],
+                            [
+                                'class' => 'yii\grid\ActionColumn',
+                                'template' => '{view} {update} {delete}',
+                                'buttons'=> [
+                                    'view' => function ($url, $model) {
+                                        return Html::a("<i class='fas fa-eye'></i>", ["payment/view", "id" => $model->id]);
+                                    },
+                                    'update' => function ($url, $model) {
+                                        return Html::a("<i class='fas fa-pencil-alt'></i>", ["payment/update", "id" => $model->id]);
+                                    },
+                                    'delete' => function ($url, $model) {
+                                        return Html::a("<i class='fas fa-trash'></i>", ["payment/delete", "id" => $model->id], [
+                                            'title' => "Activate",
+                                            'data' => [
+                                                 'method' => 'post',
+                                                 'confirm' => 'Sei sicuro di voler cancellare questo elemento?',
+                                            ],
+                                        ]);
+                                    }
+                                ],
+                            ]
                         ],
                     ]); ?>
                 </div>
@@ -499,6 +521,7 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
                                 'value' => function($model){
                                     return $model->isPayed();
                                 },
+                                'format' => "raw",
                                 'filter' => [0 => "NO", 1 => "SI"]
                             ],
                             [
@@ -506,19 +529,48 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
                                 'value' => function($model){
                                     return $model->isFatturato();
                                 },
+                                'format' => "raw",
                                 'filter' => [0 => "NO", 1 => "SI"]
                             ],
                             [
                                 'attribute' => "saldo",
                                 'value' => function($model){
-                                    $totale = $model->getTotal();
-                                    if(!$totale) return;
-                                    return $totale - $model->amount < 0 ? 0 : $model->formatNumber($totale - $model->amount);
+                                    $pagamenti = $model->checkPayments();
+                                    
+                                    if($pagamenti == 2){
+                                        return 0;
+                                    }else if ($pagamenti == 1){
+                                        $saldo = $model->getSaldo();
+                                        return $model->formatNumber($saldo);
+                                    }else{
+                                        $totale = $model->getTotal();
+                                        return $model->formatNumber($totale);
+                                    }
                                 },
                                 'format' => "raw",
                                 'label' => "Resta da saldare"
                             ],
-                            [ 'class' => ActionColumn::className() ],
+                            [
+                                'class' => 'yii\grid\ActionColumn',
+                                'template' => '{view} {update} {delete}',
+                                'buttons'=> [
+                                    'view' => function ($url, $model) {
+                                        return Html::a("<i class='fas fa-eye'></i>", ["payment/view", "id" => $model->id]);
+                                    },
+                                    'update' => function ($url, $model) {
+                                        return Html::a("<i class='fas fa-pencil-alt'></i>", ["payment/update", "id" => $model->id]);
+                                    },
+                                    'delete' => function ($url, $model) {
+                                        return Html::a("<i class='fas fa-trash'></i>", ["payment/delete", "id" => $model->id], [
+                                            'title' => "Activate",
+                                            'data' => [
+                                                 'method' => 'post',
+                                                 'confirm' => 'Sei sicuro di voler cancellare questo elemento?',
+                                            ],
+                                        ]);
+                                    }
+                                ],
+                            ]
                         ],
                     ]); ?>
                 </div>

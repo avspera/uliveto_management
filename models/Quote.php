@@ -93,11 +93,13 @@ class Quote extends \yii\db\ActiveRecord
             'custom_amount' => "Costo personalizzazione",
             'confetti'      => "Confetti",
             'invoice'       => "Fattura",
-            'attachments'  => "Allegati",
+            'attachments'   => "Allegati",
             'id_sconto'     => "Sconto",
             'delivered'     => "Consegnato",
             'custom_amount_omaggio' => "Personalizzazione omaggio",
-            'scadenza_offerta' => "Scadenza offerta"
+            'scadenza_offerta' => "Scadenza offerta",
+            'date_deposit' => "Data acconto",
+            'date_balance' => "Data saldo"
         ];
     }
 

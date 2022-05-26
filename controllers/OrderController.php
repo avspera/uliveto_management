@@ -177,13 +177,18 @@ class OrderController extends Controller
          * Quote placheolder payments
          */
         $quotePlaceholder = QuotePlaceholder::findOne(["id_quote" => $id ]);
+        
+        $paymentsPlaceholder = [];
         if(!empty($quotePlaceholder)){
-            $paymentModel = new PaymentSearch();
-            $paymentModel->id_quote_placeholder = $quotePlaceholder->id;
-            $paymentsPlaceholder = $payments->search([]);
+            $paymentQuoteModel = new PaymentSearch();
+            $paymentQuoteModel->id_quote_placeholder = $quotePlaceholder->id;
+            $paymentsPlaceholder = $paymentQuoteModel->search([]);
             $paymentsPlaceholder->sort->defaultOrder = ["created_at" => SORT_DESC];
-    
         }
+        
+         /**
+         * end of Quote placheolder payments
+         */
         
         return $this->render('view', [
             'model'         => $model,

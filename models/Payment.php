@@ -59,6 +59,7 @@ class Payment extends \yii\db\ActiveRecord
             'fatturato'     => "Fatturato",
             'type'          => "Tipo",
             'payed'         => "Versato",
+            'id_transaction' => "Transazione Paypal"
             
         ];
     }
@@ -91,11 +92,11 @@ class Payment extends \yii\db\ActiveRecord
     }
 
     public function isFatturato(){
-        return $this->fatturato ? "SI" : "NO";
+        return $this->fatturato ? '<i class="fas fa-check text-success">' : '<i class="fas fa-circle text-danger">';
     }
 
     public function isPayed(){
-        return $this->payed ? "SI" : "NO";
+        return $this->payed ? '<i class="fas fa-check text-success">' : '<i class="fas fa-circle text-danger">';
     }
     
     public function getTotal(){

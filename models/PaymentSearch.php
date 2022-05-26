@@ -61,6 +61,7 @@ class PaymentSearch extends Payment
         $query->andFilterWhere([
             'id_client' => $this->id_client,
             'id_quote' => $this->id_quote,
+            'id_quote_placeholder' => $this->id_quote_placeholder,
             'payed' => $this->payed,
             'amount' => $this->amount,
         ]);

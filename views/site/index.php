@@ -1,5 +1,7 @@
 <?php
     use yii\helpers\Url;
+    use dosamigos\chartjs\ChartJs;
+ 
     $this->title = 'Home::OrciDelCilento - Manager';
     $this->params['breadcrumbs'] = [['label' => $this->title]];
 ?>
@@ -106,4 +108,30 @@
         <?php } ?>
     </div>
 
+    <div class="row">
+        <div class="col-md-6">
+            <?= ChartJs::widget([
+                    'type' => 'pie',
+                    'options' => [
+                        'height' => 300,
+                        'width' => 300
+                    ],
+                    'data' => [
+                        'labels' => ["Preventivi", "Ordini", "Pagamenti"],
+                        'datasets' => [
+                            [
+                                'label' => "Preventivi",
+                                'backgroundColor'       => ["orange","green", "red"],
+                                'borderColor'           => "rgba(179,181,198,1)",
+                                'pointBorderColor'      => "#fff",
+                                'pointHoverBackgroundColor' => "#fff",
+                                'pointHoverBorderColor' => "rgba(179,181,198,1)",
+                                'data' => [$quotesCount, $ordersCount, $paymentsCount]
+                            ],
+                        ]
+                    ]
+                ]);
+            ?>
+        </div>
+    </div>
 </div>

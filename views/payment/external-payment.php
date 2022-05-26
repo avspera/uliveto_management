@@ -117,6 +117,8 @@
 
             <p>Qui di seguito puoi effettuare il pagamento per il tuo ordine <strong>#<?= isset($quote->order_number) ? $quote->order_number : $quote->id ?> del <?= $quote->formatDate($quote->created_at) ?></strong></p>
 
+            <div class="error-content"></div>
+
                 <div class="card">
                     <div id="collapseTwo" class="show" aria-labelledby="headingTwo" data-parent="#accordion">
                         <div class="card-body">
@@ -173,6 +175,7 @@
         },
         // Finalize the transaction after payer approval
         onApprove: (data, actions) => {
+          console.log("approved");
           return actions.order.capture().then(function(orderData) {
             const transaction = orderData.purchase_units[0].payments.captures[0];
             registerTransaction(transaction);
@@ -190,8 +193,8 @@
         return amount
     }
 
-    functioan registerTransaction(transaction){
-        console.log("transaction", transaction);
+    function registerTransaction(transaction){
+        
         $.ajax({
             url: '<?= Url::to(['payment/register-transaction']) ?>',
             type: 'get',
@@ -204,10 +207,11 @@
             success: function (data) {
                 let alertClass = "alert-warning";
                 let alertMsg = "Ops...c'è stato qualche problema. Riprova."
-
+                
                 if(data.status == "200"){
                     alertClass  = "alert-success";
                     alertMsg    = data.msg
+                    
                 }
 
                 let html = `<div style="margin-top: 5px;" class="alert ${alertClass} alert-dismissible">
@@ -218,6 +222,10 @@
                 </div>`;
 
                 $(".error-content").append(html);
+
+                var delay = 1000; 
+                setTimeout(function(){ window.location = "https:://www.orcidelcilento.it"; }, delay);
+
             },
             error: function(error){
                 alert("Ops...c'è stato un problema tecnico. Riprova")

@@ -255,7 +255,7 @@ class GeneratePdf {
                 "Totale: ".number_format($totalPrice, 2, ",", ".") ." €"
             ));
         }
-// die;
+
         //END OF FOREACH
             
         /**

@@ -280,7 +280,7 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
                             [
                             'attribute' => 'id_quote',
                             'value' => function($model){
-                                return Html::a($model->getQuoteInfo(), Url::to(["quote/view", "id" => $model->id]));
+                                return Html::a($model->getQuoteInfo(), Url::to(["quotes/view", "id" => $model->id_quote]));
                                 },
                                 'format' => "raw"
                             ],
@@ -294,20 +294,19 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
                             ],
                             'amount',
                             [
-                                'attribute' => "total_no_vat",
-                                'value' => function($model){
-                                    return $model->getTotal();
-                                },
-                                'format' => "raw",
-                                'label' => "Totale senza iva"
-                            ],
-                            [
                                 'attribute' => "total",
                                 'value' => function($model){
                                     return $model->getTotal("vat");
                                 },
                                 'format' => "raw",
                                 'label' => "Totale"
+                            ],
+                            [
+                                'attribute' => "confirmed",
+                                'value' => function($model){
+                                    return $model->confirmed ? "SI" : "NO";
+                                },
+                                'filter' => [0 => "NO", 1 => "SI"]
                             ],
                             [
                                 'attribute' => 'created_at',

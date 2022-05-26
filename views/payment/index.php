@@ -82,16 +82,18 @@ $this->params['breadcrumbs'][] = $this->title;
                     [
                         'attribute' => "payed",
                         'value' => function($model){
-                            return $model->payed ? "SI" : "NO";
+                            return $model->isPayed();
                         },
-                        'filter' => [0 => "NO", 1 => "SI"]
+                        'filter' => [0 => "NO", 1 => "SI"],
+                        'format' => "raw"
                     ],
                     [
                         'attribute' => "fatturato",
                         'value' => function($model){
                             return $model->isFatturato();
                         },
-                        'filter' => [0 => "NO", 1 => "SI"]
+                        'filter' => [0 => "NO", 1 => "SI"],
+                        'format' => "raw"
                     ],
                     [
                         'attribute' => "saldo",

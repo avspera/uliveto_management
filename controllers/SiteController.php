@@ -10,6 +10,7 @@ use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
 use app\models\Quote;
+use app\models\Payment;
 use app\models\Client;
 use app\models\Message;
 use app\models\PasswordResetRequestForm;
@@ -100,12 +101,14 @@ class SiteController extends Controller
         $clientsCount   = Client::find()->count();
         $messagesCount  = Message::find()->where(["not", ["replied_at" => null]])->count();
         $ordersCount    = Quote::find()->where(["confirmed" => 1])->count();
-        
+        $paymentsCount  = Payment::find()->where(["payed" => 1])->count();
+
         return $this->render('index', [
             "quotesCount"   => $quotesCount,
             'clientsCount'  => $clientsCount,
             'messagesCount' => $messagesCount,
-            'ordersCount'    => $ordersCount
+            'ordersCount'   => $ordersCount,
+            'paymentsCount' => $paymentsCount
         ]);
     }
 

@@ -50,7 +50,7 @@ $id_quote = !empty($model->id_quote) ? $model->id_quote : $model->id_quote_place
             ]) ?>
             <?= Html::a('<i class="fas fa-file-pdf"></i> Genera fattura pro forma', ['generate-fattura-pro-forma', 'id' => $model->id], ['class' => 'btn btn-success']) ?>
             <?= Html::a('<i class="fas fa-file-pdf"></i> Segna come fatturato', ['set-as-invoiced', 'id' => $model->id], ['class' => 'btn btn-info']) ?>
-            <?= Html::a('<i class="fas fa-envelope"></i> Invia email', ['generate-pdf', 'id' => $id_quote, 'flag' => "send"], ['class' => 'btn btn-success']) ?>
+            <?= Html::a('<i class="fas fa-envelope"></i> Invia email', ['generate-pdf', 'id' => $id_quote, 'flag' => "send", "id_payment" => $model->id], ['class' => 'btn btn-success']) ?>
         </div>
 
         <div class="card-body table-responsive">
@@ -115,13 +115,15 @@ $id_quote = !empty($model->id_quote) ? $model->id_quote : $model->id_quote_place
                         'attribute' => "fatturato",
                         'value' => function($model){
                             return $model->isFatturato();
-                        }
+                        },
+                        'format' => "raw"
                     ],
                     [
                         'attribute' => "payed",
                         'value' => function($model){
                             return $model->isPayed();
-                        }
+                        },
+                        'format' => "raw"
                     ],
                     'id_transaction',
                     [

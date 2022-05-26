@@ -136,7 +136,7 @@ class PaymentController extends Controller
             $client = Client::find()->select(["name", "surname", "email"])->where(["id" => $id_client])->one();
             $order = Quote::findOne(["id" => $id_quote]);
             // return $this->render("@app/mail/transaction-completed", ["client" => $client, "transaction" => $transaction, "order" => $order]);
-            $this->sendEmail($client, $transaction, $order, $payment->id);
+            $this->sendEmail($order, $transaction, "", $client, $payment->id);
         }
 
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -165,8 +165,8 @@ class PaymentController extends Controller
         return $this->redirect(Yii::$app->request->referrer);
     }
 
-    public function actionGeneratePdf($id, $flag){
-        $quote      = Quote::findOne(["id" => $id]);
+    public function actionGeneratePdf($id, $flag, $id_payment){
+        $quote      = Quote::findOne(["id" => $id_quote]);
         
         if(empty($quote)){
             $quote = QuotePlaceholder::findOne(["id" => $id]);
@@ -180,9 +180,9 @@ class PaymentController extends Controller
         
         $pdf = new GeneratePdf();
         $filename = $pdf->quotePdf($quote, $flag, "preventivo", "preventivi");
-
+        
         if($flag == "send"){
-            if($this->sendEmail($quote, [], $filename, $client)){
+            if($this->sendEmail($quote, [], $filename, $client, $id_payment)){
                 Yii::$app->session->setFlash('success', "Email con PDF allegato inviato correttamente: ".$filename);
             }else{
                 Yii::$app->session->setFlash('error', "Ops...something went wrong");
@@ -208,13 +208,16 @@ class PaymentController extends Controller
                 ->setTo($client->email)
                 ->setSubject($subject);
 
-        $pdf = new GeneratePdf();
-        $id_quote = !empty($payment->id_quote) ? $payment->id_quote : $order->id;
-        $quote = Quote::findOne(["id" => $id_quote]);
-        $filename = $pdf->quotePdf($quote,"F", "ordine");
+        if(!empty($filename)){
+            $pdf = new GeneratePdf();
+            $id_quote = !empty($payment->id_quote) ? $payment->id_quote : $order->id;
+            $quote = Quote::findOne(["id" => $id_quote]);
+            $filename = $pdf->quotePdf($quote,"F", "ordine");
+            
+            $fullFilename = "https://manager.orcidelcilento.it/web/pdf/".$filename;
+            $message->attachContent($fullFilename,['fileName' => $filename,'contentType' => 'application/pdf']); 
+        }
         
-        $fullFilename = "https://manager.orcidelcilento.it/web/pdf/".$filename;
-        $message->attachContent($fullFilename,['fileName' => $filename,'contentType' => 'application/pdf']); 
 
         return $message->send();
     }

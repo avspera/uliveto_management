@@ -86,7 +86,7 @@ class InviaCatalogoController extends Controller
         $existingFiles = [];
 
         try{
-            $existingFiles=\yii\helpers\FileHelper::findFiles(Yii::getAlias("@webroot").'/pdf', ['recursive' => false] );
+            $existingFiles=\yii\helpers\FileHelper::findFiles(Yii::getAlias("@webroot").'/pdf/catalogo/', ['recursive' => false] );
         }catch(InvalidArgumentException $e){
             throw new InvalidArgumentException("Ops...we got a problem [VIEW_CATS_01]");
         }
@@ -155,14 +155,15 @@ class InviaCatalogoController extends Controller
         if ($model->load($this->request->post()) ) {
             if (!empty($_FILES)) {
                 try{
-                    $existingFiles=\yii\helpers\FileHelper::findFiles(Yii::getAlias("@webroot").'/pdf', ['recursive' => false] );
+                    $existingFiles=\yii\helpers\FileHelper::findFiles(Yii::getAlias("@webroot").'/pdf/catalogo', ['recursive' => false] );
                     //delete existing files if there are new to update
+                    
                     foreach($_FILES["InviaCatalogo"]["name"]["files"] as $file) {
                         if (strpos($file, "catalogo") !== FALSE)
-                            unlink(Yii::getAlias("@webroot").'/pdf/'.$file);
+                            unlink(Yii::getAlias("@webroot").'/pdf/catalogo/'.$file);
                         
                         if (strpos($file, "prezzario") !== FALSE)
-                            unlink(Yii::getAlias("@webroot").'/pdf/'.$file);
+                            unlink(Yii::getAlias("@webroot").'/pdf/catalogo/'.$file);
                     }
                 }catch(InvalidArgumentException $e){
                     throw new InvalidArgumentException("Ops...we got a problem [INVIA_CAT_01]");
@@ -190,7 +191,7 @@ class InviaCatalogoController extends Controller
     protected function manageUploadFiles($model) {
 
         $uploader   = new FKUploadUtils();
-        $path       = Yii::getAlias('@webroot')."/pdf/";
+        $path       = Yii::getAlias('@webroot')."/pdf/catalogo/";
         
         $dirCreated = FileHelper::createDirectory($path);
         $files      = UploadedFile::getInstances($model, 'files');
