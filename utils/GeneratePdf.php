@@ -297,38 +297,31 @@ class GeneratePdf {
         */
         if($quotePlaceholder){
 
-            $placeholder = Segnaposto::find()->select(["image"])->where(["id" => $quotePlaceholder->id_placeholder])->one();
+            $placeholder = Segnaposto::find()->select(["image", "price"])->where(["id" => $quotePlaceholder->id_placeholder])->one();
             
             if(!empty($placeholder->image)){
                 $pdf->Cell($pdf->Image($placeholder->image, 130, 90, 40, 40));
             }
 
             $pdf->setFontSize("11");
-            $pdf->setXY(90, 131);
-            $pdf->Cell(0, 10, $quotePlaceholder ? "SI n.".$quotePlaceholder->amount : "NO", 0, 0, 'C'); // add the text, align to Center of cell
+            $pdf->setXY(105, 131);
+            $pdf->Cell(0, 10, $quotePlaceholder ? number_format($placeholder->price, 2, ",", ".")." EUR | n.".$quotePlaceholder->amount : "NO", 0, 0, 'C'); // add the text, align to Center of cell
 
             $totaleNoVat = $quotePlaceholder->total;
             $totaleWithVat = ($totaleNoVat + ($totaleNoVat / 100) * 22);
     
-            $pdf->setXY(115, 143.5);
+            $pdf->setXY(95, 143.5);
             $pdf->Cell(100, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", number_format($quotePlaceholder->total, 2, ",", ".")), 0, 0, 'C');
 
-            $paymentPlaceholder = Payment::findAll(["id_quote_placeholder" => $quotePlaceholder->id]);
-            if(!empty($paymentPlaceholder)){
-                foreach($paymentPlaceholder as $payment){
-                    if($payment->type == 0){
-                        $pdf->setXY(110, 152);
-                        $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $payment->amount. " - ".$quotePlaceholder->formatDate($quotePlaceholder->date_deposit)), 0, 0, 'C');
-                    }else {
-                        $pdf->setXY(110, 155);
-                        $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $payment->amount. " - ".$quotePlaceholder->formatDate($quotePlaceholder->date_deposit)), 0, 0, 'C');
-                    }
-                }
-                
-            }
-
+            $pdf->setXY(120, 152);
+            $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quotePlaceholder->acconto. " - ".$quotePlaceholder->formatDate($quotePlaceholder->date_deposit)), 0, 0, 'C');
+                    
+            $pdf->setXY(110, 159);
+            $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quotePlaceholder->saldo. " - ".$quotePlaceholder->formatDate($quotePlaceholder->date_balance)), 0, 0, 'C');
+                    
+            
             //shipping
-            $pdf->setXY(120, 166);
+            $pdf->setXY(77, 166);
             $pdf->Cell(0, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quote->shipping ? "SI" : "NO"), 0, 0, 'C');
 
             $x = $pdf->getX();

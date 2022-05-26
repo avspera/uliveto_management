@@ -451,9 +451,17 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
                             [
                                 'attribute' => "saldo",
                                 'value' => function($model){
-                                    $totale = $model->getTotal();
-                                    if(!$totale) return;
-                                    return $totale - $model->amount < 0 ? 0 : $model->formatNumber($totale - $model->amount);
+                                    $pagamenti = $model->checkPayments();
+                                    
+                                    if($pagamenti == 2){
+                                        return 0;
+                                    }else if ($pagamenti == 1){
+                                        $saldo = $model->getSaldo();
+                                        return $model->formatNumber($saldo);
+                                    }else{
+                                        $totale = $model->getTotal();
+                                        return $model->formatNumber($totale);
+                                    }
                                 },
                                 'format' => "raw",
                                 'label' => "Resta da saldare"

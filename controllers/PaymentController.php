@@ -113,7 +113,7 @@ class PaymentController extends Controller
     }
 
 
-    public function actionRegisterTransaction($transaction, $id_client, $id_quote){
+    public function actionRegisterTransaction($transaction, $id_client, $id_quote, $id_payment){
         if(empty($transaction) || empty($id_client) || empty($id_quote)) return;
         
         $transaction = json_decode($transaction, true);
@@ -121,12 +121,9 @@ class PaymentController extends Controller
         if(empty($transaction)) return;
 
         $out = ["status" => "100", "msg" => "Ops...c'è qualcosa che non va"];
-        $payment = new Payment();
-        $payment->id_client = $id_client;
-        $payment->id_quote  = $id_quote;
+        $payment = Payment::findOne(["id" => $id_payment]);
         $payment->amount    = isset($transaction["amount"]["value"]) ? $transaction["amount"]["value"] : 0;
         $payment->created_at = date("Y-m-d H:i:s");
-        $payment->type      = 0;
         $payment->fatturato = 0;
         $payment->payed     = 1;
         $payment->id_transaction = $transaction["id"];
@@ -134,7 +131,7 @@ class PaymentController extends Controller
         if($payment->save()){
             $out = ["status" => "200", "msg" => "Transazione ".$transaction["id"] ." completata con successo. Riceverai a breve un'email di conferma"];
             $client = Client::find()->select(["name", "surname", "email"])->where(["id" => $id_client])->one();
-            $order = Quote::findOne(["id" => $id_quote]);
+            $order  = Quote::findOne(["id" => $id_quote]);
             // return $this->render("@app/mail/transaction-completed", ["client" => $client, "transaction" => $transaction, "order" => $order]);
             $this->sendEmail($order, $transaction, "", $client, $payment->id);
         }
@@ -166,7 +163,8 @@ class PaymentController extends Controller
     }
 
     public function actionGeneratePdf($id, $flag, $id_payment){
-        $quote      = Quote::findOne(["id" => $id_quote]);
+        $model = $this->findModel($id);
+        $quote      = Quote::findOne(["id" => $model->id_quote]);
         
         if(empty($quote)){
             $quote = QuotePlaceholder::findOne(["id" => $id]);

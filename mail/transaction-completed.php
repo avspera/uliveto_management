@@ -12,8 +12,8 @@
     </div>
     <div class="text" style="padding: 0 3em; color: #4d4d4d">
         <p>
-            Grazie di aver scelto Orci del Cilento<br />
-            Qui di seguito troverà il riepilogo ordine e il link per effettuare il relativo pagamento.
+            Le confermiamo che il pagamento per l'ordine # <?= $order->order_number?> è stato completato con successo. <br />
+            Grazie per aver scelto Orci del Cilento.
         </p>
         <p>
             Mobili: Francesco: 3203828243 <br />

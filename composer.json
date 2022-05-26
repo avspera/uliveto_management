@@ -30,7 +30,8 @@
         "setasign/fpdi-fpdf": "^2.3",
         "bitcko/yii2-bitcko-paypal-api": "dev-master",
         "kartik-v/yii2-widget-datepicker": "dev-master",
-        "2amigos/yii2-chartjs-widget": "~2.0"
+        "2amigos/yii2-chartjs-widget": "~2.0",
+        "yiisoft/yii2-jui": "^2.0"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

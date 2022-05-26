@@ -202,7 +202,8 @@
             'data': {
                 'transaction': JSON.stringify(transaction),
                 'id_quote': <?= $quote->id ?>,
-                'id_client': <?= $client->id ?>
+                'id_client': <?= $client->id ?>,
+                'id_payment': <?= $payment->id ?>
             },
             success: function (data) {
                 let alertClass = "alert-warning";
@@ -223,8 +224,8 @@
 
                 $(".error-content").append(html);
 
-                var delay = 1000; 
-                setTimeout(function(){ window.location = "https:://www.orcidelcilento.it"; }, delay);
+                var delay = 5000; 
+                setTimeout(function(){ window.location = "https://www.orcidelcilento.it"; }, delay);
 
             },
             error: function(error){
