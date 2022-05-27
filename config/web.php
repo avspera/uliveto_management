@@ -63,7 +63,7 @@ $config = [
         ],
         'PayPalRestApi'=>[
             'class'=>'bitcko\paypalrestapi\PayPalRestApi',
-            'redirectUrl'=>'/payment/success', 
+            'redirectUrl'=>'http://www.orcidelcilento.it', 
         ]
     ],
     'params' => $params,

@@ -122,12 +122,7 @@
                 <div class="card">
                     <div id="collapseTwo" class="show" aria-labelledby="headingTwo" data-parent="#accordion">
                         <div class="card-body">
-                            <div class="text-lg">Tipo: <?= $payment->getType(); ?>. Totale: <?= $quote->formatNumber($payment->amount) ?></div>
-                            <div class="btn-group blocks" style="margin-top:10px" data-toggle="buttons">
-                                <label class="btn btn-success btn-lg active">
-                                    <input type="radio" amount="<?= $payment->amount ?>" name="options" id="percentage_100" autocomplete="off"> <?= $payment->amount ?>
-                                </label>
-                            </div>
+                            <div class="text-lg btn btn-success btn-lg active">Tipo: <?= $payment->getType(); ?>. Totale: <?= $quote->formatNumber($payment->amount) ?></div>
                             <div style="margin-top: 10px">
                                 <div id="paypal-button-container"></div>
                             </div>
@@ -168,30 +163,28 @@
           return actions.order.create({
             purchase_units: [{
               amount: {
-                value: getAmount() // Can also reference a variable or function
+                value: <?= $payment->amount ?> 
+                // getAmount() // Can also reference a variable or function
               }
             }]
           });
         },
         // Finalize the transaction after payer approval
         onApprove: (data, actions) => {
-          console.log("approved");
+          console.log("approved payment");
           return actions.order.capture().then(function(orderData) {
+            console.log("orderData", orderData);
             const transaction = orderData.purchase_units[0].payments.captures[0];
             registerTransaction(transaction);
-            // When ready to go live, remove the alert and show a success message within this page. For example:
-            // const element = document.getElementById('paypal-button-container');
-            // element.innerHTML = '<h3>Thank you for your payment!</h3>';
-            // Or go to another URL:  actions.redirect('thank_you.html');
           });
-        }
+        },
       }).render('#paypal-button-container');
 
-    function getAmount(){
-        let amount = $('input[name="options"]:checked').attr("amount");
-        console.log("amount", amount);
-        return amount
-    }
+    // function getAmount(){
+    //     let amount = $('input[name="options"]:checked').attr("amount");
+    //     console.log("amount", amount);
+    //     return amount
+    // }
 
     function registerTransaction(transaction){
         
@@ -224,8 +217,8 @@
 
                 $(".error-content").append(html);
 
-                var delay = 5000; 
-                setTimeout(function(){ window.location = "https://www.orcidelcilento.it"; }, delay);
+                // var delay = 5000; 
+                // setTimeout(function(){ window.location = "https://www.orcidelcilento.it"; }, delay);
 
             },
             error: function(error){

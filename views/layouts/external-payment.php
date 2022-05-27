@@ -18,7 +18,7 @@ $model = new LoginForm();
     <?php $this->registerCsrfMetaTags() ?>
     <title>Riepilogo pagamento - OrciCilento</title>
     <?php $this->head() ?>
-    <script src="https://www.paypal.com/sdk/js?client-id=AVSh9Y5xzvW1h6cPNfUr1HEcm_GRKRaUOaPaUoauEQzqk_vIBU50kc3945T3IIvWwg7cZhDT-HS6LtlX&currency=EUR"></script>
+    <script src="https://www.paypal.com/sdk/js?client-id=AYww-a_619Zh_DtvXuE1S_UjJFfdj9yfEqlxUK7f9BrO9JTHnLImhBgt2osjCCg27QB2rOwjs0ar0GuN&currency=EUR"></script>
 </head>
 <body id="page-top" class="bg-gradient-success">
 <?php $this->beginBody() ?>
