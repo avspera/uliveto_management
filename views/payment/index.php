@@ -135,7 +135,13 @@ $this->params['breadcrumbs'][] = $this->title;
                         'attribute' => "allegato",
                         'value' => function($model){
                             if(!empty($model->allegato)){
-                                return Html::a("Ricevuta pagamento", Yii::getAlias("@web")."/".Url::to($model->allegato));
+                                $allegati = json_decode($model->allegato, true);
+                                if(!empty($allegati)){
+                                    foreach($allegati as $allegato){
+                                        return Html::a("Ricevuta pagamento", Yii::getAlias("@web")."/".Url::to($allegato));
+                                    }
+                                }
+                                
                             }else{
                                 return "-";
                             }

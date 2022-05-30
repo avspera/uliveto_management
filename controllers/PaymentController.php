@@ -84,7 +84,12 @@ class PaymentController extends Controller
         $out = ["status" => "100", "hasAcconto" => false, "amount" => 0];
 
         $acconto = Payment::findOne(["id_quote" => $id_quote, "type" => 0]);
+        if(empty($acconto)){
+            $acconto = Payment::findOne(["id_quote_placeholder" => $id_quote, "type" => 0]);
+        }
+        
         $amount = !empty($acconto) ? floatval($acconto->amount) : 0;
+
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         
         return !empty($acconto) ? $out = ["status" => "200", "hasAcconto" => true, "amount" => $amount] : $out;
@@ -126,7 +131,7 @@ class PaymentController extends Controller
         $payment->created_at = date("Y-m-d H:i:s");
         $payment->fatturato = 0;
         $payment->payed     = 1;
-        $payment->id_transaction = $transaction["id"];
+        $payment->transaction = $transaction["id"];
 
         if($payment->save()){
             $out = ["status" => "200", "msg" => "Transazione ".$transaction["id"] ." completata con successo. Riceverai a breve un'email di conferma"];
@@ -163,11 +168,13 @@ class PaymentController extends Controller
     }
 
     public function actionGeneratePdf($id, $flag, $id_payment){
+        
         $model = $this->findModel($id);
         $quote      = Quote::findOne(["id" => $model->id_quote]);
         
         if(empty($quote)){
-            $quote = QuotePlaceholder::findOne(["id" => $id]);
+            $quote = QuotePlaceholder::findOne(["id" => $model->id_quote_placeholder]);
+            
             $quoteTmp = Quote::findOne(["id" => $quote->id_quote]);
             $client = Client::findOne(["id" => $quoteTmp->id_client]);
         }else{
@@ -276,7 +283,6 @@ class PaymentController extends Controller
     {
         $searchModel = new PaymentSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
-        $dataProvider->sort->defaultOrder = ["created_at" => SORT_DESC];
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,

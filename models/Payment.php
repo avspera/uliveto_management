@@ -21,6 +21,7 @@ class Payment extends \yii\db\ActiveRecord
     public $saldo;
     public $types = [0 => "Acconto", 1 => "Saldo"];
     public $types_reverse = ["Acconto" => 0, "Saldo" => 1];
+    public $data_saldo;
     
     /**
      * {@inheritdoc}
@@ -39,7 +40,7 @@ class Payment extends \yii\db\ActiveRecord
             [['id_client', 'amount', 'created_at', 'fatturato', 'type', 'payed'], 'required'],
             [['id_client', 'id_quote', 'id_quote_placeholder', 'fatturato', 'type', 'payed'], 'integer'],
             [['amount'], 'number'],
-            [['id_transaction', 'id_quote', 'id_quote_placeholder', 'allegato'], 'safe'],
+            [['id_transaction', 'id_quote', 'id_quote_placeholder', 'allegato', 'data_saldo'], 'safe'],
             [['allegato'], 'file', 'skipOnEmpty' => true, 'extensions' => 'jpg, pdf, png'],
         ];
     }

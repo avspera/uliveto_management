@@ -19,7 +19,7 @@ class PaymentSearch extends Payment
         return [
             [['id', 'id_client', 'id_quote', 'payed', 'id_quote_placeholder'], 'integer'],
             [['amount'], 'number'],
-            [['created_at'], 'safe'],
+            [['created_at', 'data_saldo'], 'safe'],
         ];
     }
 
@@ -43,12 +43,14 @@ class PaymentSearch extends Payment
     {
         $query = Payment::find();
 
+        $query->leftJoin('quote', 'payment.id_quote=quote.id');
+
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
-
+        
         $this->load($params);
 
         if (!$this->validate()) {
@@ -66,7 +68,7 @@ class PaymentSearch extends Payment
             'amount' => $this->amount,
         ]);
 
-        $quotes = Quote::find()->where(["id" => $this->id_quote])->orderBy(["date_balance" => SORT_DESC])->all();
+        $quotes = Quote::find()->where(["id" => $this->id_quote])->orderBy(["date_balance" => SORT_ASC])->all();
         $ids = [];
         foreach($quotes as $quote){
             $ids[$quote->id] = $quote->id;
@@ -83,6 +85,20 @@ class PaymentSearch extends Payment
                 $query->andFilterWhere(['LIKE', 'created_at', $start_date ]);
             else    
                 $query->andFilterWhere(['>=', 'created_at', $start_date ])->andFilterWhere(['<=', 'created_at', $end_date]);
+        }
+        
+        if(isset($params["sort"]) && $params["sort"] == "data_saldo"){
+            /** order by quote date_balance */
+            $dataProvider->sort->attributes['data_saldo'] = [
+                'asc' => ['quote.date_balance' => SORT_ASC],
+            ];
+        }
+        
+        if(isset($params["sort"]) && $params["sort"] == "-data_saldo"){
+            /** order by quote date_balance */
+            $dataProvider->sort->attributes['data_saldo'] = [
+                'desc' => ['quote.date_balance' => SORT_DESC],
+            ];    
         }
         
         return $dataProvider;

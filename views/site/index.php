@@ -109,24 +109,33 @@
     </div>
 
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-12">
             <?= ChartJs::widget([
-                    'type' => 'pie',
+                    'type' => 'bar',
                     'options' => [
-                        'height' => 100,
-                        'width' => 100
+                        'height' => 300,
+                        'width' => 500
                     ],
                     'data' => [
-                        'labels' => ["Preventivi", "Ordini", "Pagamenti"],
+                        'labels' => ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"],
                         'datasets' => [
                             [
                                 'label' => "Preventivi",
-                                'backgroundColor'       => ["orange","green", "red"],
+                                'backgroundColor'       => ["orange",],
                                 'borderColor'           => "rgba(179,181,198,1)",
                                 'pointBorderColor'      => "#fff",
                                 'pointHoverBackgroundColor' => "#fff",
                                 'pointHoverBorderColor' => "rgba(179,181,198,1)",
-                                'data' => [$quotesCount, $ordersCount, $paymentsCount]
+                                'data' => [$quotesCount]
+                            ],
+                            [
+                                'label' => "Ordini",
+                                'backgroundColor'       => ["green"],
+                                'borderColor'           => "rgba(179,181,198,1)",
+                                'pointBorderColor'      => "#fff",
+                                'pointHoverBackgroundColor' => "#fff",
+                                'pointHoverBorderColor' => "rgba(179,181,198,1)",
+                                'data' => [$ordersCount]
                             ],
                         ]
                     ]

@@ -7,7 +7,7 @@ use yii\widgets\ActiveForm;
 use kartik\select2\Select2;
 use app\models\Client;
 use yii\web\JsExpression;
-use kartik\date\DatePicker;
+use yii\jui\DatePicker;
 use kartik\grid\GridView;
 use yii\grid\ActionColumn;
 
@@ -184,27 +184,37 @@ $clientData     = !empty($client) ? $client->name." ".$client->surname : ""
                 <div class="row">
                     <div class="col-md-4 col-sm-4 col-12"><?= $form->field($model, 'deposit')->textInput(['maxlength' => true, "onchange" => "subtractDeposit()"]) ?></div>
                     <div class="col-md-4 col-sm-4 col-12">
-                        <?= $form->field($model, 'date_deposit')->widget(DatePicker::classname(), [
-                            'options' => ['placeholder' => 'Scegli una data ...'],
-                            'pluginOptions' => [
-                                'autoclose' => true,
-                                'format' => 'yyyy-mm-dd',
-                                'startDate' => date("Y-m-d")
+                    <?= $form->field($model, 'date_deposit')->widget(\yii\jui\DatePicker::classname(), [
+                            'language' => 'it',
+                            'dateFormat' => 'yyyy-MM-dd',
+                            'options' => [
+                                'class' => "form-control",
+                                'autocomplete' => false
+                            ],
+                            'clientOptions' => [
+                                'minDate' => "today",
+                                'changeMonth' => true, 
+                                'changeYear' => true,
                             ]
-                        ]); ?>
+                        ]) ?>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-4 col-sm-4 col-12"><?= $form->field($model, 'balance')->textInput(['maxlength' => true, "readonly" => true]) ?></div>
                     <div class="col-md-4 col-sm-4 col-12">
-                        <?= $form->field($model, 'date_balance')->widget(DatePicker::classname(), [
-                            'options' => ['placeholder' => 'Scegli una data ...'],
-                            'pluginOptions' => [
-                                'autoclose' => true,
-                                'format' => 'yyyy-mm-dd',
-                                'startDate' => date("Y-m-d")
+                    <?= $form->field($model, 'date_balance')->widget(\yii\jui\DatePicker::classname(), [
+                            'language' => 'it',
+                            'dateFormat' => 'yyyy-MM-dd',
+                            'options' => [
+                                'class' => "form-control",
+                                'autocomplete' => false
+                            ],
+                            'clientOptions' => [
+                                'minDate' => "today",
+                                'changeMonth' => true, 
+                                'changeYear' => true,
                             ]
-                        ]); ?>
+                        ]) ?>
                     </div>
                 </div>
                 <div class="row">
@@ -213,28 +223,34 @@ $clientData     = !empty($client) ? $client->name." ".$client->surname : ""
                 </div>
                 <div class="row">
                     <div class="col-md-4 col-sm-4 col-12">
-                        <?= $form->field($model, 'data_evento')
-                                ->widget(DatePicker::classname(), [
-                                'pluginOptions' => [
-                                    'autoclose' => true,
-                                    'autoclose' => true,
-                                    'format' => 'yyyy-mm-dd',
-                                    'startDate' => date("Y-m-d")
-                                ]
-                            ]); 
-                        ?>
+                    <?= $form->field($model, 'data_evento')->widget(\yii\jui\DatePicker::classname(), [
+                            'language' => 'it',
+                            'dateFormat' => 'yyyy-MM-dd',
+                            'options' => [
+                                'class' => "form-control",
+                                'autocomplete' => false
+                            ],
+                            'clientOptions' => [
+                                'minDate' => "today",
+                                'changeMonth' => true, 
+                                'changeYear' => true,
+                            ]
+                        ]) ?>
                     </div>
                     <div class="col-md-4 col-sm-4 col-12">
-                        <?= $form->field($model, 'deadline')
-                                ->widget(DatePicker::classname(), [
-                                'pluginOptions' => [
-                                    'autoclose' => true,
-                                    'autoclose' => true,
-                                    'format' => 'yyyy-mm-dd',
-                                    'startDate' => date("Y-m-d")
-                                ]
-                            ]); 
-                        ?>
+                    <?= $form->field($model, 'deadline')->widget(\yii\jui\DatePicker::classname(), [
+                            'language' => 'it',
+                            'dateFormat' => 'yyyy-MM-dd',
+                            'options' => [
+                                'class' => "form-control",
+                                'autocomplete' => false
+                            ],
+                            'clientOptions' => [
+                                'minDate' => "today",
+                                'changeMonth' => true, 
+                                'changeYear' => true,
+                            ]
+                        ]) ?>
                     </div>
                 </div>
             </div>

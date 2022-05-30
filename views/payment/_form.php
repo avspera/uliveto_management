@@ -4,7 +4,7 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 use yii\web\JsExpression;
-use kartik\date\DatePicker;
+use yii\jui\DatePicker;
 use kartik\select2\Select2;
 
 ?>
@@ -90,18 +90,19 @@ use kartik\select2\Select2;
 
     <div class="row">
         <div class="col-md-4 col-sm-6 col-12">
-            <?php
-                echo '<label class="form-label">Data</label>';
-                echo DatePicker::widget([
-                    'name' => 'Payment[created_at]',
-                    'type' => DatePicker::TYPE_INPUT,
-                    'pluginOptions' => [
-                        'autoclose' => true,
-                        'format' => 'yyyy-mm-dd',
-                        'startDate' => date("Y-m-d")
-                    ]
-                ]);
-            ?>
+            <?= $form->field($model, 'created_at')->widget(\yii\jui\DatePicker::classname(), [
+                'language' => 'it',
+                'dateFormat' => 'yyyy-MM-dd',
+                'options' => [
+                    'class' => "form-control",
+                    'autocomplete' => false
+                ],
+                'clientOptions' => [
+                    'minDate' => "today",
+                    'changeMonth' => true, 
+                    'changeYear' => true,
+                ]
+            ]) ?>
         </div>
 
         <div class="col-md-4 col-sm-6 col-12">
@@ -163,9 +164,9 @@ use kartik\select2\Select2;
         if(!id_quote){
             id_quote = $("#payment-id_quote_placeholder option:selected").val();   
         }
-
         if(type){
             let url = '<?= Url::to(['payment/has-acconto']) ?>'
+            
             $.ajax({
                 url: url,
                 type: 'get',
@@ -198,7 +199,7 @@ use kartik\select2\Select2;
             id_quote = $("#payment-id_quote option:selected").val();
             url = '<?= Url::to(['quotes/get-total']) ?>' 
         }
-        
+        console.log("url", url);
         $.ajax({
             url: url,
             type: 'get',

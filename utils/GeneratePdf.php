@@ -95,6 +95,7 @@ class GeneratePdf {
             $start_x            = 0;
             $start_pack_x       = 0;
             $packName = [];
+            $prevOrdinate = "";
             for($i= 0; $i <= count($products); $i++){
                 $color  = Color::findOne(["id" => $products[$i]->id_color]);
                 $item   = Product::find()->select(["id", "name", "price"])->where(["id" => $products[$i]->id_product])->one(); 
@@ -110,8 +111,13 @@ class GeneratePdf {
                 
                
                 if(!empty($color->picture)){
+                    $prevOrdinate = $ordinate;
                     $pdf->Cell($pdf->Image($color->picture,$start_x, $ordinate, 40, 40));
-                    $start_x += 40;
+                    // if($prevOrdinate == $ordinate)
+                    //     $start_x += 40;
+                    // else{
+                    //     $start_x = 0;
+                    // }
                 }
                 
                 if($i > 0){
@@ -119,6 +125,8 @@ class GeneratePdf {
                     $prevProd    = $products[$i-1]->id_product;
                     if($currentProd !== $prevProd){
                         $start_x = 0;
+                    }else{
+                        $start_x += 40;
                     }
                 }
 
@@ -132,8 +140,8 @@ class GeneratePdf {
                         //do not repeat pack image if already print
                         if(!in_array($packaging->label, $packName) && !empty($packaging->image)){
                             $packName[$i] = $packaging->label;
-                            $ordinate = 225;
-                            $pdf->Cell($pdf->Image($packaging->image, $start_pack_x, $ordinate, 40, 40));
+                            $ordinatePackaging = 225;
+                            $pdf->Cell($pdf->Image($packaging->image, $start_pack_x, $ordinatePackaging, 40, 40));
                             $start_pack_x += 40;
                         }
                     }

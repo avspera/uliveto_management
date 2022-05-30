@@ -23,6 +23,8 @@ use yii\filters\AccessControl;
 use kartik\mpdf\Pdf;
 use Mpdf\Mpdf;
 use app\utils\GeneratePdf;
+use yii\helpers\Url;
+use yii\helpers\Html;
 /**
  * QuotesController implements the CRUD actions for Quote model.
  */
@@ -353,7 +355,9 @@ class QuotesController extends Controller
                 Yii::$app->session->setFlash('error', "Ops...something went wrong");
             }
         }else{
-            Yii::$app->session->setFlash('success', "Pdf generato correttamente.<a href='/web/pdf/preventivi/".$filename."'>Scarica</a>");
+            $url = Html::a("Scarica", Url::to(["/pdf/preventivi/".$filename]));
+
+            Yii::$app->session->setFlash('success', "Pdf generato correttamente.".$url);
         }
 
         return $this->redirect(Yii::$app->request->referrer);

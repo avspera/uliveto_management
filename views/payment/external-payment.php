@@ -143,6 +143,7 @@
                     <?= FileInput::widget([
                         'model' => $payment,
                         'attribute' => 'allegato',
+                        "language" => "it",
                         'options' => ['multiple' => true, 'accept' => ["png", "jpg", "pdf"]]
                     ]);?>
                     <div class="form-group">
@@ -217,8 +218,8 @@
 
                 $(".error-content").append(html);
 
-                // var delay = 5000; 
-                // setTimeout(function(){ window.location = "https://www.orcidelcilento.it"; }, delay);
+                var delay = 5000; 
+                setTimeout(function(){ window.location = "https://www.orcidelcilento.it"; }, delay);
 
             },
             error: function(error){

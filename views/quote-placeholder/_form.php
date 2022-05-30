@@ -5,7 +5,7 @@ use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 use kartik\select2\Select2;
 use yii\web\JsExpression;
-use kartik\date\DatePicker;
+use yii\jui\DatePicker;
 use app\models\Segnaposto;
 
 
@@ -77,17 +77,19 @@ use app\models\Segnaposto;
 
             <div class="row">
                 <div class="col-md-6 col-sm-6 col-12">
-                    <?= $form->field($model, 'date_deposit')->widget(
-                        DatePicker::classname(), [
-                            'type' => DatePicker::TYPE_INPUT,
-                            'pluginOptions' => [
-                                'autoclose' => true,
-                                'format' => 'yyyy-mm-dd',
-                                        'language' => "it",
-                                        'startDate' => date("Y-m-d")
-                                ]
-                        ]); 
-                    ?>
+                    <?= $form->field($model, 'date_deposit')->widget(\yii\jui\DatePicker::classname(), [
+                        'language' => 'it',
+                        'dateFormat' => 'yyyy-MM-dd',
+                        'options' => [
+                            'class' => "form-control",
+                            'autocomplete' => false
+                        ],
+                        'clientOptions' => [
+                            'minDate' => "today",
+                            'changeMonth' => true, 
+                            'changeYear' => true,
+                        ]
+                    ]) ?>
                 </div>
                 <div class="col-md-6 col-sm-6 col-12">
                     <?= $form->field($model, "acconto")->textInput(["type" => "number", "step" => ".01", "onchange" => "calculateSaldo(value)"])?>
@@ -96,17 +98,19 @@ use app\models\Segnaposto;
 
             <div class="row">
                 <div class="col-md-6 col-sm-6 col-12">
-                    <?= $form->field($model, 'date_balance')->widget(
-                        DatePicker::classname(), [
-                            'type' => DatePicker::TYPE_INPUT,
-                            'pluginOptions' => [
-                                'autoclose' => true,
-                                'format' => 'yyyy-mm-dd',
-                                        'language' => "it",
-                                        'startDate' => date("Y-m-d")
-                                ]
-                        ]); 
-                    ?>
+                    <?= $form->field($model, 'date_balance')->widget(\yii\jui\DatePicker::classname(), [
+                        'language' => 'it',
+                        'dateFormat' => 'yyyy-MM-dd',
+                        'options' => [
+                            'class' => "form-control",
+                            'autocomplete' => false
+                        ],
+                        'clientOptions' => [
+                            'minDate' => "today",
+                            'changeMonth' => true, 
+                            'changeYear' => true,
+                        ]
+                    ]) ?>
                 </div>
 
                 <div class="col-md-6 col-sm-6 col-12">

@@ -4,7 +4,6 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\DetailView;
 use kartik\grid\GridView;
-use kartik\date\DatePicker;
 use yii\grid\ActionColumn;
 
 /* @var $this yii\web\View */
@@ -107,16 +106,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                         return $model->formatDate($model->created_at);
                                     },
                                     'format' => "raw",
-                                    'filter' => DatePicker::widget([
-                                        'name' => 'created_at',
-                                        'language' => "it",
-                                        'type' => DatePicker::TYPE_INPUT,
-                                        'pluginOptions' => [
-                                            'autoclose'=>true,
-                                            'format' => 'yyyy-mm-dd',
-                                            'startDate' => date("Y-m-d")
-                                        ]
-                                    ])
                                 ],
                                 [
                                     'attribute' => 'deadline',

@@ -125,7 +125,7 @@ $id_quote = !empty($model->id_quote) ? $model->id_quote : $model->id_quote_place
                         },
                         'format' => "raw"
                     ],
-                    'id_transaction',
+                    'transaction',
                     [
                         'attribute' => 'created_at',
                         'value' => function($model){
@@ -136,13 +136,16 @@ $id_quote = !empty($model->id_quote) ? $model->id_quote : $model->id_quote_place
                         'attribute' => "allegato",
                         'value' => function($model){
                             if(!empty($model->allegato)){
-                                return "<a target='_blank' href='".Url::to([$model->allegato])."'>Ricevuta di pagamento</a>";
+                                $allegati = json_decode($model->allegato, true);
+                                foreach($allegati as $allegato){
+                                    return Html::a("Ricevuta pagamento", Yii::getAlias("@web")."/".Url::to($allegato));
+                                }
                             }else{
                                 return "-";
                             }
                         },
                         'format' => "raw"
-                    ]
+                    ],
                 ],
             ]) ?>
         </div>

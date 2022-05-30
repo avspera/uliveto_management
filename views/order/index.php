@@ -4,7 +4,7 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\ActionColumn;
 use kartik\grid\GridView;
-use kartik\date\DatePicker;
+use yii\jui\DatePicker;
 
 $this->title = 'Ordini';
 $this->params['breadcrumbs'][] = $this->title;
@@ -70,13 +70,16 @@ $this->params['breadcrumbs'][] = $this->title;
                         },
                         'format' => "raw",
                         'filter' => DatePicker::widget([
-                            'name' => 'created_at',
-                            'language' => 'it-IT',
-                            'type' => DatePicker::TYPE_INPUT,
-                            'pluginOptions' => [
-                                'autoclose'=>true,
-                                'format' => 'yyyy-mm-dd',
-                                'startDate' => date("Y-m-d")
+                            'name'  => 'created_at',
+                            'language' => 'it',
+                            'dateFormat' => 'yyyy-MM-dd',
+                            'options' => [
+                                'class' => "form-control",
+                                'autocomplete' => false
+                            ],
+                            'clientOptions' => [
+                                'changeMonth' => true, 
+                                'changeYear' => true,
                             ]
                         ])
                     ],
@@ -87,13 +90,16 @@ $this->params['breadcrumbs'][] = $this->title;
                         },
                         'format' => "raw",
                         'filter' => DatePicker::widget([
-                            'name' => 'deadline',
+                            'name'  => 'deadline',
                             'language' => 'it',
-                            'type' => DatePicker::TYPE_INPUT,
-                            'pluginOptions' => [
-                                'autoclose'=>true,
-                                'format' => 'yyyy-mm-dd',
-                                'startDate' => date("Y-m-d")
+                            'dateFormat' => 'yyyy-MM-dd',
+                            'options' => [
+                                'class' => "form-control",
+                                'autocomplete' => false
+                            ],
+                            'clientOptions' => [
+                                'changeMonth' => true, 
+                                'changeYear' => true,
                             ]
                         ])
                     ],

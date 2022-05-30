@@ -3,7 +3,7 @@
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
-use kartik\date\DatePicker;
+use yii\jui\DatePicker;
 use yii\web\JsExpression;
 use kartik\select2\Select2;
 ?>
@@ -22,26 +22,39 @@ use kartik\select2\Select2;
             <div class="row">
                 <div class="col-md-3 col-sm-6 col-12">
                     <label>Effettuato DA</label>
-                    <?= DatePicker::widget([
-                            'name' => 'PaymentSearch[start_date]',
-                            'type' => DatePicker::TYPE_INPUT,
-                            'pluginOptions' => [
-                                'autoclose' => true,
-                                'format' => 'yyyy-mm-dd',
-                                'startDate' => date("Y-m-d")
-                            ]
-                        ]);
-                    ?>
+                        <?= 
+                            DatePicker::widget([
+                                'name'  => 'PaymentSearch[end_date]',
+                                'language' => 'it',
+                                'dateFormat' => 'yyyy-MM-dd',
+                                'options' => [
+                                    'class' => "form-control",
+                                    'autocomplete' => false
+                                ],
+                                'clientOptions' => [
+                                    'minDate' => 'today',
+                                    'changeMonth' => true, 
+                                    'changeYear' => true,
+                                ]
+                            ]);
+                        ?>
+                    
                 </div>
                 <div class="col-md-3 col-sm-6 col-12">
                     <label>Effettuato A</label>
-                    <?= DatePicker::widget([
-                            'name' => 'PaymentSearch[end_date]',
-                            'type' => DatePicker::TYPE_INPUT,
-                            'pluginOptions' => [
-                                'autoclose' => true,
-                                'format' => 'yyyy-mm-dd',
-                                'startDate' => date("Y-m-d")
+                    <?= 
+                        DatePicker::widget([
+                            'name'  => 'PaymentSearch[end_date]',
+                            'language' => 'it',
+                            'dateFormat' => 'yyyy-MM-dd',
+                            'options' => [
+                                'class' => "form-control",
+                                'autocomplete' => false
+                            ],
+                            'clientOptions' => [
+                                'minDate' => 'today',
+                                'changeMonth' => true, 
+                                'changeYear' => true,
                             ]
                         ]);
                     ?>
