@@ -255,7 +255,7 @@ class InviaCatalogoController extends Controller
                     ['html' => 'invio-catalogo'],
                     ['model' => $model]
                 )
-                ->setFrom([Yii::$app->params["infoEmail"]])
+                ->setFrom([Yii::$app->params["infoEmail"] => Yii::$app->params["infoName"]])
                 ->setTo($model->email)
                 ->setSubject($model->name.", ecco il nostro catalogo bomboniere L'Uliveto ");
 

@@ -53,7 +53,8 @@ class OrderController extends Controller
                             'delete-attachment',
                             'send-email-payment',
                             'generate-pdf',
-                            'set-delivered'
+                            'set-delivered',
+                            'delete-all'
                         ],
                         'allow' => true,
                         'roles' => ['@'],
@@ -99,6 +100,39 @@ class OrderController extends Controller
         ]);
     }
 
+    public function actionDeleteAll()
+    {
+        $out = ["status" => "100", "count" => 0];
+
+        $params     = Yii::$app->request->queryParams;
+            
+        if(isset($params["ids"]) && !empty($params["ids"])){
+            $ids = json_decode($params["ids"], true);
+            
+            foreach($ids as $id){
+                
+                $model = Quote::findOne(["id" => $id]);
+                
+                if(!empty($model)){
+                    
+                    $deleted = $model->delete();
+                    
+                    if($deleted){
+                        $out["count"]++;
+                    }
+                }
+                
+            }
+
+            if($out["count"] > 0){
+                $out["status"] = "200";
+            }
+        }
+
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        return $out;
+    }
+
     public function actionSendEmailPayment($id_client, $id_quote){
         if(empty($id_client) || empty($id_quote)) return;
         
@@ -135,7 +169,7 @@ class OrderController extends Controller
                     ['html' => $view],
                     ['model' => $model]
                 )
-                ->setFrom([Yii::$app->params["infoEmail"]])
+                ->setFrom([Yii::$app->params["infoEmail"] => Yii::$app->params["infoName"]])
                 ->setTo($client->email)
                 ->setSubject($model->getClient()." il tuo ordine bomboniere L’Uliveto è confermato");
 

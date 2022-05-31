@@ -258,7 +258,7 @@ class QuotePlaceholderController extends Controller
                     ['html' => $view],
                     ['model' => $model]
                 )
-                ->setFrom([Yii::$app->params["infoEmail"]])
+                ->setFrom([Yii::$app->params["infoEmail"] => Yii::$app->params["infoName"]])
                 ->setTo($client->email)
                 ->setSubject($object);
 

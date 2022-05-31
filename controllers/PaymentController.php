@@ -35,7 +35,8 @@ class PaymentController extends Controller
                             'external-payment', 
                             'register-transaction',
                             'upload-allegato',
-                            'generate-pdf'
+                            'generate-pdf',
+                            'delete-all'
                         ],
                         'allow' => true,
                         'allow' => ['?'],
@@ -67,19 +68,38 @@ class PaymentController extends Controller
         return true;
     }
 
-    // public function actionCheckSaldoPayment(){
-    //     $quotes = Quote::find()->where([">", "deadline", date("Y-m-d H:i:s")]);
-    //     foreach($quotes as $quote){
-    //         $payment = Payment::find()
-    //                     ->where(["id_quote" => $quote->id])
-                        
-    //                     ->all();
-    //         if(count($payment == 1)){
-                
-    //         }
-    //     }
-    // }
+    public function actionDeleteAll()
+    {
+        $out = ["status" => "100", "count" => 0];
 
+        $params     = Yii::$app->request->queryParams;
+            
+        if(isset($params["ids"]) && !empty($params["ids"])){
+            $ids = json_decode($params["ids"], true);
+            
+            foreach($ids as $id){
+                
+                $model = Payment::findOne(["id" => $id]);
+                
+                if(!empty($model)){
+                    
+                    $deleted = $model->delete();
+                    
+                    if($deleted){
+                        $out["count"]++;
+                    }
+                }
+                
+            }
+
+            if($out["count"] > 0){
+                $out["status"] = "200";
+            }
+        }
+
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        return $out;
+    }
     public function actionHasAcconto($id_quote){
         $out = ["status" => "100", "hasAcconto" => false, "amount" => 0];
 
@@ -209,7 +229,7 @@ class PaymentController extends Controller
                     ['html' => !empty($transaction) ? "transaction-completed" : "send-payment"],
                     ['client' => $client, 'transaction' => $transaction, "order" => $order, "id_payment" => $id_payment]
                 )
-                ->setFrom([Yii::$app->params["infoEmail"]])
+                ->setFrom([Yii::$app->params["infoEmail"] => Yii::$app->params["infoName"]])
                 ->setTo($client->email)
                 ->setSubject($subject);
 

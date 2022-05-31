@@ -109,7 +109,7 @@
     </div>
 
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-6">
             <?= ChartJs::widget([
                     'type' => 'bar',
                     'options' => [
@@ -117,7 +117,7 @@
                         'width' => 500
                     ],
                     'data' => [
-                        'labels' => ["Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"],
+                        'labels' => ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"],
                         'datasets' => [
                             [
                                 'label' => "Preventivi",

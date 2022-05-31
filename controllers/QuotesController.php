@@ -303,15 +303,35 @@ class QuotesController extends Controller
 
     public function actionDeleteAll()
     {
-        $selection=(array)Yii::$app->request->post('selection');//typecasting
-        print_r($selection);die;
-        
-        $this->findModel($id)->delete();
-        $quoteDetails   = QuoteDetails::deleteAll(["id_quote" => $id]);
-        $payments       = Payment::deleteAll(["id_quote" => $id]);
-        $quotePlaceholder = QuotePlaceholder::deleteAll(["id_quote" => $id]);
-        Yii::$app->session->setFlash('success', "Preventivo cancellato con successo");
-        return $this->redirect(["index"]);
+        $out = ["status" => "100", "count" => 0];
+
+        $params     = Yii::$app->request->queryParams;
+            
+        if(isset($params["ids"]) && !empty($params["ids"])){
+            $ids = json_decode($params["ids"], true);
+            
+            foreach($ids as $id){
+                
+                $model = Quote::findOne(["id" => $id]);
+                
+                if(!empty($model)){
+                    
+                    $deleted = $model->delete();
+                    
+                    if($deleted){
+                        $out["count"]++;
+                    }
+                }
+                
+            }
+
+            if($out["count"] > 0){
+                $out["status"] = "200";
+            }
+        }
+
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        return $out;
     }
 
     public function actionGetByClientId($id_client){
@@ -389,7 +409,7 @@ class QuotesController extends Controller
                     ['html' => $view],
                     ['model' => $model]
                 )
-                ->setFrom([Yii::$app->params["infoEmail"]])
+                ->setFrom([Yii::$app->params["infoEmail"] => Yii::$app->params["infoName"]])
                 ->setTo($client->email)
                 ->setSubject($object);
 

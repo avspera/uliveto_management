@@ -358,7 +358,6 @@ $placeholders = \app\models\Segnaposto::find()->all();
 
 </div>
 
-<?php $prefix_url = Yii::getAlias("@web"); ?>
 <script>
 
     

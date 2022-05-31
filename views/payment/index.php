@@ -1,7 +1,6 @@
 <?php
 
 use yii\helpers\Html;
-
 use yii\helpers\Url;
 use yii\grid\ActionColumn;
 use kartik\grid\GridView;
@@ -19,16 +18,33 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?php echo $this->render('_search', ['model' => $searchModel]); ?>
 
-    
+    <div class="row">
+        <div class="col-md-12">
+            <div class="result-container"></div>
+        </div>
+    </div>
+
     <div class="card">
         <div class="card-header">
             <?= Html::a('Aggiungi', ['create'], ['class' => 'btn btn-success']) ?>
+            <?= Html::button('<i class="fas fa-trash"></i> Cancella selezionati', ['class' => 'btn btn-danger', "onclick" => "deleteMultiple()"]) ?>
         </div>
 
         <div class="card-body table-responsive">
             <?= GridView::widget([
                 'dataProvider' => $dataProvider,
                 'columns' => [
+                    [
+                        'header'=>Html::checkbox('selection_all', false, ['class'=>'select-on-check-all', 'value'=>1, 'onclick'=>'$(".kv-row-checkbox").prop("checked", $(this).is(":checked"));']),
+                        'contentOptions'=>['class'=>'kv-row-select'],
+                        'content'=>function($model, $key){
+                            return Html::checkbox('selection[]', false, ['class'=>'kv-row-checkbox', 'value'=>$key, 'onclick'=>'$(this).closest("tr").toggleClass("danger");']);
+                        },
+                        'hAlign'=>'center',
+                        'vAlign'=>'middle',
+                        'hiddenFromExport'=>true,
+                        'mergeHeader'=>true,
+                    ],
                     [
                         'attribute' => 'id_client',
                         'value' => function($model){
@@ -162,3 +178,44 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 
 </div>
+
+<script>
+     function deleteMultiple(){
+        let ids = [];
+        let i = 0;
+
+        $(".kv-row-checkbox:checkbox:checked").each(function() {
+            ids[i] =  $(this).val();
+            i++;
+        })
+        
+        $.ajax({
+            url: '/web/payment/delete-all',
+            type: 'get',
+            dataType: 'json',
+            'data': {
+                'ids': JSON.stringify(ids),
+            },
+            success: function (data) {
+                let alertClass  = "alert-warning";
+                let alertMsg    = "Ops...something went wrong";
+                if(data.status == "200")
+                {
+                    alertClass = "alert-success";
+                    alertMsg = "Cancellati "+data.count+" elementi. Sto per ricaricare....";
+                    let html = `<div style="margin-top: 5px;" class="alert ${alertClass} alert-dismissible">
+                        ${alertMsg} . <br />
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                    </div>`;
+
+                    $(".result-container").append(html);
+                    setTimeout(function() {
+                        location.reload();
+                    }, 5000);
+                }
+            }
+        });
+    }
+</script>
