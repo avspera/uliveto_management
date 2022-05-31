@@ -117,7 +117,7 @@
                         'width' => 500
                     ],
                     'data' => [
-                        'labels' => ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"],
+                        'labels' => ["Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"],
                         'datasets' => [
                             [
                                 'label' => "Preventivi",

@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use Yii;
 use app\models\Sales;
 use app\models\SalesSearch;
 use yii\web\Controller;

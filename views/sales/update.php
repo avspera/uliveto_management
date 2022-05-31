@@ -2,20 +2,18 @@
 
 use yii\helpers\Html;
 
-/* @var $this yii\web\View */
-/* @var $model app\models\Sales */
-
-$this->title = 'Update Sales: ' . $model->name;
-$this->params['breadcrumbs'][] = ['label' => 'Sales', 'url' => ['index']];
+$this->title = 'Modifica Sconto: ' . $model->name;
+$this->params['breadcrumbs'][] = ['label' => 'Sconti', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['view', 'id' => $model->id]];
-$this->params['breadcrumbs'][] = 'Update';
+$this->params['breadcrumbs'][] = 'Modifica';
+
 ?>
-<div class="sales-update">
+<div class="sales-create">
 
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <?= $this->render('_form', [
-        'model' => $model,
-    ]) ?>
-
+    <div class="card">
+        <div class="card-body table-responsive">
+            <?= $this->render('_form', ['model' => $model]) ?>
+        </div>
+    </div>
 </div>
+

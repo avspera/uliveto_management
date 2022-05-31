@@ -6,7 +6,7 @@ use yii\grid\ActionColumn;
 use kartik\grid\GridView;
 use yii\jui\DatePicker;
 
-$this->title = 'Preventivi';
+$this->title = 'Preventivi Bomboniere';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="quote-index">
@@ -32,13 +32,21 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <div class="card">
-        <div class="card-header"><?= Html::a('<i class="fas fa-plus"></i> Aggiungi', ['create'], ['class' => 'btn btn-success']) ?></div>
+        <div class="card-header">
+            <?= Html::a('<i class="fas fa-plus"></i> Aggiungi', ['create'], ['class' => 'btn btn-success']) ?>
+            <?= Html::a('<i class="fas fa-trash"></i> Cancella selezionati', ['delete-all'], ['class' => 'btn btn-danger']) ?>
+        </div>
         <div class="card-body table table-responsive">
             <?= GridView::widget([
                 'dataProvider' => $dataProvider,
                 'responsive'=>true,
                 'hover'=>true,
                 'columns' => [
+                    //multiselect
+                    // [
+                    //     'class' => 'yii\grid\CheckboxColumn', 
+                    //     'checkboxOption' => ["value" => $model->id],
+                    // ],
                     'order_number',
                     [
                         'attribute' => 'id_client',

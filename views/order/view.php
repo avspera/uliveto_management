@@ -65,7 +65,10 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
             <?= DetailView::widget([
                 'model' => $model,
                 'attributes' => [
-                    'order_number',
+                    [
+                      'attribute' => 'order_number',
+                      'label' => "Numero Ordine"
+                    ],
                     [
                         'attribute' => 'created_at',
                         'value' => function($model){

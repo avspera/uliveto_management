@@ -87,13 +87,11 @@ class PaymentSearch extends Payment
                 $query->andFilterWhere(['>=', 'created_at', $start_date ])->andFilterWhere(['<=', 'created_at', $end_date]);
         }
         
-        if(isset($params["sort"]) && $params["sort"] == "data_saldo"){
-            /** order by quote date_balance */
-            $dataProvider->sort->attributes['data_saldo'] = [
-                'asc' => ['quote.date_balance' => SORT_ASC],
-            ];
-        }
-        
+        /** order by quote date_balance */
+        $dataProvider->sort->attributes['data_saldo'] = [
+            'asc' => ['quote.date_balance' => SORT_ASC],
+        ];
+    
         if(isset($params["sort"]) && $params["sort"] == "-data_saldo"){
             /** order by quote date_balance */
             $dataProvider->sort->attributes['data_saldo'] = [

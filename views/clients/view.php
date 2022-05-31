@@ -93,13 +93,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                     },
                                     'format' => "raw"
                                 ],
-                                // [
-                                //    'attribute' => 'product',
-                                //    'value' => function($model){
-                                //        return $model->getProduct();
-                                //    },
-                                //    'filter' => yii\helpers\ArrayHelper::map(app\models\Product::find()->orderBy('name')->all(), 'id', 'name')
-                                // ],
                                 [
                                     'attribute' => 'created_at',
                                     'value' => function($model){
@@ -129,29 +122,28 @@ $this->params['breadcrumbs'][] = $this->title;
                                 },
                                 'filter' => [0 => "NO", 1 => "SI"] 
                                 ],
-                                //'total',
-                                //'deposit',
-                                //'balance',
-                                //'shipping',
-                                //'deadline',
                                 [
-                                    'class' => ActionColumn::className(),
-                                ],
+                                    'class' => 'yii\grid\ActionColumn',
+                                    'template' => '{view} {update} {delete}',
+                                    'buttons'=> [
+                                        'view' => function ($url, $model) {
+                                            return Html::a("<i class='fas fa-eye'></i>", ["quotes/view", "id" => $model->id]);
+                                        },
+                                        'update' => function ($url, $model) {
+                                            return Html::a("<i class='fas fa-pencil-alt'></i>", ["quotes/update", "id" => $model->id]);
+                                        },
+                                        'delete' => function ($url, $model) {
+                                            return Html::a("<i class='fas fa-trash'></i>", ["quotes/delete", "id" => $model->id], [
+                                                'title' => "Activate",
+                                                'data' => [
+                                                     'method' => 'post',
+                                                     'confirm' => 'Sei sicuro di voler cancellare questo elemento?',
+                                                ],
+                                            ]);
+                                        }
+                                    ],
+                                ]
                             ],
-                            'toolbar' => [
-                                [
-                                    'content'=>
-                                        Html::button('<i class="fas fa-plus"></i>', [
-                                            'type'=>'button', 
-                                            'title'=>'Add Book',
-                                            'class'=>'btn btn-success'
-                                        ]) . ' '.
-                                        Html::a('<i class="fas fa-redo"></i>', ['grid-demo'], [
-                                            'class' => 'btn btn-secondary btn-default', 
-                                            'title' => 'Reset Grid'
-                                        ]),
-                                ],
-                            ]
                         ]); ?>
                     <?php } ?>
                 </div>

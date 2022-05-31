@@ -57,7 +57,8 @@ class QuotesController extends Controller
                             'generate-pdf',
                             'choose-quote',
                             'set-confirmed',
-                            'get-total'
+                            'get-total',
+                            'delete-all'
                         ],
                         'allow' => true,
                         'roles' => ['@'],
@@ -93,7 +94,7 @@ class QuotesController extends Controller
         $searchModel = new QuoteSearch();
         $searchModel->confirmed = 0;
         $dataProvider = $searchModel->search($this->request->queryParams);
-        $dataProvider->sort->defaultOrder = ["deadline" => SORT_DESC];
+        $dataProvider->sort->defaultOrder = ["deadline" => SORT_DESC, "order_number" => SORT_ASC];
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -292,6 +293,19 @@ class QuotesController extends Controller
      */
     public function actionDelete($id)
     {
+        $this->findModel($id)->delete();
+        $quoteDetails   = QuoteDetails::deleteAll(["id_quote" => $id]);
+        $payments       = Payment::deleteAll(["id_quote" => $id]);
+        $quotePlaceholder = QuotePlaceholder::deleteAll(["id_quote" => $id]);
+        Yii::$app->session->setFlash('success', "Preventivo cancellato con successo");
+        return $this->redirect(["index"]);
+    }
+
+    public function actionDeleteAll()
+    {
+        $selection=(array)Yii::$app->request->post('selection');//typecasting
+        print_r($selection);die;
+        
         $this->findModel($id)->delete();
         $quoteDetails   = QuoteDetails::deleteAll(["id_quote" => $id]);
         $payments       = Payment::deleteAll(["id_quote" => $id]);
