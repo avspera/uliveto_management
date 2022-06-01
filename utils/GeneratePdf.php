@@ -111,22 +111,29 @@ class GeneratePdf {
                 if(!empty($color->picture)){
                     $prevOrdinate = $ordinate;
                     $pdf->Cell($pdf->Image($color->picture,$start_x, $ordinate, 40, 40));
-                    // if($prevOrdinate == $ordinate)
+                    
+                    // if($prevOrdinate == $ordinate){
                     //     $start_x += 40;
+                    // }
                     // else{
                     //     $start_x = 0;
                     // }
                 }
                 
-                if($i > 0){
+                if($i > 0 ){
                     $currentProd = $products[$i]->id_product;
                     $prevProd    = $products[$i-1]->id_product;
-                    if($currentProd !== $prevProd){
-                        $start_x = 0;
-                    }else{
+
+                    if($currentProd == $prevProd){
                         $start_x += 40;
+                    }else{
+                        $start_x = 0;
                     }
+                }else{
+                    $start_x += 40;
                 }
+
+                
 
                 if(!empty($products[$i]->id_packaging)){
                     $packaging = Packaging::find()
