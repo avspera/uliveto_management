@@ -50,12 +50,10 @@ class GeneratePdf {
     
         $balance = $quote->deposit ? $quote->total - $quote->deposit : $quote->total;
 
-        
-
         $pdf = new FPDI();
         
         // Reference the PDF you want to use (use relative path)
-        $pagecount = $pdf->setSourceFile(Yii::getAlias("@webroot").'/pdf/'.$file.'.pdf');
+        $pagecount = $pdf->setSourceFile(Yii::getAlias("@webroot").'/pdf/preventivo.pdf');
 
         /**
          * PAGE ONE

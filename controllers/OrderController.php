@@ -174,7 +174,8 @@ class OrderController extends Controller
                 ->setSubject($model->getClient()." il tuo ordine bomboniere L’Uliveto è confermato");
 
         $fullFilename = "https://manager.orcidelcilento.it/web/".$filename;
-        $message->attachContent($fullFilename,['fileName' => $filename,'contentType' => 'application/pdf']); 
+        // $message->attachContent($fullFilename,['fileName' => $filename,'contentType' => 'application/pdf']); 
+        $message->attach($fullFilename);
 
         return $message->send();
     }

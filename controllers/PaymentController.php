@@ -168,8 +168,7 @@ class PaymentController extends Controller
     public function actionSendEmailPayment($id_client, $id_quote, $id_payment = []){
         if(empty($id_client) || empty($id_quote)) return;
         
-        $this->layout = "external-payment";
-
+        // $this->layout = "external-payment";
         $client     = Client::findOne(["id" => $id_client]);
         $orderQuote  = Quote::findOne(["id" => $id_quote]);
         $orderPlaceholder = QuotePlaceholder::findOne(["id" => $id_quote]);
@@ -178,7 +177,7 @@ class PaymentController extends Controller
 
         $order = !empty($orderQuote) ? $orderQuote : $orderPlaceholder;
         
-        if($this->sendEmail($client, [], $order, $id_payment)){
+        if($this->sendEmail($order, [], $filename, $client, $id_payment)){
             Yii::$app->session->setFlash('success', "Email inviata correttamente");
         }else{
             Yii::$app->session->setFlash('error', "Ops...something went wrong [ORDER_SEND_EMAIL-100]");
@@ -234,13 +233,13 @@ class PaymentController extends Controller
                 ->setSubject($subject);
 
         if(!empty($filename)){
-            $pdf = new GeneratePdf();
-            $id_quote = !empty($payment->id_quote) ? $payment->id_quote : $order->id;
-            $quote = Quote::findOne(["id" => $id_quote]);
-            $filename = $pdf->quotePdf($quote,"F", "ordine");
-            
-            $fullFilename = "https://manager.orcidelcilento.it/web/pdf/".$filename;
-            $message->attachContent($fullFilename,['fileName' => $filename,'contentType' => 'application/pdf']); 
+            $pdf        = new GeneratePdf();
+            $id_quote   = !empty($payment->id_quote) ? $payment->id_quote : $order->id;
+            $quote      = Quote::findOne(["id" => $id_quote]);
+            $filename   = $pdf->quotePdf($quote, "F", "ordine");
+            $fullFilename = "https://manager.orcidelcilento.it/web/pdf/ordini/".$filename;
+            // $message->attachContent($fullFilename,['fileName' => $filename,'contentType' => 'application/pdf']); 
+            $message->attach($fullFilename);
         }
         
 
@@ -377,7 +376,6 @@ class PaymentController extends Controller
                 if($model->save())
                     return $this->redirect(['view', 'id' => $model->id]);
                 else{
-                    print_r($model->getErrors());die;
                     Yii::$app->session->setFlash('error', "Ops...something went wrong [PACK-101]");
                 }
             }
