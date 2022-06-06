@@ -4,6 +4,7 @@
  
     $this->title = 'Home::OrciDelCilento - Manager';
     $this->params['breadcrumbs'] = [['label' => $this->title]];
+
 ?>
 <div class="container-fluid">
 
@@ -114,28 +115,65 @@
                     'type' => 'bar',
                     'options' => [
                         'height' => 300,
-                        'width' => 500
+                        'width' => 500,
+                        'responsive' => true,
+                        'scales' => [
+                            'xAxes' => [
+                                [
+                                'type'    => 'time',
+                                'time' => [
+                                    'unit' => 'month'
+                                ]]
+                            ]
+                          ]
+                      
                     ],
                     'data' => [
                         'labels' => ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"],
                         'datasets' => [
                             [
                                 'label' => "Preventivi",
-                                'backgroundColor'       => ["orange",],
+                                'backgroundColor'       => ["orange", "orange", "orange","orange","orange","orange","orange","orange","orange","orange","orange","orange",],
                                 'borderColor'           => "rgba(179,181,198,1)",
                                 'pointBorderColor'      => "#fff",
                                 'pointHoverBackgroundColor' => "#fff",
                                 'pointHoverBorderColor' => "rgba(179,181,198,1)",
-                                'data' => [$quotesCount]
+                                'data' => array_values($formattedMonthsQuotes)
                             ],
+                        ]
+                    ]
+                ]);
+            ?>
+        </div>
+        <div class="col-md-6">
+                <?= ChartJs::widget([
+                    'type' => 'bar',
+                    'options' => [
+                        'height' => 300,
+                        'width' => 500,
+                        'responsive' => true,
+                        'scales' => [
+                            'xAxes' => [
+                                [
+                                'type'    => 'time',
+                                'time' => [
+                                    'unit' => 'month'
+                                ]]
+                            ]
+                        ]
+                      
+                    ],
+                    'data' => [
+                        'labels' => ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"],
+                        'datasets' => [
                             [
                                 'label' => "Ordini",
-                                'backgroundColor'       => ["green"],
+                                'backgroundColor'       => ['green','green','green','green','green','green','green','green','green','green','green','green',],
                                 'borderColor'           => "rgba(179,181,198,1)",
                                 'pointBorderColor'      => "#fff",
                                 'pointHoverBackgroundColor' => "#fff",
                                 'pointHoverBorderColor' => "rgba(179,181,198,1)",
-                                'data' => [$ordersCount]
+                                'data' => array_values($formattedMonthsOrders)
                             ],
                         ]
                     ]

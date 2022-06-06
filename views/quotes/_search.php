@@ -91,6 +91,26 @@ use yii\jui\DatePicker;
                         ]);
                     ?>
                 </div>
+                <div class="col-md-3 col-sm-6 col-12">
+                    <label>Consegna</label>
+                    <?= 
+                        DatePicker::widget([
+                            'name'  => 'QuoteSearch[deadline]',
+                            'language' => 'it',
+                            'dateFormat' => 'yyyy-MM-dd',
+                            'options' => [
+                                'class' => "form-control",
+                                'autocomplete' => false
+                            ],
+                            'clientOptions' => [
+                                'minDate' => 'today',
+                                'changeMonth' => true, 
+                                'changeYear' => true,
+                            ]
+                        ]);
+                    ?>
+                </div>
+
             </div>
             
             <div class="row">

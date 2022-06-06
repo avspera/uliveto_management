@@ -196,8 +196,7 @@ class QuotePlaceholderController extends Controller
         if(empty($id_client) || empty($id_quote)) return;
         
         $this->layout = "external-payment";
-        print_r($id_client);
-        print_r($id_quote);die;
+        
         $client = Client::findOne(["id" => $id_client]);
         $order  = QuotePlaceholder::findOne(["id" => $id_quote]);
         

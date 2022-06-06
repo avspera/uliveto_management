@@ -10,5 +10,5 @@
     
     <div class="text" style="padding: 0 3em; color: #4d4d4d">
         <p>Grazie per aver scelto Orci Del Cilento</p>
-        <p>Ti ricordiamo che mancano <?= $days ?> giorni alla scadenza dell'offerta per il tuo preventivo #<?= $oder->order_number ?> del <?= $oder->formatDate($order->created_at) ?> </p>
+        <p>Ti ricordiamo che mancano <?= $days ?> giorni alla scadenza dell'offerta per il tuo preventivo #<?= $order->order_number ?> del <?= $order->formatDate($order->created_at) ?> </p>
     </div>

@@ -24,10 +24,10 @@ class GeneratePdf {
         
         if(empty($quote)) return;
         
-        $quotePlaceholder = QuotePlaceholder::find()->where(["id_quote" => $quote->id])->one();
-        $products   = QuoteDetails::findAll(["id_quote" => $quote->id]);
-        $colors     = [];
-        $sale       = isset($quote->id_sconto) ? Sales::findOne([$quote->id_sconto]) : 0;
+        $quotePlaceholder   = QuotePlaceholder::find()->where(["id_quote" => $quote->id])->one();
+        $products           = QuoteDetails::findAll(["id_quote" => $quote->id]);
+        $colors             = [];
+        $sale               = isset($quote->id_sconto) ? Sales::findOne([$quote->id_sconto]) : 0;
         
         if(isset($quote->id_client) && !empty($quote->id_client)){
             $client = $quote->getClient();
@@ -89,51 +89,55 @@ class GeneratePdf {
         /**
          * PRODUCTS FOTO
          */
-            $ordinate           = 80;
             $start_x            = 0;
             $start_pack_x       = 0;
-            $packName = [];
-            $prevOrdinate = "";
+            $packName           = [];
+            $ordinates          = [];
             for($i= 0; $i <= count($products); $i++){
-                $color  = Color::findOne(["id" => $products[$i]->id_color]);
-                $item   = Product::find()->select(["id", "name", "price"])->where(["id" => $products[$i]->id_product])->one(); 
                 
-                if($item->name == "[U]gliarulo")
-                $ordinate = 80;
-
-                if($item->name == "[U]classic")
-                    $ordinate = 125;
+                $color  = Color::find()->select(["picture"])->where(["id" => $products[$i]->id_color])->one();
+                $item   = Product::find()
+                            ->select(["id", "name", "price"])
+                            ->where(["id" => $products[$i]->id_product])
+                            ->one();
                 
-                if($item->name == "[U]live")
-                    $ordinate = 170;
-                
-               
-                if(!empty($color->picture)){
-                    $prevOrdinate = $ordinate;
-                    $pdf->Cell($pdf->Image($color->picture,$start_x, $ordinate, 40, 40));
-                    
-                    // if($prevOrdinate == $ordinate){
-                    //     $start_x += 40;
-                    // }
-                    // else{
-                    //     $start_x = 0;
-                    // }
+                if(stripos($item->name, "gliarulo") !== false){
+                    $ordinate = 80;
+                    $ordinates[$i] = 80;
                 }
-                
-                if($i > 0 ){
-                    $currentProd = $products[$i]->id_product;
-                    $prevProd    = $products[$i-1]->id_product;
 
-                    if($currentProd == $prevProd){
+                if(stripos($item->name, "classic") !== false){
+                    $ordinate       = 125;
+                    $ordinates[$i]  = 125;
+                }
+
+                if(stripos($item->name, "live") !== false){
+                    $ordinate = 170;
+                    $ordinates[$i] = 170;
+                }
+
+                if(!empty($color->picture)){
+                    $pdf->Cell($pdf->Image($color->picture, $start_x, $ordinate, 40, 40));
+                }
+
+                if($i > 0 ){
+                    
+                    $prevProd[$i]["id"]         = $products[$i-1]->id_product;
+                    $prevProd[$i]["ordinate"]   = $ordinate;
+                    $currentProd                = $products[$i]->id_product;
+                    
+                    if($prevProd[$i]["id"] == $currentProd){
                         $start_x += 40;
                     }else{
-                        $start_x = 0;
+                        if($ordinates[$i-1] != $ordinates[$i]){
+                            $star_x = 0;
+                        }else{
+                            $start_x += 40;
+                        }
                     }
                 }else{
-                    $start_x += 40;
+                    $start_x = 0;
                 }
-
-                
 
                 if(!empty($products[$i]->id_packaging)){
                     $packaging = Packaging::find()
@@ -143,8 +147,9 @@ class GeneratePdf {
                     
                     if(!empty($packaging)){
                         //do not repeat pack image if already print
-                        if(!in_array($packaging->label, $packName) && !empty($packaging->image)){
-                            $packName[$i] = $packaging->label;
+                        
+                        if(!in_array($packaging->image, $packName) && !empty($packaging->image)){
+                            $packName[$i] = $packaging->image;
                             $ordinatePackaging = 225;
                             $pdf->Cell($pdf->Image($packaging->image, $start_pack_x, $ordinatePackaging, 40, 40));
                             $start_pack_x += 40;
@@ -152,7 +157,8 @@ class GeneratePdf {
                     }
                 }
                 
-            }
+                
+            }//end of for   
             
             /**
              * CONFETTI.
@@ -214,23 +220,28 @@ class GeneratePdf {
         foreach($products as $product){
             $item = Product::findOne(["id" => $product->id_product]);
             //summary
-            $pdf->setXY(30, $line);
-            $pdf->setFontSize("11");
+            $pdf->setXY(10, $line);
+            $pdf->setFontSize("10");
             $pdf->setTextColor(0, 0, 0);
-            $pdf->Cell(10, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $item->name." - ".number_format($item->price, 2, ",", ".") ." €")." | n. ".$product->amount, 0, 0, 'C'); // add the text, align to Center of cell
-            $line += 7;
+            
+            $nameLine = iconv('UTF-8', "ISO-8859-1//TRANSLIT", $item->name." - ".number_format($item->price, 2, ",", ".") ." €") ." | n. ".$product->amount;
+            
+            $pdf->Cell(strlen($nameLine), 10, $nameLine, 0, 0, 'L');
+            $line += 5;
 
             $packaging = new \stdClass;
             $packaging->price = 0;
 
             if(!empty($product->id_packaging)){
-                $packaging = Packaging::findOne(["id_product" => $product->id_product]);
+                $packaging = Packaging::findOne(["id" => $product->id_packaging]);
+                
                 if(!empty($packaging)){
-                    $pdf->setXY(25, $line);
+                    $pdf->setXY(10, $line);
                     $pdf->setFontSize("11");
                     $pdf->setTextColor(0, 0, 0);
-                    $pdf->Cell(50, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $packaging->label." - ".number_format($packaging->price, 2, ",", ".") ." €")." | n. ".$product->amount, 0, 0, 'C'); // add the text, align to Center of cell
-                    $line += 7;
+                    $packagingLine = iconv('UTF-8', "ISO-8859-1//TRANSLIT", $packaging->label." - ".number_format($packaging->price, 2, ",", ".") ." €")." | n. ".$product->amount;
+                    $pdf->Cell(strlen($packagingLine), 10, $packagingLine, 0, 0, 'L'); // add the text, align to Center of cell
+                    $line += 6;
                 }
             }
             
@@ -241,10 +252,12 @@ class GeneratePdf {
                 $prezzoScontato  = $item->price - $percentage;
             
                 $pdf->setTextColor(0, 177, 106);
-                $pdf->setXY(45, $line-2);
-                $pdf->Cell(10, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", "Sconto: ".$sale->name." del ".$sale->amount."% - ".number_format($prezzoScontato, 2, ",", ".") ." €")." n. ".$product->amount, 0, 0, 'C'); // add the text, align to Center of cell
+                $pdf->setXY(10, $line-2);
+                $saleLine = iconv('UTF-8', "ISO-8859-1//TRANSLIT", "Sconto: ".$sale->name." del ".$sale->amount."% - ".number_format($prezzoScontato, 2, ",", ".") ." €")." n. ".$product->amount;
+                $pdf->Cell(strlen($saleLine), 10, $saleLine, 0, 0, 'L');
                 $line += 10;
             }else{
+                $prezzoScontato = $item->price;
                 $line += 6;
             }
 
@@ -254,19 +267,13 @@ class GeneratePdf {
             $confettiPrice  = $quote->confetti_omaggio ? 0 : floatval($quote->prezzo_confetti);
             $customPrice    = $quote->custom_amount_omaggio ? 0 : floatVal($quote->custom_amount);
             $totalPrice     = $subtotal + $packagingPrice + $confettiPrice + $customPrice;
-            // print_r("product". $product->id_product." - ");
-            // print_r("subtotal ". $subtotal." - ");
-            // print_r("packagingPrice ". $packagingPrice." - ");
-            // print_r("confettiPrice ". $confettiPrice." - ");
-            // print_r("customPrice ". $customPrice." - ");
-
+            
             $line += 1;
             
             $pdf->setTextColor(0, 0, 0);
-            $pdf->setXY(8, $line-9);
-                $pdf->Cell(10, 10, iconv('UTF-8', "ISO-8859-1//TRANSLIT", 
-                "Totale: ".number_format($totalPrice, 2, ",", ".") ." €"
-            ));
+            $pdf->setXY(10, $line-9);
+            $totalLine = iconv('UTF-8', "ISO-8859-1//TRANSLIT", "Totale: ".number_format($totalPrice, 2, ",", ".") ." €");
+            $pdf->Cell(10, 10, $totalLine);
         }
 
         //END OF FOREACH
@@ -399,7 +406,7 @@ class GeneratePdf {
 
         $filename           = $file."_".$quote->order_number."_".$client.".pdf";
         $fileRelativePath   = Yii::getAlias("@webroot")."/pdf/".$target."/".$file."_".$quote->order_number."_".$client.".pdf";
-        // $pdf->Output();die; //If test
+        $pdf->Output();die; //If test
         
         $pdf->Output($fileRelativePath, 'F');    
 

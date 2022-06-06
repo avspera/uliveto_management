@@ -122,7 +122,9 @@ class PaymentController extends Controller
             if(isset($postData["Payment"]["id"])){
                 $id = $postData["Payment"]["id"];
                 $model = Payment::findOne(["id" => $id]);
-                $model->allegato = $this->manageUploadFiles($model);
+                if (!empty($_FILES)) {
+                    $model->allegato = $this->manageUploadFiles($model);
+                }
                 
                 if($model->save()){
                     Yii::$app->session->setFlash('success', "Operazione completata con successo. Grazie");
@@ -253,14 +255,21 @@ class PaymentController extends Controller
     
         $dirCreated = FileHelper::createDirectory($path);
         
-        $allegato = UploadedFile::getInstance($model, 'allegato');
+        $allegato = UploadedFile::getInstances($model, 'allegato');
         if (!empty($allegato)){
-            $filename = $uploader->generateAndSaveFile($allegato, $path);
-            $model->allegato = "uploads/payments/".$filename;
+            $files = [];
+            $i = 0;
+        
+            foreach($allegato as $attachment){
+                $filename   = $uploader->generateAndSaveFile($attachment, $path);
+                $files[$i]  = "uploads/payments/".$filename;
+                $i++;
+            }
+            
+            $model->allegato = json_encode($files);
         }
         
         return $model->allegato;
-
     }
 
     public function actionExternalPayment($id_client, $id_quote, $id_payment){

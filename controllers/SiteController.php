@@ -97,18 +97,40 @@ class SiteController extends Controller
         if(Yii::$app->user->isGuest)
             return $this->redirect(["login"]);
             
-        $quotesCount    = Quote::find()->where(["confirmed" => 0])->count();
+        $quotesByMonth      = Quote::find()->select(["created_at"])->where(["confirmed" => 0])->groupBy("created_at")->all();
+        $quotesCount        = Quote::find()->where(["confirmed" => 0])->count();
+        $quotesMonthCount   = [];
+        $ordersMonthCount   = [];
+        $months             = [ 1 => 0, 2 => 0, 3=> 0, 4=> 0, 5=> 0, 6=> 0, 7=> 0, 8=> 0, 9=> 0, 10=> 0, 11=> 0, 12=> 0];
+
+        foreach($quotesByMonth as $quote) {
+            $createdDateMonth = (int) date('m', strtotime($quote->created_at));
+            
+            if($quote->confirmed == 0){
+                $quotesMonthCount[$createdDateMonth] += 1;
+            }
+            else{
+                $ordersMonthCount[$createdDateMonth] += 1;
+            }
+        }
+        
+    
         $clientsCount   = Client::find()->count();
         $messagesCount  = Message::find()->where(["not", ["replied_at" => null]])->count();
         $ordersCount    = Quote::find()->where(["confirmed" => 1])->count();
         $paymentsCount  = Payment::find()->where(["payed" => 1])->count();
 
+        $formattedMonthsQuotes = array_replace($months, $quotesMonthCount);
+        $formattedMonthsOrders = array_replace($months, $ordersMonthCount);
+
         return $this->render('index', [
-            "quotesCount"   => $quotesCount,
-            'clientsCount'  => $clientsCount,
-            'messagesCount' => $messagesCount,
-            'ordersCount'   => $ordersCount,
-            'paymentsCount' => $paymentsCount
+            "quotesCount"       => $quotesCount,
+            'clientsCount'      => $clientsCount,
+            'messagesCount'     => $messagesCount,
+            'ordersCount'       => $ordersCount,
+            'paymentsCount'     => $paymentsCount,
+            'formattedMonthsQuotes'  => $formattedMonthsQuotes,
+            'formattedMonthsOrders'  => $formattedMonthsOrders,
         ]);
     }
 

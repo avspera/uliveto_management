@@ -140,12 +140,14 @@
                     ]);
                   ?>
                     <?php echo $form->field($payment, 'id')->hiddenInput(['value'=> $payment->id])->label(false); ?>
+                    
                     <?= FileInput::widget([
-                        'model' => $payment,
+                        'model'     => $payment,
                         'attribute' => 'allegato',
-                        "language" => "it",
-                        'options' => ['multiple' => true, 'accept' => ["png", "jpg", "pdf"]]
+                        "language"  => "it",
+                        'options'   => ['multiple' => true, 'accept' => ["png", "jpg", "pdf"]]
                     ]);?>
+                    
                     <div class="form-group">
                         <?= Html::submitButton('Carica', ['class' => 'btn btn-success', 'style' => "margin-top: 5px"]) ?>
                     </div>
