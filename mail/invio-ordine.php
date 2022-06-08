@@ -12,7 +12,7 @@
     </div>
     <div class="text" style="padding: 0 3em; color: #4d4d4d">
         <p>
-            ti confermiamo che l'ordine <?= $model->order_number ?> del <?= $model->formatDate($model->created_at) ?> è stato preso in carico e che gli orci saranno pronti entro il giorno concordato <br />
+            le confermiamo che l'ordine <?= $model->order_number ?> del <?= $model->formatDate($model->created_at) ?> è stato preso in carico e che gli orci saranno pronti entro il giorno concordato <br />
             Per qualsiasi richiesta rimaniamo a completa disposizione, può rispondere a questa e-mail o contattarci ai seguenti recapiti:<br />
         </p>
         <p>

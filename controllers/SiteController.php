@@ -97,7 +97,7 @@ class SiteController extends Controller
         if(Yii::$app->user->isGuest)
             return $this->redirect(["login"]);
             
-        $quotesByMonth      = Quote::find()->select(["created_at"])->where(["confirmed" => 0])->groupBy("created_at")->all();
+        $quotesByMonth      = Quote::find()->select(["created_at", "confirmed"])->groupBy(["created_at", "confirmed"])->all();
         $quotesCount        = Quote::find()->where(["confirmed" => 0])->count();
         $quotesMonthCount   = [];
         $ordersMonthCount   = [];
@@ -113,7 +113,6 @@ class SiteController extends Controller
                 $ordersMonthCount[$createdDateMonth] += 1;
             }
         }
-        
     
         $clientsCount   = Client::find()->count();
         $messagesCount  = Message::find()->where(["not", ["replied_at" => null]])->count();

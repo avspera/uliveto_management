@@ -406,7 +406,7 @@ class GeneratePdf {
 
         $filename           = $file."_".$quote->order_number."_".$client.".pdf";
         $fileRelativePath   = Yii::getAlias("@webroot")."/pdf/".$target."/".$file."_".$quote->order_number."_".$client.".pdf";
-        $pdf->Output();die; //If test
+        // $pdf->Output();die; //If test
         
         $pdf->Output($fileRelativePath, 'F');    
 
