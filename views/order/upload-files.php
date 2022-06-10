@@ -36,6 +36,10 @@ if(!empty($model->attachments)){
             <div class="col-12">
                 <?= FileInput::widget([
                     'model' => $model,
+                    'pluginOptions' => [
+                        'initialPreview' => $previews,
+                        'initialPreviewAsData'=>true,
+                    ],
                     'attribute' => 'attachments',
                     'options' => ['multiple' => true, 'accept' => ["png", "jpg", "pdf"]]
                 ]);?>

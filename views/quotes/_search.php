@@ -65,7 +65,6 @@ use yii\jui\DatePicker;
                                 'autocomplete' => false
                             ],
                             'clientOptions' => [
-                                'minDate' => 'today',
                                 'changeMonth' => true, 
                                 'changeYear' => true,
                             ]

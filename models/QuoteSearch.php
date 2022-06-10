@@ -79,14 +79,14 @@ class QuoteSearch extends Quote
             'confirmed' => $this->confirmed,
         ]);
 
+        
         if(!empty($params["QuoteSearch"]["start_date"]) || !empty($params["QuoteSearch"]["end_date"]))
         {
-            $tmp_start_date = explode("/", $params["QuoteSearch"]["start_date"]);
-            $start_date     = $tmp_start_date["2"]."-".$tmp_start_date["1"]."-".$tmp_start_date[0];
-            $tmp_end_date   = explode("/", $params["QuoteSearch"]["end_date"]);
-            $end_date       = $tmp_end_date["2"]."-".$tmp_end_date["1"]."-".$tmp_end_date[0];
+            $start_date = $params["QuoteSearch"]["start_date"];
+            $end_date = $params["QuoteSearch"]["end_date"];
+            
             if($start_date == $end_date)
-                $query->andFilterWhere(['LIKE', 'created_at', $start_date ]);
+                $query->andFilterWhere(['created_at' => $start_date ]);
             else    
                 $query->andFilterWhere(['>=', 'created_at', $start_date ])->andFilterWhere(['<=', 'created_at', $end_date]);
         }

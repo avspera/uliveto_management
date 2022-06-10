@@ -55,7 +55,7 @@ use kartik\select2\Select2;
                 <div class="col-md-3 col-sm-6 col-12">
                     <label>Creato DA</label>
                         <?= DatePicker::widget([
-                            'name'  => 'OrderSearch[start_date]',
+                            'name'  => 'QuoteSearch[start_date]',
                             'language' => 'it',
                             'dateFormat' => 'yyyy-MM-dd',
                             'options' => [
@@ -71,8 +71,8 @@ use kartik\select2\Select2;
                 </div>
                 <div class="col-md-3 col-sm-6 col-12">
                     <label>Creato A</label>
-                    <?= DatePicker::widget([
-                            'name'  => 'OrderSearch[start_date]',
+                        <?= DatePicker::widget([
+                            'name'  => 'QuoteSearch[end_date]',
                             'language' => 'it',
                             'dateFormat' => 'yyyy-MM-dd',
                             'options' => [
