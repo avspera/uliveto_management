@@ -207,7 +207,8 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
                         'value' => function($model){
                             if(!empty($model->attachments)){
                                 $html = "<div class='row'>";
-                                $attachments = json_decode($model->attachments, true);
+                                $attachments = json_decode($model->attachments);
+                                
                                 foreach($attachments as $file){
                                     $html .= "<div style='margin: 5px'>";
                                     $html .= Html::a("<i class='fas fa-file'></i> Allegato", Url::to([$file]));

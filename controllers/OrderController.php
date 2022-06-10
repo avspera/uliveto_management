@@ -371,22 +371,19 @@ class OrderController extends Controller
         $path       = Yii::getAlias('@webroot')."/uploads/documents/".$model->id_client;
     
         $dirCreated = FileHelper::createDirectory($path);
-        
+        $files = [];
         $attachments = UploadedFile::getInstances($model, 'attachments');
         if (!empty($attachments)){
-            $files = [];
             $i = 0;
-        
             foreach($attachments as $attachment){
                 $filename   = $uploader->generateAndSaveFile($attachment, $path);
                 $files[$i]  = "uploads/documents/".$model->id_client."/".$filename;
                 $i++;
             }
             
-            $model->attachments = $files;
         }
         
-        return $model->attachments;
+        return $files;
 
     }
 
@@ -433,7 +430,9 @@ class OrderController extends Controller
                 $newAttach = $this->manageUploadFiles($model);
                 
                 if(!empty($oldAttachments)){
-                    array_push($oldAttachments, $newAttach);
+                    foreach($newAttach as $attach){
+                        $oldAttachments[] = $attach;
+                    }
                     $model->attachments = json_encode($oldAttachments);
                 }
                 else{
