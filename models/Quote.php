@@ -49,12 +49,12 @@ class Quote extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['order_number', 'created_at', 'id_client',  'confirmed', 'shipping', 'deadline'], 'required'],
+            [['order_number', 'created_at', 'id_client',  'confirmed', 'shipping'], 'required'],
             [['order_number', 'id_client', 'confirmed', 'placeholder', 'shipping', 'id_sconto'], 'integer'],
             [['created_at', 'updated_at', 'data_evento', 'deadline', 'product', 'amount', 'color', 'packaging', 'total_no_vat',
                 'date_deposit', 'date_balance','placeholder', 'address', 'custom_color', 'placeholder_amount',
                     'confetti', 'custom', 'custom_amount', 'id_sconto', 'custom_amount_omaggio',
-                    'prezzo_confetti', 'confetti_omaggio', 'delivered', 'scadenza_offerta'], 'safe'],
+                    'prezzo_confetti', 'confetti_omaggio', 'delivered', 'scadenza_offerta', 'deadline'], 'safe'],
             [['notes', 'address'], 'string'],
             [['total', 'deposit', 'balance', 'delivered'], 'number'],
             [['attachments'], 'file', 'skipOnEmpty' => true, 'extensions' => 'jpg, png, pdf'],

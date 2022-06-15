@@ -179,7 +179,7 @@ class PaymentController extends Controller
 
         $order = !empty($orderQuote) ? $orderQuote : $orderPlaceholder;
         
-        if($this->sendEmail($order, [], $filename, $client, $id_payment)){
+        if($this->sendEmail($order, [], $filename, $client, $id_payment, "nonconfirm")){
             Yii::$app->session->setFlash('success', "Email inviata correttamente");
         }else{
             Yii::$app->session->setFlash('error', "Ops...something went wrong [ORDER_SEND_EMAIL-100]");
@@ -208,7 +208,7 @@ class PaymentController extends Controller
         $filename = $pdf->quotePdf($quote, $flag, "preventivo", "preventivi");
         
         if($flag == "send"){
-            if($this->sendEmail($quote, [], $filename, $client, $id_payment)){
+            if($this->sendEmail($quote, [], $filename, $client, $id_payment, "nonconfirm")){
                 Yii::$app->session->setFlash('success', "Email con PDF allegato inviato correttamente: ".$filename);
             }else{
                 Yii::$app->session->setFlash('error', "Ops...something went wrong");
@@ -220,14 +220,17 @@ class PaymentController extends Controller
         return $this->redirect(Yii::$app->request->referrer);
     }
 
-    protected function sendEmail($order, $transaction = [], $filename, $client, $id_payment = ""){
+    protected function sendEmail($order, $transaction = [], $filename, $client, $id_payment = "", $flag = "confirm"){
         
         if(empty($client) || empty($order)) return false;
         
-        $subject = !empty($transaction) ? $client->name." ".$client->surname.", grazie per aver effettuato il pagamento" : $client->name." ".$client->surname." procedi per effettuare il tuo pagamento";
+        if(!empty($transaction)) 
+            $flag = "confirm";
+        
+        $subject = $flag == "confirm" ? $client->name." ".$client->surname.", grazie per aver effettuato il pagamento" : $client->name." ".$client->surname." procedi per effettuare il tuo pagamento";
         $message = Yii::$app->mailer
                 ->compose(
-                    ['html' => !empty($transaction) ? "transaction-completed" : "send-payment"],
+                    ['html' => $flag == "confirm" ? "transaction-completed" : "send-payment"],
                     ['client' => $client, 'transaction' => $transaction, "order" => $order, "id_payment" => $id_payment]
                 )
                 ->setFrom([Yii::$app->params["infoEmail"] => Yii::$app->params["infoName"]])
@@ -408,10 +411,24 @@ class PaymentController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        }else{
-            Yii::$app->session->setFlash('error', "Ops...something went wrong [PACK-102]");
+        if ($model->load($this->request->post())) {
+
+            if($model->save()){
+                if($model->payed == 1){
+                    $client = Client::find()->select(["name", "surname", "email"])->where(["id" => $model->id_client])->one();
+                    if(!empty($model->id_quote)){
+                        $order  = Quote::findOne(["id" => $model->id_quote]);
+                    }else{
+                        $order  = QuotePlaceholder::findOne(["id" => $model->id_quote_placeholder]);
+                    }
+                    $pdf = new GeneratePdf();
+                    $filename = $pdf->quotePdf($quote, $flag, "ordine");
+                    $this->sendEmail($order, [], $filename, $client, $id_payment = $model->id, "confirm");
+                }
+                return $this->redirect(['view', 'id' => $model->id]);
+            }else{
+                Yii::$app->session->setFlash('error', "Ops...something went wrong [PACK-102]");
+            }   
         }
 
         if(!empty($model->id_quote)){

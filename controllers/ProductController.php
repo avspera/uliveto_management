@@ -5,6 +5,7 @@ use Yii;
 use app\models\Product;
 use app\models\Packaging;
 use app\models\Color;
+use app\models\ColorSearch;
 use app\models\ProductSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -88,8 +89,12 @@ class ProductController extends Controller
     public function actionView($id)
     {
         if($model = $this->findModel($id)){
+            $colorModel = new ColorSearch();
+            $colorModel->id_product = $id;
+            $colors     = $colorModel->search([]);
             return $this->render('view', [
                 'model' => $this->findModel($id),
+                'colors' => $colors
             ]);
         }else{
             Yii::$app->session->setFlash('error', "Ops...something went wrong [PROD-100]");

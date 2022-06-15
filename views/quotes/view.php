@@ -159,6 +159,13 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
                         'format' => "raw"
                     ],
                     [
+                        'attribute' => 'date_balance',
+                        'value' => function($model){
+                            return $model->formatDate($model->date_balance);
+                        },
+                        'format' => "raw"
+                    ],
+                    [
                         'attribute' => 'shipping',
                         'value' => function($model){
                             return $model->shipping ? $model->address : "NO";

@@ -20,12 +20,74 @@ use PHP_HTML;
 
 class GeneratePdf {
 
-    public static function quotePdf($quote, $flag, $file, $target = "ordini"){
+    private function printBottles($products, $pdf){
+
+        $start_x            = 0;
+        $start_pack_x       = 0;
+        $packName           = [];
+        $ordinates          = [];
+        $ordinate           = 0;
+
+        foreach($products as $product){
+            $color  = Color::find()->select(["picture"])->where(["id" => $product->id_color])->one();
+            
+            $item   = Product::find()
+                        ->select(["id", "name", "price"])
+                        ->where(["id" => $product->id_product])
+                        ->one();
+            
+            if(stripos($item->name, "gliarulo") !== false){
+                $ordinate = 80;
+            }
+
+            if(stripos($item->name, "classic") !== false){
+                $ordinate = 125;
+            }
+
+            if(stripos($item->name, "live") !== false){
+                $ordinate = 170;
+            }
+            
+            if(!empty($color->picture)){
+                $pdf->Cell($pdf->Image($color->picture, $start_x, $ordinate, 40, 40));
+            }
+           
+            if(!empty($product->id_packaging)){
+                $packaging = Packaging::find()
+                                ->select(["label", "image"])
+                                ->where(["id" =>$product->id_packaging])
+                                ->one();
+                
+                if(!empty($packaging)){
+                    //do not repeat pack image if already print
+                    
+                    if(!in_array($packaging->image, $packName) && !empty($packaging->image)){
+                        $packName[$i] = $packaging->image;
+                        $ordinatePackaging = 225;
+                        $pdf->Cell($pdf->Image($packaging->image, $start_pack_x, $ordinatePackaging, 40, 40));
+                        $start_pack_x += 40;
+                    }
+                }
+            }
+            
+            $start_x += 40;
+        }//end of for   
+       
+    }
+
+    public function quotePdf($quote, $flag, $file, $target = "ordini"){
         
         if(empty($quote)) return;
         
         $quotePlaceholder   = QuotePlaceholder::find()->where(["id_quote" => $quote->id])->one();
-        $products           = QuoteDetails::findAll(["id_quote" => $quote->id]);
+        $products           = QuoteDetails::find()->where(["id_quote" => $quote->id])->all();
+        $productsClassic    = QuoteDetails::find()->where(["id_quote" => $quote->id])->andWhere(["id_product" => 3])->all();
+        $productsGliarulo   = QuoteDetails::find()->where(["id_quote" => $quote->id])->andWhere(["id_product" => 4])->all();
+        $productsUlive      = QuoteDetails::find()->where(["id_quote" => $quote->id])->andWhere(["id_product" => 2])->all();
+        $productsUliveMono  = QuoteDetails::find()->where(["id_quote" => $quote->id])->andWhere(["id_product" => 3])->all();
+        $productsGliaruloMono = QuoteDetails::find()->where(["id_quote" => $quote->id])->andWhere(["id_product" => 3])->all();
+        $productsClassicMono = QuoteDetails::find()->where(["id_quote" => $quote->id])->andWhere(["id_product" => 3])->all();
+        
         $colors             = [];
         $sale               = isset($quote->id_sconto) ? Sales::findOne([$quote->id_sconto]) : 0;
         
@@ -89,77 +151,12 @@ class GeneratePdf {
         /**
          * PRODUCTS FOTO
          */
-            $start_x            = 0;
-            $start_pack_x       = 0;
-            $packName           = [];
-            $ordinates          = [];
-            for($i= 0; $i <= count($products); $i++){
-                
-                $color  = Color::find()->select(["picture"])->where(["id" => $products[$i]->id_color])->one();
-                $item   = Product::find()
-                            ->select(["id", "name", "price"])
-                            ->where(["id" => $products[$i]->id_product])
-                            ->one();
-                
-                if(stripos($item->name, "gliarulo") !== false){
-                    $ordinate = 80;
-                    $ordinates[$i] = 80;
-                }
-
-                if(stripos($item->name, "classic") !== false){
-                    $ordinate       = 125;
-                    $ordinates[$i]  = 125;
-                }
-
-                if(stripos($item->name, "live") !== false){
-                    $ordinate = 170;
-                    $ordinates[$i] = 170;
-                }
-
-                if(!empty($color->picture)){
-                    $pdf->Cell($pdf->Image($color->picture, $start_x, $ordinate, 40, 40));
-                }
-
-                if($i > 0 ){
-                    
-                    $prevProd[$i]["id"]         = $products[$i-1]->id_product;
-                    $prevProd[$i]["ordinate"]   = $ordinate;
-                    $currentProd                = $products[$i]->id_product;
-                    
-                    if($prevProd[$i]["id"] == $currentProd){
-                        $start_x += 40;
-                    }else{
-                        if($ordinates[$i-1] != $ordinates[$i]){
-                            $star_x = 0;
-                        }else{
-                            $start_x += 40;
-                        }
-                    }
-                }else{
-                    $start_x = 0;
-                }
-
-                if(!empty($products[$i]->id_packaging)){
-                    $packaging = Packaging::find()
-                                    ->select(["label", "image"])
-                                    ->where(["id" =>$products[$i]->id_packaging])
-                                    ->one();
-                    
-                    if(!empty($packaging)){
-                        //do not repeat pack image if already print
-                        
-                        if(!in_array($packaging->image, $packName) && !empty($packaging->image)){
-                            $packName[$i] = $packaging->image;
-                            $ordinatePackaging = 225;
-                            $pdf->Cell($pdf->Image($packaging->image, $start_pack_x, $ordinatePackaging, 40, 40));
-                            $start_pack_x += 40;
-                        }
-                    }
-                }
-                
-                
-            }//end of for   
-            
+            $this->printBottles($productsClassic, $pdf);
+            $this->printBottles($productsGliarulo, $pdf);
+            $this->printBottles($productsUlive, $pdf);
+            $this->printBottles($productsUliveMono, $pdf);
+            $this->printBottles($productsGliaruloMono, $pdf);
+            $this->printBottles($productsClassicMono, $pdf);
             /**
              * CONFETTI.
              */
@@ -271,7 +268,7 @@ class GeneratePdf {
             $line += 1;
             
             $pdf->setTextColor(0, 0, 0);
-            $pdf->setXY(10, $line-9);
+            $pdf->setXY(10, $line-8);
             $totalLine = iconv('UTF-8', "ISO-8859-1//TRANSLIT", "Totale: ".number_format($totalPrice, 2, ",", ".") ." €");
             $pdf->Cell(10, 10, $totalLine);
         }
@@ -406,7 +403,7 @@ class GeneratePdf {
 
         $filename           = $file."_".$quote->order_number."_".$client.".pdf";
         $fileRelativePath   = Yii::getAlias("@webroot")."/pdf/".$target."/".$file."_".$quote->order_number."_".$client.".pdf";
-        // $pdf->Output();die; //If test
+        $pdf->Output();die; //If test
         
         $pdf->Output($fileRelativePath, 'F');    
 

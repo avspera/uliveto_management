@@ -164,6 +164,7 @@ class OrderController extends Controller
         
         if(empty($client)) return false;
 
+        $object = $view == "set-delivered" ? $model->getClient().", il tuo ordine bomboniere L'Uliveto è stato consegnato" : $model->getClient().", il tuo ordine bomboniere L’Uliveto è confermato";
         $message = Yii::$app->mailer
                 ->compose(
                     ['html' => $view],
@@ -171,7 +172,7 @@ class OrderController extends Controller
                 )
                 ->setFrom([Yii::$app->params["infoEmail"] => Yii::$app->params["infoName"]])
                 ->setTo($client->email)
-                ->setSubject($model->getClient()." il tuo ordine bomboniere L’Uliveto è confermato");
+                ->setSubject($object);
 
         $fullFilename = "https://manager.orcidelcilento.it/web/".$filename;
         // $message->attachContent($fullFilename,['fileName' => $filename,'contentType' => 'application/pdf']); 
@@ -273,12 +274,15 @@ class OrderController extends Controller
             
             $model->delivered = 1;
             if($model->save()){
+                if($this->sendEmail($model, [], "set-delivered")){
+                    Yii::$app->session->setFlash('success', "Modifica effettuata correttamente.");
+                }else{
+                    Yii::$app->session->setFlash('error', "Ops...something went wrong");
+                }
                 return $this->redirect(['/order/view', "id" => $id]);
-            }else{
-                print_r($model->getErrors());die;
             }
         }catch(Exception $e){
-            Yii::$app->session->setFlash('error', "Ops...something went wrong [OR-105]");
+            Yii::$app->session->setFlash('error', "Ops...something went wrong [OR-107]");
             
             return $this->render('view', [
                 'model' => $model,
