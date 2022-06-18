@@ -49,7 +49,7 @@ class GeneratePdf {
             }
             
             if(!empty($color->picture)){
-                $pdf->Cell($pdf->Image($color->picture, $start_x, $ordinate, 40, 40));
+                $pdf->Cell($pdf->Image($color->picture, $start_x, $ordinate, 35, 40));
             }
            
             if(!empty($product->id_packaging)){
@@ -70,7 +70,7 @@ class GeneratePdf {
                 }
             }
             
-            $start_x += 40;
+            $start_x += 30;
         }//end of for   
        
     }
@@ -403,7 +403,7 @@ class GeneratePdf {
 
         $filename           = $file."_".$quote->order_number."_".$client.".pdf";
         $fileRelativePath   = Yii::getAlias("@webroot")."/pdf/".$target."/".$file."_".$quote->order_number."_".$client.".pdf";
-        $pdf->Output();die; //If test
+        // $pdf->Output();die; //If test
         
         $pdf->Output($fileRelativePath, 'F');    
 

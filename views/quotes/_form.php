@@ -213,8 +213,15 @@ $placeholders = \app\models\Segnaposto::find()->all();
                     <div class="col-md-3 col-sm-4 col-12">
                         <div class="form-group field-quote-custom_amount">
                             <label class="control-label" for="quote-custom_amount">Costo personalizzazione</label>
-                            <input prevValue=0 onchange="value == 0 ? removePrezzoAggiuntivo('custom_amount') : addPrezzoAggiuntivo(value, 'custom_amount')" type="number" id="quote-custom_amount" class="form-control" name="Quote[custom_amount]">
-                            <div class="help-block"></div>
+                            <input 
+                                step=0.1 
+                                prevValue=0 
+                                onchange="value == 0 ? removePrezzoAggiuntivo('custom_amount') : addPrezzoAggiuntivo(value, 'custom_amount')" 
+                                type="number" 
+                                id="quote-custom_amount" 
+                                class="form-control" 
+                                name="Quote[custom_amount]"
+                            >
                         </div>
                     </div>
 
