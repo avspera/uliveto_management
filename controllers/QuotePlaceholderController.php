@@ -173,17 +173,16 @@ class QuotePlaceholderController extends Controller
         if(empty($quotePlaceholder)) return;
         
         $pdf        = new GeneratePdf();
-        $filename   = $pdf->quotePdf($quotePlaceholder, $flag, "preventivo", "preventivi");
-        
         $quote      = Quote::findOne(["id" => $quotePlaceholder->id_quote]);
+        $filename   = $pdf->quotePdf($quote, $flag, "preventivo", "preventivi");
+        
         $client     = Client::findOne(["id" => $quote->id_client]);
+        
         if($flag == "send"){
-            
-            if($this->sendEmail($quotePlaceholder, $filename, "invio-preventivo-segnaposto", $quote->getClient().", ecco il preventivo delle tue bomboniere L'Uliveto", $client)){
+            if($this->sendEmail($quote, $filename, "invio-preventivo-segnaposto", $quote->getClient().", ecco il preventivo delle tue bomboniere L'Uliveto", $client)){
                 Yii::$app->session->setFlash('success', "Email con PDF allegato inviato correttamente: ".$filename." - email: ".$client->email);
             }else{
-
-                Yii::$app->session->setFlash('error', "Ops...something went wrong");
+                Yii::$app->session->setFlash('error', "Ops...unable to send email");
             }
         }else{
             Yii::$app->session->setFlash('success', "Pdf generato correttamente.<a href='/web/pdf/preventivi/".$filename."'>Scarica</a>");
@@ -248,7 +247,7 @@ class QuotePlaceholderController extends Controller
         return $out;
     }
 
-    protected function sendEmail($model, $filename, $view, $client){
+    protected function sendEmail($model, $filename, $view, $object, $client){
         
         if(empty($model)) return false;
         
@@ -262,10 +261,14 @@ class QuotePlaceholderController extends Controller
                 ->setSubject($object);
 
         $fullFilename = "https://manager.orcidelcilento.it/web/pdf/preventivi/".$filename;
-        
         $message->attach($fullFilename);
+
+        try{
+            return $message->send();
+        }catch(Swift_SwiftExcetptio $exception){
+            return  false;
+        }
         
-        return $message->send();
     }
     
     public function actionGetTotal($id_quote){

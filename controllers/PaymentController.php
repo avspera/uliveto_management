@@ -195,11 +195,10 @@ class PaymentController extends Controller
         
         if(empty($quote)){
             $quote = QuotePlaceholder::findOne(["id" => $model->id_quote_placeholder]);
-            
-            $quoteTmp = Quote::findOne(["id" => $quote->id_quote]);
-            $client = Client::findOne(["id" => $quoteTmp->id_client]);
+            $quoteTmp   = Quote::findOne(["id" => $quote->id_quote]);
+            $client     = Client::findOne(["id" => $quoteTmp->id_client]);
         }else{
-            $client = Client::findOne(["id" => $quote->id_client]);
+            $client     = Client::findOne(["id" => $quote->id_client]);
         }
 
         if(empty($quote)) return;
@@ -237,15 +236,12 @@ class PaymentController extends Controller
                 ->setTo($client->email)
                 ->setSubject($subject);
 
-        if(!empty($filename)){
-            $pdf        = new GeneratePdf();
-            $id_quote   = !empty($payment->id_quote) ? $payment->id_quote : $order->id;
-            $quote      = Quote::findOne(["id" => $id_quote]);
-            $filename   = $pdf->quotePdf($quote, "F", "ordine");
-            $fullFilename = "https://manager.orcidelcilento.it/web/pdf/ordini/".$filename;
-            // $message->attachContent($fullFilename,['fileName' => $filename,'contentType' => 'application/pdf']); 
-            $message->attach($fullFilename);
-        }
+        $filename   = $pdf->quotePdf($quote, "F", "ordine");
+        $fullFilename = "https://manager.orcidelcilento.it/web/pdf/ordini/".$filename;
+        
+        // $message->attachContent($fullFilename,['fileName' => $filename,'contentType' => 'application/pdf']); 
+        $message->attach($fullFilename);
+
         
 
         return $message->send();

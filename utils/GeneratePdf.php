@@ -80,13 +80,19 @@ class GeneratePdf {
         if(empty($quote)) return;
         
         $quotePlaceholder   = QuotePlaceholder::find()->where(["id_quote" => $quote->id])->one();
+        
         $products           = QuoteDetails::find()->where(["id_quote" => $quote->id])->all();
-        $productsClassic    = QuoteDetails::find()->where(["id_quote" => $quote->id])->andWhere(["id_product" => 3])->all();
-        $productsGliarulo   = QuoteDetails::find()->where(["id_quote" => $quote->id])->andWhere(["id_product" => 4])->all();
         $productsUlive      = QuoteDetails::find()->where(["id_quote" => $quote->id])->andWhere(["id_product" => 2])->all();
-        $productsUliveMono  = QuoteDetails::find()->where(["id_quote" => $quote->id])->andWhere(["id_product" => 3])->all();
-        $productsGliaruloMono = QuoteDetails::find()->where(["id_quote" => $quote->id])->andWhere(["id_product" => 3])->all();
-        $productsClassicMono = QuoteDetails::find()->where(["id_quote" => $quote->id])->andWhere(["id_product" => 3])->all();
+        $productsUliveMono  = QuoteDetails::find()->where(["id_quote" => $quote->id])->andWhere(["id_product" => 7])->all();
+        $productsUlive = array_merge($productsUlive, $productsUliveMono);
+
+        $productsClassic    = QuoteDetails::find()->where(["id_quote" => $quote->id])->andWhere(["id_product" => 3])->all();
+        $productsClassicMono = QuoteDetails::find()->where(["id_quote" => $quote->id])->andWhere(["id_product" => 9])->all();
+        $productsClassic    = array_merge($productsClassic, $productsClassicMono);
+
+        $productsGliarulo   = QuoteDetails::find()->where(["id_quote" => $quote->id])->andWhere(["id_product" => 4])->all();
+        $productsGliaruloMono = QuoteDetails::find()->where(["id_quote" => $quote->id])->andWhere(["id_product" => 8])->all();
+        $productsGliarulo    = array_merge($productsGliarulo, $productsGliaruloMono);
         
         $colors             = [];
         $sale               = isset($quote->id_sconto) ? Sales::findOne([$quote->id_sconto]) : 0;
@@ -154,9 +160,9 @@ class GeneratePdf {
             $this->printBottles($productsClassic, $pdf);
             $this->printBottles($productsGliarulo, $pdf);
             $this->printBottles($productsUlive, $pdf);
-            $this->printBottles($productsUliveMono, $pdf);
-            $this->printBottles($productsGliaruloMono, $pdf);
-            $this->printBottles($productsClassicMono, $pdf);
+            // $this->printBottles($productsUliveMono, $pdf);
+            // $this->printBottles($productsGliaruloMono, $pdf);
+            // $this->printBottles($productsClassicMono, $pdf);
             /**
              * CONFETTI.
              */
