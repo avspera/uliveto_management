@@ -3,6 +3,7 @@ namespace app\controllers;
 
 use Yii;
 use app\models\Quote;
+use app\models\QuotePlaceholder;
 use app\models\Payment;
 use app\models\Client;
 use yii\web\Controller;
@@ -27,6 +28,7 @@ class CronManagerController extends Controller
         $emails = 0;
         for($i = 0; $i < count($days); $i++){
             $emails += $this->sendReminders($days[$i], "payment");
+            $emails += $this->sendReminders($days[$i], "payment_placeholder");
         }
         
         $days = [25, 15, 10, 5, 2];
@@ -54,10 +56,15 @@ class CronManagerController extends Controller
         return $sentEmails;
     }
 
-    private function loopQuotes($quotes, $object, $day, $view){
+    private function loopQuotes($quotes, $object, $day, $view, $flag = "quote"){
         $sentEmails = 0;
         foreach($quotes as $quote){
             if($quote->confirmed){
+
+                if($flag == "quote_placeholder"){
+                    $quote = Quote::findOne(["id_quote_placeholder" => $quote->id]);
+                }
+
                 $payments = Payment::findAll(["id_quote" => $quote->id]);
                 
                 if(count($payments) == 1){
@@ -91,9 +98,16 @@ class CronManagerController extends Controller
         if($flag == "scadenza_offerta"){
             $quotes     = Quote::find()->where(["scadenza_offerta" => $latenza])->andWhere(["confirmed" => 0])->all();
             $sentEmails += $this->loopQuotes($quotes, "la tua offerta Bomboniere L'Uliveto è in scadenza", $day, "reminder-deadline-quote");    
-        }else{
+        }
+        
+        if($flag == "payment"){
             $quotes     = Quote::find()->where(["date_balance" => $latenza])->andWhere(["confirmed" => 1])->all();
-            $sentEmails = $this->loopQuotes($quotes, "ricordati di effettuare il pagamento per il tuo ordine Bomboniere L'Uliveto", $day, "reminder-payment");
+            $sentEmails += $this->loopQuotes($quotes, "ricordati di effettuare il pagamento per il tuo ordine Bomboniere L'Uliveto", $day, "reminder-payment");
+        }
+
+        if($flag == "payment_placeholder"){
+            $quotes     = QuotePlaceholder::find()->leftJoin("quote", '`quote`.`id` = `quote_placeholder`.`id_quote`')->where(['`quote_placeholder`.`date_balance`' => $latenza])->andWhere(['`quote_placeholder`.`confirmed`' => 1])->all();
+            $sentEmails += $this->loopQuotes($quotes, "ricordati di effettuare il pagamento per il tuo ordine Segnaposto L'Uliveto", $day, "reminder-payment", 'quote_placeholder');
         }
         
         return $sentEmails;
