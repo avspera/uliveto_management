@@ -216,7 +216,7 @@ $placeholders = \app\models\Segnaposto::find()->all();
                             <input 
                                 step=0.1 
                                 prevValue=0 
-                                onchange="value == 0 ? removePrezzoAggiuntivo('custom_amount') : addPrezzoAggiuntivo(value, 'custom_amount')" 
+                                onchange="value.length == 0 ? removePrezzoAggiuntivo('custom_amount') : addPrezzoAggiuntivo(value, 'custom_amount')" 
                                 type="number" 
                                 id="quote-custom_amount" 
                                 class="form-control" 

@@ -20,6 +20,35 @@ use PHP_HTML;
 
 class GeneratePdf {
 
+    private function printPackaging($products, $pdf){
+        
+        $start_pack_x = 0;
+        $ordinatePackaging = 225;
+        $packName = [];
+        $i = 0;
+        foreach($products as $product){
+            if(!empty($product->id_packaging)){
+                $packaging = Packaging::find()
+                                ->select(["label", "image"])
+                                ->where(["id" =>$product->id_packaging])
+                                ->one();
+                
+                if(!empty($packaging)){
+                    $packName[$i] = $packaging->image;
+                    $i++;
+                }
+            }
+        }
+
+        $packName = array_unique($packName);
+
+        foreach($packName as $image){
+            $pdf->Cell($pdf->Image($image, $start_pack_x, $ordinatePackaging, 40, 40));
+            $start_pack_x += 40;
+        }
+
+    }
+
     private function printBottles($products, $pdf){
 
         $start_x            = 0;
@@ -27,7 +56,7 @@ class GeneratePdf {
         $packName           = [];
         $ordinates          = [];
         $ordinate           = 0;
-
+        $i                  = 0;
         foreach($products as $product){
             $color  = Color::find()->select(["picture"])->where(["id" => $product->id_color])->one();
             
@@ -52,29 +81,10 @@ class GeneratePdf {
                 $pdf->Cell($pdf->Image($color->picture, $start_x, $ordinate, 35, 40));
             }
            
-            if(!empty($product->id_packaging)){
-                $packaging = Packaging::find()
-                                ->select(["label", "image"])
-                                ->where(["id" =>$product->id_packaging])
-                                ->one();
-                
-                if(!empty($packaging)){
-                    //do not repeat pack image if already print
-                    
-                    if(!in_array($packaging->image, $packName) && !empty($packaging->image)){
-                        $packName[$i] = $packaging->image;
-                        $ordinatePackaging = 225;
-                        $pdf->Cell($pdf->Image($packaging->image, $start_pack_x, $ordinatePackaging, 40, 40));
-                        $start_pack_x += 40;
-                    }
-                }
-            }
-            
             $start_x += 30;
         }//end of for   
-       
     }
-
+    
     public function quotePdf($quote, $flag, $file, $target = "ordini"){
         
         if(empty($quote)) return;
@@ -151,33 +161,32 @@ class GeneratePdf {
             foreach($allProducts as $product){
                 $name = str_replace(' ', '', $product->name);
                 $name = strtolower($name);
-                $products = QuoteDetails::find()->where(["id_quote" => $quote->id])->andWhere(["id_product" => $product->id])->all();
-                if(!empty($products)){
-                    $productsByCat[$name] = $products;
+                $productsTmp = QuoteDetails::find()->where(["id_quote" => $quote->id])->andWhere(["id_product" => $product->id])->all();
+                if(!empty($productsTmp)){
+                    $productsByCat[$name] = $productsTmp;
                 }
             }
             
-            if(isset($productsByCat["[u]gliarulo]"]) && isset($productsByCat["[u]gliarulomonocolor]"])){
-                $productsByCat["[u]gliarulo]"] = array_merge($productsByCat["[u]gliarulo"], $productsByCat["[u]gliarulomonocolor"]);
-                $this->printBottles($productsByCat["[u]gliarulo]"], $pdf);
+            if(isset($productsByCat["[u]gliarulo"]) && isset($productsByCat["[u]gliarulomonocolor"])){
+                $productsByCat["[u]gliarulo"] = array_merge($productsByCat["[u]gliarulo"], $productsByCat["[u]gliarulomonocolor"]);
+                $this->printBottles($productsByCat["[u]gliarulo"], $pdf);
             }else{
                 if(isset($productsByCat["[u]gliarulomonocolor]"]))
-                    $productsByCat["[u]gliarulo]"] = $productsByCat["[u]gliarulomonocolor]"];
+                    $productsByCat["[u]gliarulo"] = $productsByCat["[u]gliarulomonocolor]"];
                 else{
-                    $productsByCat["[u]gliarulo]"] = $productsByCat["[u]gliarulo]"];
+                    $productsByCat["[u]gliarulo"] = $productsByCat["[u]gliarulo]"];
                 }
                 
-                if(!empty($productsByCat["[u]gliarulo]"])){
-                    $this->printBottles($productsByCat["[u]gliarulo]"], $pdf);
+                if(!empty($productsByCat["[u]gliarulo"])){
+                    $this->printBottles($productsByCat["[u]gliarulo"], $pdf);
                 }
-                    
             }
             
             if(isset($productsByCat["[u]classic"]) && isset($productsByCat["[u]classicmonocolor"])){
-                $productsByCat["[u]classic]"] = array_merge($productsByCat["[u]classic"], $productsByCat["[u]classicmonocolor"]);
-                $this->printBottles($productsByCat["[u]classic]"], $pdf);
+                $productsByCat["[u]classic"] = array_merge($productsByCat["[u]classic"], $productsByCat["[u]classicmonocolor"]);
+                $this->printBottles($productsByCat["[u]classic"], $pdf);
             }else{
-                if(isset($productsByCat["[u]classicmonocolor]"]))
+                if(isset($productsByCat["[u]classicmonocolor"]))
                     $productsByCat["[u]classic"] = $productsByCat["[u]classicmonocolor"];
                 else{
                     $productsByCat["[u]classic"] = $productsByCat["[u]classic"];
@@ -201,7 +210,8 @@ class GeneratePdf {
                     $this->printBottles($productsByCat["[u]live"], $pdf);
                 }
             }
-
+            
+            $this->printPackaging($products, $pdf);
             /**
              * CONFETTI.
              */
@@ -269,7 +279,7 @@ class GeneratePdf {
             $nameLine = iconv('UTF-8', "ISO-8859-1//TRANSLIT", $item->name." - ".number_format($item->price, 2, ",", ".") ." €") ." | n. ".$product->amount;
             
             $pdf->Cell(strlen($nameLine), 10, $nameLine, 0, 0, 'L');
-            $line += 5;
+            $line += 7;
 
             $packaging = new \stdClass;
             $packaging->price = 0;
