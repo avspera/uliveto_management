@@ -80,20 +80,7 @@ class GeneratePdf {
         if(empty($quote)) return;
         
         $quotePlaceholder   = QuotePlaceholder::find()->where(["id_quote" => $quote->id])->one();
-        
         $products           = QuoteDetails::find()->where(["id_quote" => $quote->id])->all();
-        
-        // $productsUlive      = QuoteDetails::find()->where(["id_quote" => $quote->id])->andWhere(["id_product" => 2])->all();
-        // $productsUliveMono  = QuoteDetails::find()->where(["id_quote" => $quote->id])->andWhere(["id_product" => 7])->all();
-        // $productsUlive = array_merge($productsUlive, $productsUliveMono);
-
-        // $productsClassic    = QuoteDetails::find()->where(["id_quote" => $quote->id])->andWhere(["id_product" => 3])->all();
-        // $productsClassicMono = QuoteDetails::find()->where(["id_quote" => $quote->id])->andWhere(["id_product" => 9])->all();
-        // $productsClassic    = array_merge($productsClassic, $productsClassicMono);
-
-        // $productsGliarulo   = QuoteDetails::find()->where(["id_quote" => $quote->id])->andWhere(["id_product" => 4])->all();
-        // $productsGliaruloMono = QuoteDetails::find()->where(["id_quote" => $quote->id])->andWhere(["id_product" => 8])->all();
-        // $productsGliarulo    = array_merge($productsGliarulo, $productsGliaruloMono);
         
         $colors             = [];
         $sale               = isset($quote->id_sconto) ? Sales::findOne([$quote->id_sconto]) : 0;
@@ -170,20 +157,49 @@ class GeneratePdf {
                 }
             }
             
-            if(isset($productsByCat["[u]gliarulo]"])){
-                $productsByCat["[u]gliarulo]"] = array_merge($productsByCat["[u]gliarulo]"], $productsByCat["[u]gliarulomonocolor]"]);
+            if(isset($productsByCat["[u]gliarulo]"]) && isset($productsByCat["[u]gliarulomonocolor]"])){
+                $productsByCat["[u]gliarulo]"] = array_merge($productsByCat["[u]gliarulo"], $productsByCat["[u]gliarulomonocolor"]);
                 $this->printBottles($productsByCat["[u]gliarulo]"], $pdf);
+            }else{
+                if(isset($productsByCat["[u]gliarulomonocolor]"]))
+                    $productsByCat["[u]gliarulo]"] = $productsByCat["[u]gliarulomonocolor]"];
+                else{
+                    $productsByCat["[u]gliarulo]"] = $productsByCat["[u]gliarulo]"];
+                }
+                
+                if(!empty($productsByCat["[u]gliarulo]"])){
+                    $this->printBottles($productsByCat["[u]gliarulo]"], $pdf);
+                }
+                    
             }
             
-            if(isset($productsByCat["[u]classic"])){
+            if(isset($productsByCat["[u]classic"]) && isset($productsByCat["[u]classicmonocolor"])){
                 $productsByCat["[u]classic]"] = array_merge($productsByCat["[u]classic"], $productsByCat["[u]classicmonocolor"]);
                 $this->printBottles($productsByCat["[u]classic]"], $pdf);
-             }
+            }else{
+                if(isset($productsByCat["[u]classicmonocolor]"]))
+                    $productsByCat["[u]classic"] = $productsByCat["[u]classicmonocolor"];
+                else{
+                    $productsByCat["[u]classic"] = $productsByCat["[u]classic"];
+                }
+                if(!empty($productsByCat["[u]classic"])){
+                    $this->printBottles($productsByCat["[u]classic"], $pdf);
+                }
+            }
 
-            
-            if(isset($productsByCat["[u]live"])){
-                $productsByCat["[u]live]"] = array_merge($productsByCat["[u]live"], $productsByCat["[u]livemonocolor"]);
-                $this->printBottles($productsByCat["[u]live]"], $pdf);
+            if(isset($productsByCat["[u]live"]) && isset($productsByCat["[u]livemonocolor"])){
+                $productsByCat["[u]live"] = array_merge($productsByCat["[u]live"], $productsByCat["[u]livemonocolor"]);
+                $this->printBottles($productsByCat["[u]live"], $pdf);
+            }else{
+                if(isset($productsByCat["[u]livemonocolor"]))
+                    $productsByCat["[u]live"] = $productsByCat["[u]livemonocolor"];
+                else{
+                    $productsByCat["[u]live"] = $productsByCat["[u]live"];
+                }
+                
+                if(!empty($productsByCat["[u]live"])){
+                    $this->printBottles($productsByCat["[u]live"], $pdf);
+                }
             }
 
             /**
@@ -432,7 +448,7 @@ class GeneratePdf {
 
         $filename           = $file."_".$quote->order_number."_".$client.".pdf";
         $fileRelativePath   = Yii::getAlias("@webroot")."/pdf/".$target."/".$file."_".$quote->order_number."_".$client.".pdf";
-        $pdf->Output();die; //If test
+        // $pdf->Output();die; //If test
         
         $pdf->Output($fileRelativePath, 'F');    
 
