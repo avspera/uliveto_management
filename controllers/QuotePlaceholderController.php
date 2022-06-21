@@ -125,11 +125,14 @@ class QuotePlaceholderController extends Controller
             $model = $this->findModel($id);
             $model->confirmed = 1;
             if($model->save()){
-                // $pdf = new GeneratePdf();
-                // $filename = $pdf->quotePdf($model, $flag, "preventivo");
-                Yii::$app->session->setFlash('success', "Preventivo segnaposto confermato con successo");
-                // $this->sendEmail($model, $filename, "invio-ordine-placeholder", $model->getClient().", ecco l'ordine dei tuoi segnaposto L'Uliveto");
-                return $this->redirect(Yii::$app->request->referrer);
+                $pdf        = new GeneratePdf();
+                $quote      = Quote::findOne(["id" => $quotePlaceholder->id_quote]);
+                $filename = $pdf->quotePdf($model, $flag, "preventivo");
+                $client     = Client::findOne(["id" => $quote->id_client]);
+                if($this->sendEmail($model, $filename, "invio-preventivo-segnaposto", $client->name." ".$client->surname.", ecco l'ordine dei tuoi segnaposto L'Uliveto", $client)){
+                    Yii::$app->session->setFlash('success', "Preventivo segnaposto confermato con successo");
+                    return $this->redirect(Yii::$app->request->referrer);
+                }
             }else{
                 Yii::$app->session->setFlash('error', "Ops...something went wrong [QU-107]");
                 return $this->redirect(Yii::$app->request->referrer);
@@ -175,11 +178,10 @@ class QuotePlaceholderController extends Controller
         $pdf        = new GeneratePdf();
         $quote      = Quote::findOne(["id" => $quotePlaceholder->id_quote]);
         $filename   = $pdf->quotePdf($quote, $flag, "preventivo", "preventivi");
-        
         $client     = Client::findOne(["id" => $quote->id_client]);
         
         if($flag == "send"){
-            if($this->sendEmail($quote, $filename, "invio-preventivo-segnaposto", $quote->getClient().", ecco il preventivo delle tue bomboniere L'Uliveto", $client)){
+            if($this->sendEmail($quote, $filename, "invio-preventivo-segnaposto", $client->name." ".$client->surname.", ecco il preventivo dei tuoi segnaposto L'Uliveto", $client)){
                 Yii::$app->session->setFlash('success', "Email con PDF allegato inviato correttamente: ".$filename." - email: ".$client->email);
             }else{
                 Yii::$app->session->setFlash('error', "Ops...unable to send email");
@@ -254,7 +256,8 @@ class QuotePlaceholderController extends Controller
         $message = Yii::$app->mailer
                 ->compose(
                     ['html' => $view],
-                    ['model' => $model]
+                    ['model' => $model, 'client' => $client]
+                    
                 )
                 ->setFrom([Yii::$app->params["infoEmail"] => Yii::$app->params["infoName"]])
                 ->setTo($client->email)

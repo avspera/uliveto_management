@@ -81,6 +81,14 @@ $id_quote = !empty($model->id_quote) ? $model->id_quote : $model->id_quote_place
                         'format' => "raw"
                     ],
                     [
+                        'attribute' => "total",
+                        'value' => function($model){
+                            return $model->formatNumber($model->getTotal());
+                        },
+                        'format' => "raw",
+                        'label' => "Totale"
+                    ],
+                    [
                         'attribute' => 'amount',
                         'value' => function($model){
                             return $model->formatNumber($model->amount);
@@ -112,16 +120,34 @@ $id_quote = !empty($model->id_quote) ? $model->id_quote : $model->id_quote_place
                         'label' => "Data Saldo"
                     ],
                     [
-                        'attribute' => "fatturato",
+                        'attribute' => "saldo",
                         'value' => function($model){
-                            return $model->isFatturato();
+                            $pagamenti = $model->checkPayments();
+                            
+                            if($pagamenti == 2){
+                                return 0;
+                            }else if ($pagamenti == 1){
+                                $saldo = $model->getSaldo();
+                                return $model->formatNumber($saldo);
+                            }else{
+                                $totale = $model->getTotal();
+                                return $model->formatNumber($totale);
+                            }
                         },
-                        'format' => "raw"
+                        'format' => "raw",
+                        'label' => "Resta da saldare"
                     ],
                     [
                         'attribute' => "payed",
                         'value' => function($model){
                             return $model->isPayed();
+                        },
+                        'format' => "raw"
+                    ],
+                    [
+                        'attribute' => "fatturato",
+                        'value' => function($model){
+                            return $model->isFatturato();
                         },
                         'format' => "raw"
                     ],

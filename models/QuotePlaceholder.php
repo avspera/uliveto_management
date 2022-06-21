@@ -79,7 +79,7 @@ class QuotePlaceholder extends \yii\db\ActiveRecord
         else{
             $subtotal = $this->amount * floatval($price);
             $totaleWithVat = ($subtotal + ($subtotal / 100) * 22);
-            $total = is_numeric($totaleWithVat) ? $this->formatNumber($totaleWithVat) : 0;
+            $total = is_numeric($totaleWithVat) ? $totaleWithVat : 0;
           
             return $total;
         }

@@ -102,7 +102,8 @@ class Payment extends \yii\db\ActiveRecord
     
     public function getTotal(){
         $total = 0;
-        $quote = Quote::find()->select(["total"])->where(["id" => $this->id_quote])->one();
+        if(!empty($this->id_quote))
+            $quote = Quote::find()->select(["total"])->where(["id" => $this->id_quote])->one();
         
         if(empty($quote)){
             $quote = QuotePlaceholder::find()->where(["id" => $this->id_quote_placeholder])->one();
@@ -130,11 +131,12 @@ class Payment extends \yii\db\ActiveRecord
     }
 
     public function getSaldo(){
-        if(!empty($this->id_quote))
+        if(!empty($this->id_quote)){
             $pagamento = Payment::find()
                             ->where(["id_quote" => $this->id_quote])
                             ->andWhere(["type" => 0])
                             ->one();
+        }
         else{
             $pagamento = Payment::find()
                             ->where(["id_quote_placeholder" => $this->id_quote_placeholder])
@@ -149,7 +151,7 @@ class Payment extends \yii\db\ActiveRecord
         
         $totale = $this->getTotal();
         
-        return floatval($totale-$acconto);
+        return floatval(abs($totale-$acconto));
     }
     
     public function getClient(){

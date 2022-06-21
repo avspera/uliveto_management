@@ -70,7 +70,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     [
                         'attribute' => "total",
                         'value' => function($model){
-                            return $model->getTotal();
+                            return $model->formatNumber($model->getTotal());
                         },
                         'format' => "raw",
                         'label' => "Totale"
