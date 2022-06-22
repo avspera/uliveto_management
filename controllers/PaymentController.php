@@ -43,7 +43,7 @@ class PaymentController extends Controller
                     ],
                     [
                         'actions' => ['view', 'index', 'create', 'update', 'check-saldo-payment',
-                                    'delete', 'set-as-invoiced', 'has-acconto', 'send-email-payment'],
+                                    'delete', 'set-as-invoiced', 'get-amount', 'send-email-payment'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -100,19 +100,34 @@ class PaymentController extends Controller
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         return $out;
     }
-    public function actionHasAcconto($id_quote){
+
+    public function actionGetAmount($id_quote, $type, $flag){
         $out = ["status" => "100", "hasAcconto" => false, "amount" => 0];
 
-        $acconto = Payment::findOne(["id_quote" => $id_quote, "type" => 0]);
-        if(empty($acconto)){
-            $acconto = Payment::findOne(["id_quote_placeholder" => $id_quote, "type" => 0]);
-        }
-        
-        $amount = !empty($acconto) ? floatval($acconto->amount) : 0;
+        $amount = 0;
+        if($type == 0){
+            if($flag == "quote")
+                $quote  = Quote::findOne(["id" => $id_quote]);
+            else{
+                $quote = QuotePlaceholder::findOne(["id" => $id_quote]);
+            }
 
+            $amount = $flag == "quote" ? $quote->deposit : $quote->acconto;
+            $hasAcconto = true;
+
+        }else{
+            if($flag == "quote")
+                $balance = Quote::find()->select(["balance"])->where(["id" => $id_quote])->one();
+            else{
+                $balance = QuotePlaceholder::find()->select(["saldo"])->where(["id" => $id_quote])->one();
+            }
+            
+            $amount = $flag == "quote" ? $balance->balance : $balance->saldo;
+        }
+    
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         
-        return !empty($acconto) ? $out = ["status" => "200", "hasAcconto" => true, "amount" => $amount] : $out;
+        return !empty($amount) ? $out = ["status" => "200", "hasAcconto" => $hasAcconto, "amount" => $amount] : $out;
     }
 
     public function actionUploadAllegato(){

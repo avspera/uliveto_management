@@ -160,28 +160,28 @@ use kartik\select2\Select2;
     function getAmount(){
         let type = $("#payment-type option:selected").val();   
         let id_quote = $("#payment-id_quote option:selected").val();
-        
+        let id_quote_placeholder = $("#payment-id_quote_placeholder option:selected").val();
+        let flag = id_quote ? "quote" : "quote_placeholder";
+
         if(!id_quote){
             id_quote = $("#payment-id_quote_placeholder option:selected").val();   
         }
         if(type){
-            let url = '<?= Url::to(['payment/has-acconto']) ?>'
+            let url = '<?= Url::to(['payment/get-amount']) ?>'
             
             $.ajax({
                 url: url,
                 type: 'get',
                 dataType: 'json',
                 'data': {
-                    'id_quote': id_quote,
+                    'id_quote': id_quote ? id_quote : id_quote_placeholder,
+                    'type': type,
+                    'flag': flag
                 },
                 success: function (data) {
-                    let total = $("#payment-total").val();
-                    console.log("data.amount", data.amount);
-                    if(data.amount){
-                        $("#payment-amount").val(parseFloat(total) - data.amount);
-                    }else{
-                        $("#payment-amount").val(parseFloat(total));
-                    }
+                    console.log("data", data)
+                    if(data.status == '200')
+                    $("#payment-amount").val(parseFloat(data.amount));
                 }
             });
         }

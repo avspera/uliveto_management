@@ -171,10 +171,10 @@ class GeneratePdf {
                 $productsByCat["[u]gliarulo"] = array_merge($productsByCat["[u]gliarulo"], $productsByCat["[u]gliarulomonocolor"]);
                 $this->printBottles($productsByCat["[u]gliarulo"], $pdf);
             }else{
-                if(isset($productsByCat["[u]gliarulomonocolor]"]))
-                    $productsByCat["[u]gliarulo"] = $productsByCat["[u]gliarulomonocolor]"];
+                if(isset($productsByCat["[u]gliarulomonocolor"]))
+                    $productsByCat["[u]gliarulo"] = $productsByCat["[u]gliarulomonocolor"];
                 else{
-                    $productsByCat["[u]gliarulo"] = $productsByCat["[u]gliarulo]"];
+                    $productsByCat["[u]gliarulo"] = $productsByCat["[u]gliarulo"];
                 }
                 
                 if(!empty($productsByCat["[u]gliarulo"])){
@@ -279,7 +279,7 @@ class GeneratePdf {
             $nameLine = iconv('UTF-8', "ISO-8859-1//TRANSLIT", $item->name." - ".number_format($item->price, 2, ",", ".") ." €") ." | n. ".$product->amount;
             
             $pdf->Cell(strlen($nameLine), 10, $nameLine, 0, 0, 'L');
-            $line += 7;
+            $line += 4;
 
             $packaging = new \stdClass;
             $packaging->price = 0;
@@ -320,10 +320,8 @@ class GeneratePdf {
             $customPrice    = $quote->custom_amount_omaggio ? 0 : floatVal($quote->custom_amount);
             $totalPrice     = $subtotal + $packagingPrice + $confettiPrice + $customPrice;
             
-            $line += 1;
-            
             $pdf->setTextColor(0, 0, 0);
-            $pdf->setXY(10, $line-8);
+            $pdf->setXY(10, $line-7);
             $totalLine = iconv('UTF-8', "ISO-8859-1//TRANSLIT", "Totale: ".number_format($totalPrice, 2, ",", ".") ." €");
             $pdf->Cell(10, 10, $totalLine);
         }
