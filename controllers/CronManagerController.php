@@ -106,7 +106,11 @@ class CronManagerController extends Controller
         }
 
         if($flag == "payment_placeholder"){
-            $quotes     = QuotePlaceholder::find()->leftJoin("quote", '`quote`.`id` = `quote_placeholder`.`id_quote`')->where(['`quote_placeholder`.`date_balance`' => $latenza])->andWhere(['`quote_placeholder`.`confirmed`' => 1])->all();
+            $quotes     = QuotePlaceholder::find()
+                            ->leftJoin("quote", '`quote`.`id` = `quote_placeholder`.`id_quote`')
+                            ->where(['`quote_placeholder`.`date_balance`' => $latenza])
+                            ->andWhere(['`quote_placeholder`.`confirmed`' => 1])
+                            ->all();
             $sentEmails += $this->loopQuotes($quotes, "ricordati di effettuare il pagamento per il tuo ordine Segnaposto L'Uliveto", $day, "reminder-payment", 'quote_placeholder');
         }
         

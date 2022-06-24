@@ -26,7 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div class="card">
         <div class="card-header">
-            <?= Html::a('Aggiungi', ['create'], ['class' => 'btn btn-success']) ?>
+            <?= Html::a('<i class="fas fa-plus"></i> Aggiungi', ['create'], ['class' => 'btn btn-success']) ?>
             <?= Html::button('<i class="fas fa-trash"></i> Cancella selezionati', ['class' => 'btn btn-danger', "onclick" => "deleteMultiple()"]) ?>
         </div>
 

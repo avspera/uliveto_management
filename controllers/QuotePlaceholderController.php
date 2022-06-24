@@ -126,13 +126,19 @@ class QuotePlaceholderController extends Controller
             $model->confirmed = 1;
             if($model->save()){
                 $pdf        = new GeneratePdf();
-                $quote      = Quote::findOne(["id" => $quotePlaceholder->id_quote]);
-                $filename = $pdf->quotePdf($model, $flag, "preventivo");
-                $client     = Client::findOne(["id" => $quote->id_client]);
-                if($this->sendEmail($model, $filename, "invio-preventivo-segnaposto", $client->name." ".$client->surname.", ecco l'ordine dei tuoi segnaposto L'Uliveto", $client)){
-                    Yii::$app->session->setFlash('success', "Preventivo segnaposto confermato con successo");
-                    return $this->redirect(Yii::$app->request->referrer);
+                $quote      = Quote::findOne(["id" => $model->id_quote]);
+                if(!empty($quote)){
+                    $filename = $pdf->quotePdf($model, $flag, "preventivo");
+                    $client     = Client::findOne(["id" => $quote->id_client]);
+                    
+                    if($this->sendEmail($model, $filename, "invio-preventivo-segnaposto", $client->name." ".$client->surname.", ecco l'ordine dei tuoi segnaposto L'Uliveto", $client)){
+                        Yii::$app->session->setFlash('success', "Preventivo segnaposto confermato con successo");
+                        return $this->redirect(Yii::$app->request->referrer);
+                    }
+                }else{
+                    Yii::$app->session->setFlash('error', "Non trovo il preventivo associato ai segnaposto");
                 }
+                
             }else{
                 Yii::$app->session->setFlash('error', "Ops...something went wrong [QU-107]");
                 return $this->redirect(Yii::$app->request->referrer);
