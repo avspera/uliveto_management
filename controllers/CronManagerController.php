@@ -33,6 +33,7 @@ class CronManagerController extends Controller
         
         $days = [25, 15, 10, 5, 2];
         foreach($days as $key){
+            //try to check from created_at and end of its month, because offerta ends on end of month
             $emails += $this->sendReminders($key, "scadenza_offerta");
         }
         
@@ -45,8 +46,7 @@ class CronManagerController extends Controller
         $quotes = Quote::find()
                     ->where(["data_evento" => $today])
                     ->andWhere(["confirmed" => 1])
-                    ->all(); 
-        
+                    ->all();
         $sentEmails = 0;
         foreach($quotes as $quote){
             if($this->sendEmail([], $quote, "send-wishes", 0, "i nostri migliori auguri per il tuo lieto evento"))

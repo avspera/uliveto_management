@@ -24,7 +24,7 @@ class GeneratePdf {
         
         $start_pack_x = 0;
         $ordinatePackaging = 225;
-        $packName = [];
+        $packImages = [];
         $i = 0;
         foreach($products as $product){
             if(!empty($product->id_packaging)){
@@ -34,15 +34,17 @@ class GeneratePdf {
                                 ->one();
                 
                 if(!empty($packaging)){
-                    $packName[$i] = $packaging->image;
-                    $i++;
+                    if(!in_array($packaging->image, $packImages)){
+                        $packImages[$i] = $packaging->image;
+                        $i++;
+                    }
                 }
             }
         }
 
-        $packName = array_unique($packName);
+        // $packImages = array_unique($packImages);
 
-        foreach($packName as $image){
+        foreach($packImages as $image){
             $pdf->Cell($pdf->Image($image, $start_pack_x, $ordinatePackaging, 40, 40));
             $start_pack_x += 40;
         }
@@ -53,7 +55,7 @@ class GeneratePdf {
 
         $start_x            = 0;
         $start_pack_x       = 0;
-        $packName           = [];
+        $packImages         = [];
         $ordinates          = [];
         $ordinate           = 0;
         $i                  = 0;
@@ -310,7 +312,7 @@ class GeneratePdf {
                 $line += 10;
             }else{
                 $prezzoScontato = $item->price;
-                $line += 6;
+                $line += 7;
             }
 
             //add prezzo packaging + prezzo confetti
@@ -456,7 +458,7 @@ class GeneratePdf {
 
         $filename           = $file."_".$quote->order_number."_".$client.".pdf";
         $fileRelativePath   = Yii::getAlias("@webroot")."/pdf/".$target."/".$file."_".$quote->order_number."_".$client.".pdf";
-        // $pdf->Output();die; //If test
+        $pdf->Output();die; //If test
         
         $pdf->Output($fileRelativePath, 'F');    
 
