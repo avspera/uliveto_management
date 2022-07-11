@@ -28,6 +28,7 @@ use kartik\mpdf\Pdf;
 use Mpdf\Mpdf;
 use \setasign\Fpdi\Fpdi;
 use app\utils\GeneratePdf;
+
 /**
  * OrderController implements the CRUD actions for Quote model.
  */
@@ -54,7 +55,8 @@ class OrderController extends Controller
                             'send-email-payment',
                             'generate-pdf',
                             'set-delivered',
-                            'delete-all'
+                            'delete-all',
+                            'ask-review'
                         ],
                         'allow' => true,
                         'roles' => ['@'],
@@ -133,6 +135,9 @@ class OrderController extends Controller
         return $out;
     }
 
+    /**
+     * check if is useless
+     */
     public function actionSendEmailPayment($id_client, $id_quote){
         if(empty($id_client) || empty($id_quote)) return;
         
@@ -148,23 +153,25 @@ class OrderController extends Controller
         //     'client'        => $client
         // ]);
 
-        if($this->sendEmail($client, $order, $msg = "")){
+        $object = $model->getClient().", il tuo ordine bomboniere L'Uliveto è stato consegnato";
+        if($this->sendEmail($order, "", "send-payment", $object)){
             Yii::$app->session->setFlash('success', "Email inviata correttamente");
         }else{
             Yii::$app->session->setFlash('error', "Ops...something went wrong [ORDER_SEND_EMAIL-100]");
         }
+        
 
         return $this->redirect(["view", "id" => $id_quote]);
     }
 
-    protected function sendEmail($model, $filename, $view){
+    protected function sendEmail($model, $filename, $view, $object = ""){
         
         if(empty($model)) return false;
+        
         $client = Client::find()->select(["email"])->where(["id" => $model->id_client])->one();
         
         if(empty($client)) return false;
-
-        $object = $view == "set-delivered" ? $model->getClient().", il tuo ordine bomboniere L'Uliveto è stato consegnato" : $model->getClient().", il tuo ordine bomboniere L’Uliveto è confermato";
+        
         $message = Yii::$app->mailer
                 ->compose(
                     ['html' => $view],
@@ -174,11 +181,26 @@ class OrderController extends Controller
                 ->setTo($client->email)
                 ->setSubject($object);
 
-        $fullFilename = "https://manager.orcidelcilento.it/web/".$filename;
-        // $message->attachContent($fullFilename,['fileName' => $filename,'contentType' => 'application/pdf']); 
-        $message->attach($fullFilename);
+        if(!empty($filename)){
+            $fullFilename = "https://manager.orcidelcilento.it/web/pdf/ordini/".$filename;
+            $message->attach($fullFilename);
+        }
 
         return $message->send();
+    }
+
+    public function actionAskReview($id){
+        $order = $this->findModel($id);
+        if(!empty($order)){
+            $client = Client::findOne(["id" => $order->id_client]);
+            if($this->sendEmail($order, "", "ask-review", $model->getClient().", lascia una recensione del tuo ordine L'Uliveto")){
+                Yii::$app->session->setFlash('success', "Rischiesta di recensione inviata correttamente");
+            }else{
+                Yii::$app->session->setFlash('error', "Ops...something went wrong");
+            }
+        }
+
+        $this->redirect(Yii::$app->request->referrer);
     }
 
     /**
@@ -274,7 +296,7 @@ class OrderController extends Controller
             
             $model->delivered = 1;
             if($model->save()){
-                if($this->sendEmail($model, [], "set-delivered")){
+                if($this->sendEmail($model, "", "set-delivered", $model->getClient().", il tuo ordine bomboniere L'Uliveto è stato consegnato")){
                     Yii::$app->session->setFlash('success', "Modifica effettuata correttamente.");
                 }else{
                     Yii::$app->session->setFlash('error', "Ops...something went wrong");
@@ -353,21 +375,27 @@ class OrderController extends Controller
     public function actionGeneratePdf($id, $flag){
         $quote      = $this->findModel($id);
         
+        if(empty($quote)) return;
+        
         $pdf = new GeneratePdf();
-        $filename = $pdf->quotePdf($quote, $flag, "ordine");
+
+        $filename = $pdf->quotePdf($quote, $flag, "ordine", "ordini");
         
         if($flag == "send"){
-            if($this->sendEmail($quote, $filename, "invio-ordine")){
-                Yii::$app->session->setFlash('success', "Pdf inviato correttamente");
+            if($this->sendEmail($quote, $filename, "invio-ordine", $quote->getClient().", l'ordine delle tue bomboniere L'Uliveto")){
+                Yii::$app->session->setFlash('success', "Email con PDF allegato inviato correttamente: ".$filename);
             }else{
                 Yii::$app->session->setFlash('error', "Ops...something went wrong");
             }
         }else{
-            Yii::$app->session->setFlash('success', "Pdf generato correttamente.<a href='/web/pdf/ordini/".$filename."'> Scarica</a>");
+            $url = "<a href='https://manager.orcidelcilento.it/web/pdf/ordini/{$filename}'>Scarica</a>";
+
+            Yii::$app->session->setFlash('success', "Pdf generato correttamente. ".$url);
         }
 
-        return $this->redirect("index");
+        return $this->redirect(Yii::$app->request->referrer);
     }
+
 
     protected function manageUploadFiles($model) {
 

@@ -281,7 +281,7 @@ class GeneratePdf {
             $nameLine = iconv('UTF-8', "ISO-8859-1//TRANSLIT", $item->name." - ".number_format($item->price, 2, ",", ".") ." €") ." | n. ".$product->amount;
             
             $pdf->Cell(strlen($nameLine), 10, $nameLine, 0, 0, 'L');
-            $line += 4;
+            $line += 6;
 
             $packaging = new \stdClass;
             $packaging->price = 0;
@@ -309,7 +309,7 @@ class GeneratePdf {
                 $pdf->setXY(10, $line-2);
                 $saleLine = iconv('UTF-8', "ISO-8859-1//TRANSLIT", "Sconto: ".$sale->name." del ".$sale->amount."% - ".number_format($prezzoScontato, 2, ",", ".") ." €")." n. ".$product->amount;
                 $pdf->Cell(strlen($saleLine), 10, $saleLine, 0, 0, 'L');
-                $line += 10;
+                $line += 9;
             }else{
                 $prezzoScontato = $item->price;
                 $line += 7;
@@ -458,7 +458,8 @@ class GeneratePdf {
 
         $filename           = $file."_".$quote->order_number."_".$client.".pdf";
         $fileRelativePath   = Yii::getAlias("@webroot")."/pdf/".$target."/".$file."_".$quote->order_number."_".$client.".pdf";
-        $pdf->Output();die; //If test
+        
+        // $pdf->Output();die; //If test
         
         $pdf->Output($fileRelativePath, 'F');    
 
