@@ -79,17 +79,35 @@ class QuoteSearch extends Quote
             'confirmed' => $this->confirmed,
         ]);
 
-        
-        if(!empty($params["QuoteSearch"]["start_date"]) || !empty($params["QuoteSearch"]["end_date"]))
+        if(!empty($params["QuoteSearch"]["start_date_year"]) || !empty($params["QuoteSearch"]["end_date_year"]))
         {
-            $start_date = $params["QuoteSearch"]["start_date"];
-            $end_date = $params["QuoteSearch"]["end_date"];
-            
+            $start_date = $params["QuoteSearch"]["start_date_year"];
+            $end_date = $params["QuoteSearch"]["end_date_year"];
+
             if($start_date == $end_date)
-                $query->andFilterWhere(['created_at' => $start_date ]);
-            else    
-                $query->andFilterWhere(['>=', 'created_at', $start_date ])->andFilterWhere(['<=', 'created_at', $end_date]);
+                $query->andFilterWhere([
+                        'YEAR(`created_at`)' => $params["QuoteSearch"]["start_date_year"]
+                    ]
+                );
+            else{
+                $query->andFilterWhere(['>=', 'YEAR(`created_at`)', $params["QuoteSearch"]["start_date_year"] ])
+                    ->andFilterWhere(['<=', 'YEAR(`created_at`)', $params["QuoteSearch"]["start_date_year"] ]);
+            }
+        }else{
+            if(!empty($params["QuoteSearch"]["start_date"]) || !empty($params["QuoteSearch"]["end_date"]))
+            {
+                $start_date = $params["QuoteSearch"]["start_date"];
+                $end_date = $params["QuoteSearch"]["end_date"];
+                
+
+                if($start_date == $end_date)
+                    $query->andFilterWhere(['created_at' => $start_date ]);
+                else    
+                    $query->andFilterWhere(['>=', 'created_at', $start_date ])->andFilterWhere(['<=', 'created_at', $end_date]);
+            }
         }
+
+        
 
         
         if(!empty($params["QuoteSearch"]["product"])){

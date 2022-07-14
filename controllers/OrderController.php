@@ -94,6 +94,7 @@ class OrderController extends Controller
         $searchModel = new QuoteSearch();
         $searchModel->confirmed = 1;
         $searchModel->delivered = 0;
+        
         $dataProvider = $searchModel->search($this->request->queryParams);
         $dataProvider->sort->defaultOrder = ["deadline" => SORT_ASC];
         return $this->render('index', [

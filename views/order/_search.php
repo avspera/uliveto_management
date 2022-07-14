@@ -8,6 +8,13 @@ use yii\web\JsExpression;
 use kartik\select2\Select2;
 ?>
 
+<style type="text/css">
+.ui-datepicker-calendar {
+        display: none;
+    }
+</style>
+
+
 <div class="quote-search">
 
     <?php $form = ActiveForm::begin([
@@ -88,6 +95,17 @@ use kartik\select2\Select2;
                 </div>
                 <div class="col-md-3 col-sm-6 col-12">
                     <?= $form->field($model, "delivered")->dropdownlist([0 => "NO", 1 => "SI"], ["prompt" => "Scegli"]) ?>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3 col-sm-6 col-12">
+                    <label>Filtra per Anno da</label>
+                    <input class="form-control" type= "text" maxlength="4" name="QuoteSearch[start_date_year]" /> 
+                </div>
+                <div class="col-md-3 col-sm-6 col-12">
+                    <label>Filtra per Anno a</label>
+                    <input class="form-control" type= "text" maxlength="4" name="QuoteSearch[end_date_year]" /> 
                 </div>
             </div>
             

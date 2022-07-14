@@ -31,7 +31,8 @@
         "bitcko/yii2-bitcko-paypal-api": "dev-master",
         "kartik-v/yii2-widget-datepicker": "dev-master",
         "2amigos/yii2-chartjs-widget": "~2.0",
-        "yiisoft/yii2-jui": "^2.0"
+        "yiisoft/yii2-jui": "^2.0",
+        "kartik-v/yii2-field-range": "*"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",
