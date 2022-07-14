@@ -86,29 +86,28 @@ class QuoteSearch extends Quote
 
             if($start_date == $end_date)
                 $query->andFilterWhere([
-                        'YEAR(`created_at`)' => $params["QuoteSearch"]["start_date_year"]
+                        'YEAR(`deadline`)' => $params["QuoteSearch"]["start_date_year"]
                     ]
                 );
             else{
-                $query->andFilterWhere(['>=', 'YEAR(`created_at`)', $params["QuoteSearch"]["start_date_year"] ])
-                    ->andFilterWhere(['<=', 'YEAR(`created_at`)', $params["QuoteSearch"]["start_date_year"] ]);
-            }
-        }else{
-            if(!empty($params["QuoteSearch"]["start_date"]) || !empty($params["QuoteSearch"]["end_date"]))
-            {
-                $start_date = $params["QuoteSearch"]["start_date"];
-                $end_date = $params["QuoteSearch"]["end_date"];
-                
-
-                if($start_date == $end_date)
-                    $query->andFilterWhere(['created_at' => $start_date ]);
-                else    
-                    $query->andFilterWhere(['>=', 'created_at', $start_date ])->andFilterWhere(['<=', 'created_at', $end_date]);
+                $query->andFilterWhere(['>=', 'YEAR(`deadline`)', $params["QuoteSearch"]["start_date_year"] ])
+                    ->andFilterWhere(['<=', 'YEAR(`deadline`)', $params["QuoteSearch"]["start_date_year"] ]);
             }
         }
-
         
+        
+        if(!empty($params["QuoteSearch"]["start_date"]) || !empty($params["QuoteSearch"]["end_date"]))
+        {
+            $start_date = $params["QuoteSearch"]["start_date"];
+            $end_date = $params["QuoteSearch"]["end_date"];
+            
 
+            if($start_date == $end_date)
+                $query->andFilterWhere(['created_at' => $start_date ]);
+            else    
+                $query->andFilterWhere(['>=', 'created_at', $start_date ])->andFilterWhere(['<=', 'created_at', $end_date]);
+        }
+    
         
         if(!empty($params["QuoteSearch"]["product"])){
             $quoteDetails = QuoteDetails::find()
