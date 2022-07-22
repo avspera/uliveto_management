@@ -20,7 +20,7 @@ class QuoteSearch extends Quote
             [['id', 'order_number', 'id_client', 'confirmed',
                 'product', 'amount', 'color', 'packaging', 'delivered',
                 'placeholder', 'shipping'], 'integer'],
-            [['created_at', 'updated_at', 'notes', 'deadline'], 'safe'],
+            [['created_at', 'updated_at', 'notes', 'deadline', 'from_web'], 'safe'],
             [['total', 'deposit', 'balance'], 'number'],
         ];
     }
@@ -77,6 +77,7 @@ class QuoteSearch extends Quote
             'shipping' => $this->shipping,
             'deadline' => $this->deadline,
             'confirmed' => $this->confirmed,
+            'from_web' => $this->from_web,
         ]);
 
         if(!empty($params["QuoteSearch"]["start_date_year"]) || !empty($params["QuoteSearch"]["end_date_year"]))

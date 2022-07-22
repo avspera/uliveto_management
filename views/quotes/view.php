@@ -196,6 +196,12 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
                         "value" => function($model){
                             return $model->confirmed ? "SI" : "NO";
                         }
+                    ],
+                    [
+                        'attribute' => "from_web",
+                        "value" => function($model){
+                            return $model->from_web ? "SI" : "NO";
+                        }
                     ]
                 ],
             ]) ?>

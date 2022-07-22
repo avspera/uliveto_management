@@ -201,7 +201,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     $(".result-container").append(html);
                     setTimeout(function() {
                         location.reload();
-                    }, 5000);
+                    }, 2000);
                 }
             }
         });

@@ -450,10 +450,10 @@ class GeneratePdf {
 
         //LUOGO E DATA
         $pdf->setFontSize("12");
-        $pdf->setXY(23, 190);
+        $pdf->setXY(23, 215);
         $pdf->Cell(30, 0, iconv('UTF-8', "ISO-8859-1//TRANSLIT", "Trentinara, ".$quote->formatDate($quote->created_at)), 0, 0, 'C');
         
-        $pdf->setXY(0, 215);
+        $pdf->setXY(0, 240);
         $pdf->Cell(0, 0, iconv('UTF-8', "ISO-8859-1//TRANSLIT", $quote->notes), 0, 0, 'C');
 
         $filename           = $file."_".$quote->order_number."_".$client.".pdf";

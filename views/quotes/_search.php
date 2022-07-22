@@ -109,6 +109,9 @@ use yii\jui\DatePicker;
                         ]);
                     ?>
                 </div>
+                <div class="col-md-3">
+                    <?= $form->field($model, 'from_web')->dropdownlist([0 => "NO", 1 => "SI"], ["prompt" => "Scegli"]) ?>
+                </div>
 
             </div>
             

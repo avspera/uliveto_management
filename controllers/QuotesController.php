@@ -63,6 +63,13 @@ class QuotesController extends Controller
                         'allow' => true,
                         'roles' => ['@'],
                     ],
+                    [
+                        'actions' => [
+                            'create-from-web'
+                        ],
+                        'allow' => true,
+                        'allow' => ['?']
+                    ]
                 ],
             ],
         ];
@@ -164,7 +171,7 @@ class QuotesController extends Controller
                 $model->updated_at      = date("Y-m-d H:i:s");
                 $model->confirmed       = 0;
                 $model->total_no_vat    = $model->total / (1 + 4 / 100);
-                
+                $model->from_web        = 0;
                 if($model->save()){
                     $i = 0;
                     foreach($model->product as $key => $value){
@@ -332,6 +339,108 @@ class QuotesController extends Controller
 
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         return $out;
+    }
+
+    /**
+     * create quote from web.
+     * this is coming from wordpress website forms
+     * it is called in functions.php in wordpress 
+     */
+
+     public function actionCreateFromWeb($inputData){
+        $out = ["status" => "100", "msg" => "Ops...qualcosa è andato storto"];
+        $data = json_decode($inputData, true);
+
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        if(empty($data)) return $out;
+
+        $latestCode = Quote::find()->select(["order_number"])->orderBy(["created_at" => SORT_DESC])->one();
+        $model = new Quote();
+        $model->order_number = !empty($latestCode) ? $latestCode->order_number+1 : 1;
+        $model->created_at      = date("Y-m-d H:i:s");
+        $model->updated_at      = date("Y-m-d H:i:s");
+        $model->confirmed       = 0;
+        $model->data_evento     = isset($data["Datadelmatrimonio"]) ? $data["Datadelmatrimonio"] : NULL;
+        $model->notes           = isset($data["your-message"]) ? $data["your-message"] : NULL;
+        $model->custom          = isset($data["custom"]) ? $data["custom"] : NULL;
+        $model->from_web        = 1;
+        $model->shipping        = 1;
+
+        $client = new Client();
+        $client->name = $data["your-name"];
+        $client->email = $data["your-email"];
+        $client->phone = $data["Telefono"];
+
+        if($client->save())
+            $model->id_client = $client->id;
+        else{
+            print_r($client->getErrors()); die;
+        }
+
+        $total_no_vat = 0;
+        $model->total_no_vat = $total_no_vat;
+        if($model->save()){
+            $out = ["status" => "200", "msg" => "Fatto"]; 
+        }
+    
+        $bottles = [
+            "monocolor" => count($data["monocolor"]) > 0 ? $data["monocolor"][0] : [],
+            "sfumato" => count($data["sfumato"]) > 0 ? $data["monocolor"][0] : []
+        ];
+            
+        print_r($bottles);die;
+        foreach($bottles as $bottle => $value){
+            $color      = Color::find()->where(["LIKE", "label", $value])->one();
+            
+            if(!empty($color) && !empty($product)){
+                $quoteDetails               = new QuoteDetails();
+                $quoteDetails->id_product   = $color->id_product;
+                $quoteDetails->id_quote     = $model->id;
+
+                if($bottle == "sfumato"){
+                    $quoteDetails->amount       = $data["quantita_sfumato"];
+                    $product    = Product::findOne(["LIKE", "name", $data["orcio"]])->one();
+                    if(!empty($product)){
+                        $total_no_vat += $product->price*$data["quantita_sfumato"];
+                    }
+                }else{
+                    $quoteDetails->amount       = $data["quantita_monocolor"];
+                    $product    = Product::findOne(["LIKE", "name", $data["orcio"]." monocolor"])->one();
+                    if(!empty($product)){
+                        $total_no_vat += $product->price*$data["quantita_monocolor"];
+                    }
+                }
+
+                $quoteDetails->id_color  = $color->id;
+                $packaging = count($data["packaging"]) ? 
+                                Packaging::find()
+                                    ->where(["LIKE", "label", $data["packaging"][0]])
+                                    ->andWhere(["id_product" => $product->id])
+                                    ->one()
+                            : NULL;
+
+                if($packaging){
+                    $quoteDetails->id_packaging = $packaging->id;
+                }
+                
+                $quoteDetails->created_at   = date("Y-m-d H:i:s");
+    
+                if(!$quoteDetails->save()){
+                    print_r($quoteDetails->getErrors());
+                }
+                $i++;
+            }
+
+        }
+    
+        $model->total_no_vat = $total_no_vat;
+        if($model->save()){
+            return $out = ["status" => "200", "msg" => "Fatto"]; 
+        }
+        else{
+            print_r($model->getErrors());die;
+        }
+        
     }
 
     public function actionGetByClientId($id_client){

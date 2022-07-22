@@ -60,7 +60,7 @@ $phone  = $clientPhone ? "0039".trim($clientPhone) : 0;
             <?= $phone ? Html::a('<i class="fas fa-comment"></i> Whatsapp', Url::to("https://wa.me/".$phone."/?text=".$text), ['class' => 'btn btn-primary', 'target' => "_blank"]) : "" ?>
             <?= Html::a('<span style="color:white"><i class="fas fa-upload"></i> Carica allegati</span>', ['upload-files', 'id' => $model->id], ['class' => 'btn btn-warning']) ?>
             <?= !$model->delivered ? Html::a('<span style="color:white"><i class="fas fa-truck"></i> CONSEGNATO</span>', ['set-delivered', 'id' => $model->id], ['class' => 'btn btn-success']) : "" ?>
-            <?= Html::a('<span style="color:white"><i class="fas fa-star"></i> Chiedi recensione </span>', ['ask-review', 'id' => $model->id], ['class' => 'btn btn-info']) ?>
+            <?= $model->delivered ? Html::a('<span style="color:white"><i class="fas fa-star"></i> Chiedi recensione </span>', ['ask-review', 'id' => $model->id], ['class' => 'btn btn-info']) : "" ?>
         </div>
 
         <div class="card-body">

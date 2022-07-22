@@ -28,6 +28,7 @@ use app\models\QuotePlaceholder;
  * @property float|null $deposit
  * @property float|null $balance
  * @property int $shipping
+ * @property int $from_web
  * @property string $deadline
  * @property string $scandenza_offerta
  * @property string $date_deposit
@@ -54,7 +55,7 @@ class Quote extends \yii\db\ActiveRecord
             [['created_at', 'updated_at', 'data_evento', 'deadline', 'product', 'amount', 'color', 'packaging', 'total_no_vat',
                 'date_deposit', 'date_balance','placeholder', 'address', 'custom_color', 'placeholder_amount',
                     'confetti', 'custom', 'custom_amount', 'id_sconto', 'custom_amount_omaggio',
-                    'prezzo_confetti', 'confetti_omaggio', 'delivered', 'scadenza_offerta', 'deadline'], 'safe'],
+                    'prezzo_confetti', 'confetti_omaggio', 'delivered', 'scadenza_offerta', 'deadline', 'from_web'], 'safe'],
             [['notes', 'address'], 'string'],
             [['total', 'deposit', 'balance', 'delivered'], 'number'],
             [['attachments'], 'file', 'skipOnEmpty' => true, 'extensions' => 'jpg, png, pdf'],
@@ -99,7 +100,8 @@ class Quote extends \yii\db\ActiveRecord
             'custom_amount_omaggio' => "Personalizzazione omaggio",
             'scadenza_offerta' => "Scadenza offerta",
             'date_deposit' => "Data acconto",
-            'date_balance' => "Data saldo"
+            'date_balance' => "Data saldo",
+            'from_web' => "Da web"
         ];
     }
 

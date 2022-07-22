@@ -117,7 +117,12 @@ $this->params['breadcrumbs'][] = $this->title;
                         },
                         'format' => "raw"
                     ],
-                    
+                    [
+                        'attribute' => "from_web",
+                        "value" => function($model){
+                            return $model->from_web ? "SI" : "NO";
+                        }
+                    ],
                     [
                         'class' => ActionColumn::className(),
                     ],
@@ -163,9 +168,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     $(".result-container").append(html);
                     setTimeout(function() {
                         location.reload();
-                    }, 5000);
+                    }, 2000);
                 }
             }
         });
+
     }
 </script>

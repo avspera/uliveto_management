@@ -194,7 +194,7 @@ class OrderController extends Controller
         $order = $this->findModel($id);
         if(!empty($order)){
             $client = Client::findOne(["id" => $order->id_client]);
-            if($this->sendEmail($order, "", "ask-review", $model->getClient().", lascia una recensione del tuo ordine L'Uliveto")){
+            if($this->sendEmail($order, "", "ask-review", $order->getClient().", lascia una recensione del tuo ordine L'Uliveto")){
                 Yii::$app->session->setFlash('success', "Rischiesta di recensione inviata correttamente");
             }else{
                 Yii::$app->session->setFlash('error', "Ops...something went wrong");
