@@ -107,7 +107,7 @@ class ClientsController extends Controller
                         ->where(["LIKE", "surname", $term])
                         ->orWhere(["LIKE", "name", $term])
                         ->orderBy(["name" => SORT_ASC])
-                        ->all();
+                        ->distinct()->all();
                 
             $i = 0;
             foreach($data as $client){

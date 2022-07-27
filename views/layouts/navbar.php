@@ -18,7 +18,10 @@
                                     ->andWhere(["confirmed" => 1])
                                     ->count();
 
-    $messageCount   = app\models\Message::find()->where(["not",  ["replied_at" => null]])->count();
+    // $messageCount   = app\models\Message::find()->where(["not",  ["replied_at" => null]])->count();
+    $fromWebCount   = app\models\Quote::find()->where(["from_web" => 1, 'delivered' => 0])->count();
+
+    $fromWeb        = app\models\Quote::find()->where(["from_web" => 1, 'delivered' => 0])->all();
     $paymentsCount  = app\models\Payment::find()->count();
     $payments       = app\models\Payment::find()
                                     ->orderBy(["created_at" => SORT_DESC])
@@ -66,25 +69,28 @@
         <li class="nav-item dropdown">
             <a class="nav-link" data-toggle="dropdown" href="#">
                 <i class="far fa-comments"></i>
-                <span class="badge badge-danger navbar-badge"><?= $messageCount ?></span>
+                <span class="badge badge-danger navbar-badge"><?= $fromWebCount ?></span>
             </a>
             <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                <a href="#" class="dropdown-item">
-                    <!-- Message Start -->
-                    <div class="media">
-                        <img src="<?=$assetDir?>/img/user1-128x128.jpg" alt="User Avatar" class="img-size-50 mr-3 img-circle">
-                        <div class="media-body">
-                            <h3 class="dropdown-item-title">
-                                Brad Diesel
-                                <span class="float-right text-sm text-danger"><i class="fas fa-star"></i></span>
-                            </h3>
-                            <p class="text-sm">Call me whenever you can...</p>
-                            <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
+                <?php foreach($fromWeb as $item) {
+                    
+                ?>
+                    <a href="<?= Url::to(["quotes/view", "id" => $item->id]) ?>" class="dropdown-item">
+                        <!-- Message Start -->
+                        <div class="media">
+                            <div class="media-body">
+                                <h3 class="dropdown-item-title">
+                                    <?= $item->getClient() ?>
+                                    <span class="float-right text-sm text-danger"><i class="fas fa-star"></i></span>
+                                </h3>
+                                <p class="text-sm">Ha richiesto un nuovo preventivo...</p>
+                                <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> <?= $item->formatDate($item->created_at) ?></p>
+                            </div>
                         </div>
-                    </div>
-                    <!-- Message End -->
-                </a>
-                <div class="dropdown-divider"></div>
+                        <!-- Message End -->
+                    </a>
+                    <div class="dropdown-divider"></div>
+                <?php } ?>
                 <a href="<?= Url::to(["message/index"]) ?>" class="dropdown-item dropdown-footer">Vedi tutti</a>
             </div>
         </li>

@@ -267,10 +267,8 @@ class QuotesController extends Controller
                 return $this->redirect(['view', 'id' => $model->id]);    
             }
             
-        }else{
-            Yii::$app->session->setFlash('error', "Ops...something went wrong [QU-102]");
         }
-
+        
         $detailsModel   = new QuoteDetailsSearch();
         $detailsModel->id_quote = $id;
         $quoteDetails   = $detailsModel->search($this->request->queryParams);
